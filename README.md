@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ReFi Starter - Swipe-to-Donate App
 
-## Getting Started
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-First, run the development server:
+This repository contains the frontend application for the Swipe-to-Donate project, part of the ReFi Starter initiative. It's a mobile-first Web3 app built for the Celo ecosystem, designed to make supporting meaningful causes as easy as swiping right.
+
+Users can discover verified impact projects, donate stablecoins (like cUSD) on Celo, and track impact transparently on the blockchain.
+
+This project is being built in public. Follow our progress in the [**Documentation**](./docs/README.md).
+
+## ✨ Features (Planned)
+
+- **Swipe Interface:** Easily browse and discover impact projects.
+- **Micro-Donations:** Support causes with small amounts of Celo stablecoins.
+- **MiniPay Integration:** Seamless experience within the MiniPay wallet.
+- **Project Verification:** Ensuring listed projects meet impact criteria (details TBD).
+- **On-Chain Transparency:** Donations and project funding tracked on Celo.
+
+## 🛠 Tech Stack
+
+- **Runtime:** [Bun](https://bun.sh/)
+- **Framework:** [Next.js](https://nextjs.org/) (App Router)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+- **Blockchain Interaction:** [Wagmi](https://wagmi.sh/) / [Viem](https://viem.sh/)
+- **Smart Contracts:** [Foundry](https://getfoundry.sh/) (Solidity) - Managed as a git submodule in `./contracts`.
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- [Bun](https://bun.sh/docs/installation) (v1.0 or higher)
+- [Git](https://git-scm.com/)
+- [Foundry](https://book.getfoundry.sh/getting-started/installation) (for contract interaction/testing)
+
+### Installation & Setup
+
+1.  **Clone the repository:**
+    ```bash
+    git clone <your-repo-url>
+    cd swipe-pad
+    ```
+
+2.  **Initialize Submodules:**
+    The project uses git submodules for the smart contracts. Initialize them:
+    ```bash
+    git submodule update --init --recursive
+    ```
+
+3.  **Install Frontend Dependencies:**
+    ```bash
+    bun install
+    ```
+
+4.  **Compile Contracts:**
+    Navigate to the contracts directory and compile:
+    ```bash
+    cd contracts
+    forge build
+    cd ..
+    ```
+
+5.  **Generate Wagmi Hooks:**
+    Ensure contracts are compiled, then generate hooks:
+    ```bash
+    bunx wagmi generate
+    ```
+
+6.  **Environment Variables:**
+    Create a `.env.local` file based on `.env.example` (if one exists) and populate it with necessary keys (e.g., RPC URLs, API keys).
+
+### Running the Development Server
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
 bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📚 Documentation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Detailed documentation, including milestones, technical decisions (ADRs), and build-in-public updates, can be found in the [`docs/`](./docs/README.md) directory.
 
-## Learn More
+## 🤝 Contributing
 
-To learn more about Next.js, take a look at the following resources:
+Contributions are welcome! Please refer to the `CONTRIBUTING.md` guide (to be created) for details on how to contribute.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📄 License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details (to be created).
