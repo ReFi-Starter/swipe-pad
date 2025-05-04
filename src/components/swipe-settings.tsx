@@ -4,44 +4,50 @@ import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { swipeAmounts } from "@/lib/utils"
+import { Input } from "@/components/ui/input"
 
-interface SwipeSettingsProps {
+export interface SwipeSettingsProps {
   defaultAmount: number
+  onDefaultAmountChange: (amount: number) => void
   autoBatch: boolean
-  onChangeAmount: (amount: number) => void
-  onChangeAutoBatch: (enabled: boolean) => void
+  onAutoBatchChange: (enabled: boolean) => void
 }
 
-export function SwipeSettings({ defaultAmount, autoBatch, onChangeAmount, onChangeAutoBatch }: SwipeSettingsProps) {
+export function SwipeSettings({
+  defaultAmount,
+  onDefaultAmountChange,
+  autoBatch,
+  onAutoBatchChange,
+}: SwipeSettingsProps) {
   return (
     <Card className="overflow-hidden bento-bevel">
       <CardContent className="p-4">
         <h3 className="font-semibold mb-3">Swipe Settings</h3>
 
-        <div className="mb-4">
-          <p className="text-sm text-slate-500 mb-2">Default donation amount</p>
-          <div className="grid grid-cols-4 gap-2">
-            {swipeAmounts.map((amount) => (
-              <Button
-                key={amount.value}
-                variant={defaultAmount === amount.value ? "default" : "outline"}
-                className="w-full"
-                onClick={() => onChangeAmount(amount.value)}
-              >
-                {amount.label}
-              </Button>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between">
+        <div className="space-y-4">
           <div>
-            <Label htmlFor="auto-batch" className="font-medium">
-              Enable auto-batch
-            </Label>
-            <p className="text-xs text-slate-500">Process donations in batches to reduce transaction fees</p>
+            <Label htmlFor="default-amount">Default Donation Amount</Label>
+            <div className="mt-1">
+              <Input
+                id="default-amount"
+                type="number"
+                min="0.01"
+                step="0.01"
+                value={defaultAmount}
+                onChange={(e) => onDefaultAmountChange(parseFloat(e.target.value))}
+                className="w-full"
+              />
+            </div>
+            <p className="text-sm text-slate-500 mt-1">Amount to donate with each right swipe</p>
           </div>
-          <Switch id="auto-batch" checked={autoBatch} onCheckedChange={onChangeAutoBatch} />
+
+          <div className="flex items-center justify-between">
+            <div>
+              <Label htmlFor="auto-batch">Auto-batch Transactions</Label>
+              <p className="text-sm text-slate-500">Combine multiple donations into a single transaction</p>
+            </div>
+            <Switch id="auto-batch" checked={autoBatch} onCheckedChange={onAutoBatchChange} />
+          </div>
         </div>
       </CardContent>
     </Card>
