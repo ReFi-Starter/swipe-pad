@@ -68,7 +68,7 @@ export default function ProfilePage() {
           <TabsContent value="achievements" className="mt-4 space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="font-medium">Your Achievements</h3>
-              <PrivacyToggle isPublic={isPublic} onToggle={() => setIsPublic(!isPublic)} />
+              <PrivacyToggle isPublic={isPublic} onChange={() => setIsPublic(!isPublic)} />
             </div>
 
             <div className="grid grid-cols-3 gap-3">
@@ -104,12 +104,11 @@ export default function ProfilePage() {
             </div>
 
             <ImpactShareCard
-              stats={{
-                totalDonated: stats.totalDonated,
-                projectsSupported: stats.projectsSupported,
-                categoriesSupported: stats.categoriesSupported,
-                totalPoints: stats.nextLevel?.currentPoints || 0,
-              }}
+              totalDonated={stats.totalDonated}
+              projectsSupported={stats.projectsSupported}
+              categoriesSupported={stats.categoriesSupported}
+              totalPoints={stats.nextLevel?.currentPoints || 0}
+              onShare={() => {}}
             />
           </TabsContent>
         </Tabs>
