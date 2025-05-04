@@ -1,4 +1,5 @@
 import { pgTable, serial, varchar, timestamp, text, integer, boolean, pgEnum, numeric } from 'drizzle-orm/pg-core';
+import { InferInsertModel, InferSelectModel } from 'drizzle-orm';
 
 // Enums
 export const userLevelEnum = pgEnum('user_level', ['Beginner', 'Contributor', 'Supporter', 'Champion']);
@@ -139,4 +140,44 @@ export const cachedDonations = pgTable('cached_donations', {
   amount: numeric('amount', { precision: 20, scale: 0 }).notNull(),
   tokenAddress: varchar('token_address', { length: 42 }),
   donatedAt: timestamp('donated_at').defaultNow(),
-}); 
+});
+
+// Export types
+export type User = InferSelectModel<typeof users>;
+export type NewUser = InferInsertModel<typeof users>;
+
+export type UserSettings = InferSelectModel<typeof userSettings>;
+export type NewUserSettings = InferInsertModel<typeof userSettings>;
+
+export type Achievement = InferSelectModel<typeof achievements>;
+export type NewAchievement = InferInsertModel<typeof achievements>;
+
+export type UserAchievement = InferSelectModel<typeof userAchievements>;
+export type NewUserAchievement = InferInsertModel<typeof userAchievements>;
+
+export type ProjectMetadata = InferSelectModel<typeof projectMetadata>;
+export type NewProjectMetadata = InferInsertModel<typeof projectMetadata>;
+
+export type Category = InferSelectModel<typeof categories>;
+export type NewCategory = InferInsertModel<typeof categories>;
+
+export type CommunityTag = InferSelectModel<typeof communityTags>;
+export type NewCommunityTag = InferInsertModel<typeof communityTags>;
+
+export type CommunityNote = InferSelectModel<typeof communityNotes>;
+export type NewCommunityNote = InferInsertModel<typeof communityNotes>;
+
+export type CommunityNoteVote = InferSelectModel<typeof communityNoteVotes>;
+export type NewCommunityNoteVote = InferInsertModel<typeof communityNoteVotes>;
+
+export type UserConnection = InferSelectModel<typeof userConnections>;
+export type NewUserConnection = InferInsertModel<typeof userConnections>;
+
+export type UserActivity = InferSelectModel<typeof userActivities>;
+export type NewUserActivity = InferInsertModel<typeof userActivities>;
+
+export type CachedProject = InferSelectModel<typeof cachedProjects>;
+export type NewCachedProject = InferInsertModel<typeof cachedProjects>;
+
+export type CachedDonation = InferSelectModel<typeof cachedDonations>;
+export type NewCachedDonation = InferInsertModel<typeof cachedDonations>; 
