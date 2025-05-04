@@ -2,9 +2,15 @@
 
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { markOnboardingAsCompleted } from "@/lib/onboarding"
 
 export default function OnboardingStep3() {
   const router = useRouter()
+
+  const handleFinishOnboarding = () => {
+    markOnboardingAsCompleted()
+    router.push("/home")
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -22,7 +28,7 @@ export default function OnboardingStep3() {
       </div>
 
       <div className="p-6">
-        <Button className="w-full" onClick={() => router.push("/home")}>
+        <Button className="w-full" onClick={handleFinishOnboarding}>
           Start Swiping
         </Button>
       </div>
