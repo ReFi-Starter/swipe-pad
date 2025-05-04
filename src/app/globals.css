@@ -388,7 +388,7 @@
   overflow-y: auto;
 }
 
-/* Fix any references to PennySwipe in CSS */
-.pennyswipe-logo {
+/* Fix any references to SwipePad in CSS */
+.swipepad-logo {
   content: "SwipePad";
 }
