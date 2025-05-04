@@ -4,9 +4,26 @@ import Link from "next/link";
 import { ConnectButton } from "@/components/connect-button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { injected } from "wagmi/connectors";
+import { useEffect, useState } from "react";
+import { useConnect } from "wagmi";
 
 export function Navbar() {
   const pathname = usePathname();
+  const [hideConnectBtn, setHideConnectBtn] = useState(false)
+  const { connect } = useConnect()
+
+  useEffect(() => {
+    if (window.ethereum && window.ethereum.isMiniPay) {
+      setHideConnectBtn(true)
+      connect({ connector: injected({ target: "metaMask" }) })
+    }
+  }, [connect])
+
+  // Don't show on onboarding screens
+  if (pathname.startsWith("/onboarding")) {
+    return null
+  }
   
   const navItems = [
     { name: "Home", href: "/" },
@@ -18,7 +35,7 @@ export function Navbar() {
   return (
     <header className="bg-white border-b border-gray-200">
       <div className="container flex items-center justify-between h-16">
-        <div className="flex items-center">
+        <div className="flex items-center px-4">
           <Link href="/" className="text-2xl font-bold text-blue-600">
             SwipePad
           </Link>
@@ -38,10 +55,11 @@ export function Navbar() {
             ))}
           </nav>
         </div>
-        
-        <div className="flex items-center space-x-4">
-          <ConnectButton />
-        </div>
+        {!hideConnectBtn && (
+          <div className="flex items-center space-x-4 px-4">
+            <ConnectButton />
+          </div>
+        )}
       </div>
     </header>
   );
