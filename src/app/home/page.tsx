@@ -289,9 +289,9 @@ export default function Home() {
                          {filteredProjects.length > 1 && (
                               <ProjectCard
                                 project={nextProject}
+                                key={`next-card-${currentProjectIndex + 1}`}
                                 isNext
                                 donationAmount={defaultDonationAmount}
-                                isExpanded={false} // Background card is never expanded
                               />
                          )}
                     </div>
@@ -312,7 +312,6 @@ export default function Home() {
                             showOverlay={dragDirection !== null}
                             overlayDirection={dragDirection}
                             donationAmount={defaultDonationAmount}
-                            isExpanded={false} // Card itself is never in expanded state now
                             onToggleExpand={handleToggleExpand} // This prop now triggers the drawer
                         />
                     </div>
