@@ -1,14 +1,14 @@
 "use client"
 
 import type React from "react"
-
 import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import type { ButtonProps } from "@/components/ui/button"
+import type { VariantProps } from "class-variance-authority"
 
-interface AnimatedButtonProps extends ButtonProps {
+interface AnimatedButtonProps extends React.ComponentProps<"button">, VariantProps<typeof buttonVariants> {
   animateOnClick?: boolean
+  asChild?: boolean
 }
 
 export function AnimatedButton({ children, className, animateOnClick = true, onClick, ...props }: AnimatedButtonProps) {
