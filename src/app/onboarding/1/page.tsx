@@ -10,7 +10,7 @@ export default function OnboardingStep1() {
     <div className="min-h-screen flex flex-col gradient-green">
       <div className="flex-1 flex flex-col items-center justify-center p-6">
         <div className="w-full max-w-sm">
-          <h1 className="text-3xl font-bold text-white text-center mb-8">Welcome to PennySwipe</h1>
+          <h1 className="text-3xl font-bold text-white text-center mb-8">Welcome to SwipePad</h1>
 
           <div className="relative w-full h-64 mb-8">
             {/* Bento-style stacked cards illustration */}
@@ -36,7 +36,7 @@ export default function OnboardingStep1() {
           className="w-full bg-white text-[#22CC88] hover:bg-white/90"
           onClick={() => router.push("/onboarding/2")}
         >
-          Let's Swipe!
+          Let&apos;s Swipe!
         </Button>
       </div>
     </div>
