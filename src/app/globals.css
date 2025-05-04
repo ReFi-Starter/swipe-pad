@@ -54,8 +54,8 @@
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 358 74% 61%;
+    --primary-foreground: 355 100% 97%;
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
     --muted: 240 4.8% 95.9%;
@@ -66,7 +66,7 @@
     --destructive-foreground: 0 0% 98%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 240 10% 3.9%;
+    --ring: 346 77% 49.8%;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -76,25 +76,25 @@
   }
   
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
+    --background: 20 14.3% 4.1%;
+    --foreground: 0 0% 95%;
+    --card: 24 9.8% 10%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 9%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 346 77% 49.8%;
+    --primary-foreground: 355 100% 97%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
+    --muted: 0 0% 15%;
     --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
+    --accent: 12 6.5% 15.1%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 0 85.7% 97.3%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --ring: 346 77% 49.8%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -230,12 +230,12 @@ html, body {
 }
 
 main {
-  height: 100dvh;
+  height: calc(100dvh - 4rem); /* Altura total menos la altura de la barra */
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  padding-bottom: 80px; /* Espacio para el componente BottomNav (64px altura + margen) */
+  padding-bottom: 0 !important; /* Eliminar padding adicional */
 }
 
 /* Header and Navigation */
@@ -298,6 +298,7 @@ main {
   overflow: hidden;
   padding: 1rem;
   perspective: 1000px;
+  max-height: calc(100% - 2rem); /* Ajustar para usar espacio disponible */
 }
 
 .card-swipe-container {
@@ -383,30 +384,6 @@ main {
   z-index: 12;
 }
 
-/* Mejorar animaciones con menor inercia, más fluidas y tiempo extra */
-.project-card.swipe-left {
-  transform: translateX(-150%) rotate(-15deg) !important;
-  transition: transform 0.55s cubic-bezier(0.2, 0.1, 0.2, 1) !important;
-  opacity: 0 !important;
-}
-
-.project-card.swipe-right {
-  transform: translateX(150%) rotate(15deg) !important;
-  transition: transform 0.55s cubic-bezier(0.2, 0.1, 0.2, 1) !important;
-  opacity: 0 !important;
-}
-
-/* Reduced sensitivity for on-rails animation with less jitter */
-.project-card.moving-left {
-  transform: translateX(calc(var(--x, 0) * 0.5px)) rotate(calc(var(--x, 0) * -0.03deg)) !important;
-  transition: none !important;
-}
-
-.project-card.moving-right {
-  transform: translateX(calc(var(--x, 0) * 0.5px)) rotate(calc(var(--x, 0) * 0.03deg)) !important;
-  transition: none !important;
-}
-
 /* Indicadores visuales de swipe */
 .project-card::before {
   content: '';
@@ -417,29 +394,68 @@ main {
   bottom: 0;
   z-index: 30;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.3s ease;
   pointer-events: none;
   border-radius: 12px;
 }
 
+/* Efecto de brillo mejorado para la tarjeta */
+.project-card.moving-left {
+  box-shadow: -5px 0 15px rgba(239, 68, 68, 0.2) !important;
+}
+
 .project-card.moving-left::before {
   opacity: 0.7;
-  background: linear-gradient(to right, rgba(239, 68, 68, 0.2), transparent 70%);
+  background: linear-gradient(to right, rgba(239, 68, 68, 0.3), transparent 70%);
+}
+
+.project-card.moving-right {
+  box-shadow: 5px 0 15px rgba(74, 222, 128, 0.2) !important;
 }
 
 .project-card.moving-right::before {
   opacity: 0.7;
-  background: linear-gradient(to left, rgba(74, 222, 128, 0.2), transparent 70%);
+  background: linear-gradient(to left, rgba(74, 222, 128, 0.3), transparent 70%);
+}
+
+/* Animación de brillo para el swipe completo */
+@keyframes glowLeft {
+  0% { box-shadow: 0 0 0 rgba(239, 68, 68, 0); }
+  50% { box-shadow: -10px 0 20px rgba(239, 68, 68, 0.4); }
+  100% { box-shadow: -15px 0 25px rgba(239, 68, 68, 0.2); }
+}
+
+@keyframes glowRight {
+  0% { box-shadow: 0 0 0 rgba(74, 222, 128, 0); }
+  50% { box-shadow: 10px 0 20px rgba(74, 222, 128, 0.4); }
+  100% { box-shadow: 15px 0 25px rgba(74, 222, 128, 0.2); }
+}
+
+.project-card.swipe-left {
+  animation: glowLeft 0.5s forwards !important;
 }
 
 .project-card.swipe-left::before {
   opacity: 1;
-  background: linear-gradient(to right, rgba(239, 68, 68, 0.6), transparent);
+  background: linear-gradient(to right, rgba(239, 68, 68, 0.7), transparent 90%);
+}
+
+.project-card.swipe-right {
+  animation: glowRight 0.5s forwards !important;
 }
 
 .project-card.swipe-right::before {
   opacity: 1;
-  background: linear-gradient(to left, rgba(74, 222, 128, 0.6), transparent);
+  background: linear-gradient(to left, rgba(74, 222, 128, 0.7), transparent 90%);
+}
+
+/* Efecto de brillo de borde durante el swipe */
+.project-card.moving-left {
+  border-left-color: rgba(239, 68, 68, 0.6) !important;
+}
+
+.project-card.moving-right {
+  border-right-color: rgba(74, 222, 128, 0.6) !important;
 }
 
 /* Card reveal animation - más lenta y suave */
@@ -494,7 +510,9 @@ main {
   justify-content: center;
   gap: 2rem;
   margin-top: 1rem;
+  margin-bottom: 0.5rem; /* Asegurar espacio desde la barra de navegación */
   padding: 0 1rem;
+  z-index: 20; /* Asegurar que estén por encima del contenido pero debajo del nav */
 }
 
 .action-button {
@@ -841,7 +859,7 @@ main {
 
 /* Bottom Navigation */
 .bottom-nav {
-  position: sticky;
+  position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
@@ -850,7 +868,7 @@ main {
   padding: 0.75rem 0;
   background-color: white;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-  z-index: 10;
+  z-index: 50; /* Mayor z-index para estar encima de todo el contenido */
   border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
@@ -863,11 +881,17 @@ main {
   color: #71717a;
   transition: color 0.2s;
   height: 3rem;
+  text-decoration: none; /* Para asegurar que no hay subrayado de link */
+  padding: 0.25rem 0.5rem;
 }
 
 .bottom-nav-item.active {
-  color: #000;
+  color: rgb(var(--minipay-green));
   font-weight: 500;
+}
+
+.bottom-nav-item.active svg {
+  color: rgb(var(--minipay-green));
 }
 
 /* Improved touch handling for mobile */
@@ -909,4 +933,216 @@ main {
 ::-webkit-scrollbar {
   width: 0px;
   background: transparent;
+}
+
+/* Animación de pulso para la tarjeta al hacer swipe */
+@keyframes cardPulse {
+  0% { transform: scale(1); opacity: 1; }
+  15% { transform: scale(1.02); opacity: 1; }
+  100% { transform: scale(1); opacity: 0; }
+}
+
+/* Overlay de feedback para mostrar el "like" o "dislike" */
+.card-feedback-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.card-feedback-overlay.like {
+  background-color: rgba(74, 222, 128, 0.1);
+  color: rgba(74, 222, 128, 1);
+  animation: cardPulse 0.5s forwards;
+}
+
+.card-feedback-overlay.skip {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: rgba(239, 68, 68, 1);
+  animation: cardPulse 0.5s forwards;
+}
+
+.card-feedback-overlay .feedback-icon {
+  font-size: 5rem;
+  transform: scale(0.8);
+  opacity: 0.9;
+  animation: feedbackPop 0.3s forwards;
+}
+
+@keyframes feedbackPop {
+  0% { transform: scale(0.8); opacity: 0.7; }
+  70% { transform: scale(1.1); opacity: 0.9; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Estilos para el icono personalizado en la barra de navegación */
+.custom-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.nav-icon {
+  color: currentColor;
+}
+
+.active .nav-icon {
+  color: rgb(var(--minipay-green));
+}
+
+/* Para pantallas pequeñas, ajustar espaciado */
+@media (max-height: 700px) {
+  main {
+    height: calc(100dvh - 3.5rem); /* Altura reducida para la barra */
+  }
+  
+  .bottom-nav {
+    padding: 0.5rem 0;
+    height: 3rem;
+  }
+  
+  .card-stack-container {
+    padding: 0.5rem;
+  }
+  
+  .action-buttons {
+    margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+}
+
+/* Estilos para los swipe cards */
+.swipe {
+  position: absolute;
+  width: 100%;
+}
+
+.moving-left {
+  animation: swipeLeft 0.5s ease-out;
+}
+
+.moving-right {
+  animation: swipeRight 0.5s ease-out;
+}
+
+@keyframes swipeLeft {
+  from {
+    transform: translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-120%) rotate(-20deg);
+    opacity: 0;
+  }
+}
+
+@keyframes swipeRight {
+  from {
+    transform: translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(120%) rotate(20deg);
+    opacity: 0;
+  }
+}
+
+/* Estilos para los placeholders de imágenes */
+.image-placeholder {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s ease-in-out;
+}
+
+/* Animación de desenfoque para carga de imágenes */
+.image-loading-blur {
+  animation: pulseBlur 2s infinite alternate ease-in-out;
+}
+
+@keyframes pulseBlur {
+  0% {
+    filter: blur(0px);
+  }
+  50% {
+    filter: blur(5px);
+  }
+  100% {
+    filter: blur(2px);
+  }
+}
+
+/* Animaciones para gradientes estilo VHS */
+.vhs-gradient {
+  background-size: 100% 100%;
+  animation: gradientShift 8s infinite linear;
+  transition: opacity 0.5s ease;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 0% 100%;
+  }
+}
+
+/* Efecto de líneas de scanline */
+.scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.scanlines::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    rgba(0, 0, 0, 0.05) 51%
+  );
+  background-size: 100% 4px;
+  animation: scanlines 0.5s infinite linear;
+  opacity: 0.3;
+}
+
+@keyframes scanlines {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 4px;
+  }
+}
+
+/* Efecto de ruido */
+.noise {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.1;
+  z-index: 5;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  pointer-events: none;
 }

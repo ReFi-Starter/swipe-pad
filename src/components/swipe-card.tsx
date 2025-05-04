@@ -1,339 +1,293 @@
 "use client"
 
-import { useState, useEffect, forwardRef, ForwardedRef, useRef } from "react"
-import TinderCard from "react-tinder-card"
-import Image from "next/image"
-import { VerifiedBadge } from "./verified-badge"
-import { Button } from "./ui/button"
+import React, { useRef } from 'react'
+import { motion, useMotionValue, useTransform } from 'framer-motion'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { formatCurrency } from '@/lib/utils'
+import { ThumbsDown, ThumbsUp, Info } from 'lucide-react'
+import { VerifiedBadge } from '@/components/verified-badge'
+import { ProjectImage } from '@/components/project-image'
 
-interface SwipeCardProps {
+export interface Project {
   id: string
   title: string
   description: string
   imageUrl: string
   donationAmount: number
-  creator?: {
+  creator: {
     name: string
+    avatar?: string
     verified?: boolean
   }
-  onSwipe?: (direction: "left" | "right") => void
-  mode?: "swipe" | "list"
-  cardIndex?: number // Posición en la baraja (0 = carta actual, 1 = siguiente, etc.)
-  isRevealing?: boolean // Para animar la carta cuando se convierte en la principal
+  createdAt?: Date
 }
 
-type TinderCardRef = {
-  swipe: (dir: "left" | "right") => Promise<void>
-  restoreCard: () => Promise<void>
+// Para uso con referencias externas
+export type SwipeCardRef = {
+  swipe: (dir: 'left' | 'right') => void
 }
 
-// Usar forwardRef para permitir pasar referencias desde el componente padre
-export const SwipeCard = forwardRef(function SwipeCard(
-  {
-    id,
-    title,
-    description,
-    imageUrl,
-    donationAmount,
-    creator,
-    onSwipe,
-    mode = "swipe",
-    cardIndex = 0,
-    isRevealing = false
-  }: SwipeCardProps,
-  ref: ForwardedRef<TinderCardRef>
-) {
-  const [position, setPosition] = useState(0) // 0: center, -1: left, 1: right
-  const wrapperRef = useRef<HTMLDivElement>(null)
-  const isDragging = useRef(false)
-  const lastTouchX = useRef(0) // Para reducir la sensibilidad
-  const lastUpdateTime = useRef(0) // Para throttlear las actualizaciones
-  const moveThreshold = 5 // Umbral para evitar micro-movimientos (aumentado)
-  const updateInterval = 16 // ~60fps
+interface SwipeCardProps {
+  project: Project
+  onSwipe?: (direction: 'left' | 'right') => void
+  active?: boolean
+  className?: string
+  cardIndex?: number
+  mode?: 'swipe' | 'list'
+}
 
-  // Determinar la clase CSS según la posición en la baraja
-  const getCardClass = () => {
-    if (mode === "list") return "static transform-none";
-    if (cardIndex === 0) return "";
-    if (cardIndex === 1) return "next-card";
-    if (cardIndex === 2) return "next-next-card";
-    return "hidden";
-  };
-
-  // Manejar animación al swipear
-  const handleSwipe = (direction: string) => {
-    if (direction === "left") {
-      setPosition(-1)
-      
-      // Aplicar clase de movimiento manualmente
-      if (wrapperRef.current) {
-        wrapperRef.current.classList.remove('moving-right')
-        wrapperRef.current.classList.add('moving-left')
-        wrapperRef.current.classList.add('swipe-left')
-      }
-
-      // Dar tiempo para que la animación sea visible antes de ejecutar el callback
-      setTimeout(() => {
-        onSwipe?.("left")
-      }, 100)
-    } else if (direction === "right") {
-      setPosition(1)
-      
-      // Aplicar clase de movimiento manualmente
-      if (wrapperRef.current) {
-        wrapperRef.current.classList.remove('moving-left')
-        wrapperRef.current.classList.add('moving-right')
-        wrapperRef.current.classList.add('swipe-right')
-      }
-
-      // Dar tiempo para que la animación sea visible antes de ejecutar el callback
-      setTimeout(() => {
-        onSwipe?.("right")
-      }, 100)
+// Funciones auxiliares para activar el swipe desde componentes externos
+export const swipeLeft = (ref: HTMLDivElement) => {
+  if (!ref) return;
+  
+  // Aplicar transformación para simular swipe hacia la izquierda
+  ref.style.transform = `translateX(-200px) rotate(-20deg)`;
+  
+  // Añadir transición CSS
+  ref.style.transition = 'transform 0.5s ease-out';
+  
+  // Disparar el evento de transitionend después de la animación
+  setTimeout(() => {
+    const parent = ref.parentElement;
+    if (parent) {
+      parent.classList.add('moving-left');
     }
-  }
+  }, 100);
+};
 
-  // Reset cuando cambie el ID para re-renderizar tarjeta
-  useEffect(() => {
-    setPosition(0)
-    isDragging.current = false
-    lastTouchX.current = 0
-    
-    // Limpiar clases y variables CSS
-    if (wrapperRef.current) {
-      wrapperRef.current.classList.remove('moving-left', 'moving-right', 'swipe-left', 'swipe-right')
-      wrapperRef.current.style.removeProperty('--x');
+export const swipeRight = (ref: HTMLDivElement) => {
+  if (!ref) return;
+  
+  // Aplicar transformación para simular swipe hacia la derecha
+  ref.style.transform = `translateX(200px) rotate(20deg)`;
+  
+  // Añadir transición CSS
+  ref.style.transition = 'transform 0.5s ease-out';
+  
+  // Disparar el evento de transitionend después de la animación
+  setTimeout(() => {
+    const parent = ref.parentElement;
+    if (parent) {
+      parent.classList.add('moving-right');
     }
-  }, [id])
+  }, 100);
+};
 
-  // Efecto de revelación cuando una carta pasa de segunda a primera
-  useEffect(() => {
-    if (isRevealing && wrapperRef.current && cardIndex === 0) {
-      wrapperRef.current.classList.add('card-reveal');
-      const timer = setTimeout(() => {
-        if (wrapperRef.current) {
-          wrapperRef.current.classList.remove('card-reveal');
-        }
-      }, 450); // Ajustado al tiempo de la animación en CSS
-      return () => clearTimeout(timer);
-    }
-  }, [isRevealing, cardIndex]);
-
-  // Función throttleada para actualizar la posición de la carta
-  // Esto reduce el número de actualizaciones y hace el movimiento más suave
-  const updateCardPosition = (x: number) => {
-    const now = Date.now();
-    
-    // Throttling: actualizar max ~60fps para evitar jitter
-    if (now - lastUpdateTime.current < updateInterval) return;
-    lastUpdateTime.current = now;
-    
-    if (wrapperRef.current) {
-      // Aplicar un factor de sensibilidad reducido para movimientos más suaves
-      const sensitivity = 0.4; // Reducido aún más
-      
-      // Ignorar pequeños movimientos (reduce el temblor)
-      const delta = x - lastTouchX.current;
-      if (Math.abs(delta) < moveThreshold) return;
-      
-      // Suavizado de movimiento: movimiento exponencial para reducir micro-movimientos
-      const dampedX = x * sensitivity;
-      const adjustedX = Math.sign(dampedX) * Math.pow(Math.abs(dampedX), 0.8);
-      
-      lastTouchX.current = x;
-      
-      wrapperRef.current.style.setProperty('--x', adjustedX.toString());
-      
-      // Determinar la dirección del arrastre y aplicar la clase correcta
-      if (adjustedX > 20) {
-        wrapperRef.current.classList.remove('moving-left');
-        wrapperRef.current.classList.add('moving-right');
-      } else if (adjustedX < -20) {
-        wrapperRef.current.classList.remove('moving-right');
-        wrapperRef.current.classList.add('moving-left');
-      } else if (Math.abs(adjustedX) < 5) {
-        wrapperRef.current.classList.remove('moving-right', 'moving-left');
-      }
-    }
-  }
-
-  // Feedback haptico y visual al completar swipe
-  const startSwipeFeedback = (direction: "left" | "right") => {
-    const feedbackElement = document.querySelector(`.action-button.${direction === "right" ? "like" : "skip"}`);
-    if (feedbackElement) {
-      feedbackElement.classList.add('pulse');
-      feedbackElement.classList.add('action-button-action');
-      
-      setTimeout(() => {
-        feedbackElement.classList.remove('pulse');
-        feedbackElement.classList.remove('action-button-action');
-      }, 600);
-    }
-  }
-
-  // No renderizar cartas más allá de la segunda de respaldo
-  if (cardIndex > 2) return null;
-
-  // Modo lista para navegación no-swipe
-  if (mode === "list") {
+export function SwipeCard({
+  project,
+  onSwipe,
+  active = true,
+  className = "",
+  cardIndex = 0,
+  mode = 'swipe'
+}: SwipeCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null)
+  
+  // Motion values for animations
+  const x = useMotionValue(0)
+  const rotateRaw = useTransform(x, [-150, 150], [-18, 18])
+  
+  // Visual feedback transformations
+  const rightSwipeOpacity = useTransform(x, [0, 100], [0, 0.8])
+  const leftSwipeOpacity = useTransform(x, [-100, 0], [0.8, 0])
+  
+  const isFront = cardIndex === 0
+  const baseRotation = !isFront ? (cardIndex % 2 ? 3 : -3) : 0
+  
+  // List mode render
+  if (mode === 'list') {
     return (
-      <div className="project-card static transform-none cursor-pointer hover:scale-[0.98] transition-transform">
-        <div className="project-card-image">
-          <Image
-            src={imageUrl}
-            alt={title}
+      <Card className={`w-full overflow-hidden shadow-sm border ${className}`}>
+        <div className="relative aspect-[4/3] w-full">
+          <ProjectImage
+            src={project.imageUrl}
+            alt={project.title}
+            projectId={project.id}
             fill
+            sizes="(max-width: 768px) 50vw, 33vw"
             className="object-cover"
-            sizes="(max-width: 340px) 90vw, 340px"
-            priority={cardIndex === 0}
-            unoptimized // Para asegurar que las imágenes remotas carguen
+            fallbackClassName="bg-cover bg-center"
           />
         </div>
-        <div className="project-card-content">
-          <div className="flex items-center gap-2 mb-2">
-            <h3 className="text-lg font-semibold line-clamp-1">{title}</h3>
-            {creator?.verified && <VerifiedBadge isVerified={true} />}
-          </div>
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{description}</p>
-          <div className="mt-auto pt-2">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium">Goal: ${donationAmount}</span>
+        
+        <CardContent className="p-4">
+          <div className="flex items-start justify-between mb-2">
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold line-clamp-1">{project.title}</h3>
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                <span>by {project.creator.name}</span>
+                {project.creator.verified && <VerifiedBadge isVerified />}
+              </div>
             </div>
-            <Button variant="outline" size="sm" className="w-full">
-              View Details
-            </Button>
+            <Badge variant="outline" className="ml-2 shrink-0">
+              {formatCurrency(project.donationAmount)}
+            </Badge>
           </div>
-        </div>
-      </div>
+          
+          <p className="text-sm mb-3 text-muted-foreground line-clamp-2">
+            {project.description}
+          </p>
+          
+          <Button size="sm" variant="default" className="w-full h-8">
+            <Info className="h-4 w-4 mr-1" />
+            <span className="text-xs">View Details</span>
+          </Button>
+        </CardContent>
+      </Card>
     )
   }
-
-  // Modo swipe con TinderCard
+  
+  // Swipe mode with framer-motion
   return (
-    <TinderCard
-      ref={cardIndex === 0 ? ref : undefined}
-      className={`project-card-wrapper ${getCardClass()}`}
-      onSwipe={(direction) => {
-        if (cardIndex === 0) {
-          handleSwipe(direction);
-          startSwipeFeedback(direction as "left" | "right");
+    <motion.div
+      ref={cardRef}
+      className={`w-[280px] h-[400px] ${className} rounded-lg overflow-hidden`} 
+      style={{
+        gridRow: 1,
+        gridColumn: 1,
+        x,
+        zIndex: 50 - cardIndex,
+      }}
+      animate={{
+        scale: isFront ? 1 : 1 - (cardIndex * 0.01),
+        y: isFront ? 0 : cardIndex * -3,
+        rotate: isFront ? `${rotateRaw.get()}deg` : `${baseRotation}deg`,
+        boxShadow: isFront 
+          ? "0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.3)"
+          : "0 4px 6px -1px rgb(0 0 0 / 0.03), 0 2px 4px -1px rgb(0 0 0 / 0.03)",
+        opacity: isFront ? 1 : 0.9 - (cardIndex * 0.1),
+      }}
+      exit={{ 
+        x: x.get() > 0 ? 200 : -200,
+        opacity: 0,
+        scale: 0.8, 
+        transition: { duration: 0.2, ease: "easeIn" }
+      }}
+      transition={{
+        type: 'spring',
+        stiffness: 200,
+        damping: 25,
+        mass: 0.5,
+        boxShadow: { duration: 0.3 },
+        rotate: { type: 'spring', stiffness: 200, damping: 25, mass: 0.5 }, 
+      }}
+      drag={isFront ? "x" : false}
+      dragConstraints={{ left: 0, right: 0 }}
+      onDragEnd={() => {
+        const xValue = x.get()
+        if (isFront && Math.abs(xValue) > 100) { // Check isFront here
+          const direction = xValue > 0 ? 'right' : 'left'
+          onSwipe?.(direction) // Call onSwipe only if it's the front card
         }
       }}
-      onCardLeftScreen={() => {
-        // Limpiar clases cuando la tarjeta sale de pantalla
-        if (wrapperRef.current) {
-          wrapperRef.current.classList.remove('moving-left', 'moving-right', 'swipe-left', 'swipe-right')
-          wrapperRef.current.style.removeProperty('--x');
-        }
-      }}
-      swipeRequirementType="position"
-      swipeThreshold={75} // Reducido para hacer el swipe más fácil
-      preventSwipe={["up", "down"]}
-      flickOnSwipe={cardIndex === 0}
+      dragElastic={0.7}
+      whileTap={{ cursor: "grabbing" }}
     >
-      <div 
-        ref={wrapperRef} 
-        className={`project-card ${position < 0 ? 'swipe-left' : position > 0 ? 'swipe-right' : ''}`}
-        onTouchStart={cardIndex === 0 ? () => { isDragging.current = true } : undefined}
-        onMouseDown={cardIndex === 0 ? () => { isDragging.current = true } : undefined}
-        onTouchMove={cardIndex === 0 ? (e) => {
-          if (!isDragging.current) return;
-          
-          // Calcular el desplazamiento desde el centro
-          const touch = e.touches[0];
-          const card = e.currentTarget.getBoundingClientRect();
-          const centerX = card.left + card.width / 2;
-          const offsetX = touch.clientX - centerX;
-          updateCardPosition(offsetX);
-        } : undefined}
-        onMouseMove={cardIndex === 0 ? (e) => {
-          // Sólo actualizar si se está arrastrando (por ejemplo, mousedown)
-          if (e.buttons === 1 && isDragging.current) {
-            const card = e.currentTarget.getBoundingClientRect();
-            const centerX = card.left + card.width / 2;
-            const offsetX = e.clientX - centerX;
-            updateCardPosition(offsetX);
-          }
-        } : undefined}
-        onTouchEnd={cardIndex === 0 ? () => { 
-          isDragging.current = false;
-          lastTouchX.current = 0;
-          
-          // Reset suave al soltar
-          if (wrapperRef.current) {
-            const currentX = parseFloat(wrapperRef.current.style.getPropertyValue('--x') || '0');
-            
-            // Si se movió lo suficiente en una dirección, mantener la clase de movimiento
-            // para feedback visual, pero eliminar lentamente el valor de --x
-            if (Math.abs(currentX) < 50) {
-              wrapperRef.current.classList.remove('moving-left', 'moving-right');
-              wrapperRef.current.style.removeProperty('--x');
-            }
-          }
-        } : undefined}
-        onMouseUp={cardIndex === 0 ? () => { 
-          isDragging.current = false;
-          lastTouchX.current = 0;
-          
-          // Reset suave al soltar
-          if (wrapperRef.current) {
-            const currentX = parseFloat(wrapperRef.current.style.getPropertyValue('--x') || '0');
-            
-            // Si se movió lo suficiente en una dirección, mantener la clase de movimiento
-            // para feedback visual, pero eliminar lentamente el valor de --x
-            if (Math.abs(currentX) < 50) {
-              wrapperRef.current.classList.remove('moving-left', 'moving-right');
-              wrapperRef.current.style.removeProperty('--x');
-            }
-          }
-        } : undefined}
-        onMouseLeave={cardIndex === 0 ? () => {
-          if (isDragging.current) {
-            isDragging.current = false;
-            lastTouchX.current = 0;
-            
-            // Reset al salir
-            if (wrapperRef.current) {
-              wrapperRef.current.classList.remove('moving-left', 'moving-right');
-              wrapperRef.current.style.removeProperty('--x');
-            }
-          }
-        } : undefined}
-      >
-        <div className="project-card-image">
-          <Image
-            src={imageUrl}
-            alt={title}
-            fill
-            className="object-cover"
-            sizes="(max-width: 340px) 90vw, 340px"
-            priority={cardIndex < 2} // Solo priorizar las dos primeras cartas
-            unoptimized // Para asegurar que las imágenes remotas carguen
-          />
-        </div>
-        <div className="project-card-content">
-          <div className="flex items-center gap-2 mb-2">
-            <h3 className="text-lg font-semibold line-clamp-1">{title}</h3>
-            {creator?.verified && <VerifiedBadge isVerified={true} />}
+      {/* Added subtle border to the inner card */}
+      <Card className="w-full h-full rounded-lg overflow-hidden border border-black/5 shadow-none flex flex-col bg-background">
+        {/* Image container aligned to top with fixed height */}
+        <div className="relative w-full h-[60%] flex-none"> 
+          <div className="absolute inset-0 z-0">
+            <ProjectImage
+              src={project.imageUrl}
+              alt={project.title}
+              projectId={project.id}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
+              fallbackClassName="bg-cover bg-center"
+              priority={active} // Ensures LCP priority for the top card image
+            />
           </div>
-          <p className="text-sm text-muted-foreground line-clamp-3 mb-3">{description}</p>
-          <div className="mt-auto pt-2 border-t border-gray-100">
-            <div className="flex items-center justify-between py-2">
-              <span className="text-sm font-semibold">Goal: ${donationAmount}</span>
-              <Button variant="outline" size="sm">Details</Button>
+          
+          {/* Visual feedback during swipe - overlay on image */}
+          {isFront && (
+            <>
+              <motion.div 
+                className="absolute inset-0 bg-gradient-to-r from-green-500/50 to-transparent pointer-events-none z-10"
+                style={{ opacity: rightSwipeOpacity }}
+                initial={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="absolute top-4 right-4 transform rotate-[15deg]">
+                  <ThumbsUp className="text-white w-10 h-10 drop-shadow-lg" strokeWidth={2.5} />
+                </div>
+              </motion.div>
+              
+              <motion.div 
+                className="absolute inset-0 bg-gradient-to-l from-red-500/50 to-transparent pointer-events-none z-10"
+                style={{ opacity: leftSwipeOpacity }}
+                initial={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="absolute top-4 left-4 transform -rotate-[15deg]">
+                  <ThumbsDown className="text-white w-10 h-10 drop-shadow-lg" strokeWidth={2.5}/>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </div>
+        
+        {/* Restructured Card Content with fixed height to ensure initial render */}
+        <div className="h-[40%] p-3 flex flex-col justify-between overflow-y-auto z-20 bg-background relative">
+          {/* Top section: Title, Creator, Amount */}
+          <div className="mb-2">
+            <div className="flex items-start justify-between gap-2 mb-1">
+              <h3 className="text-base font-semibold line-clamp-2 leading-tight">{project.title}</h3>
+              <Badge variant="secondary" className="ml-auto shrink-0 text-xs font-bold px-1.5 py-0.5">
+                {formatCurrency(project.donationAmount)}
+              </Badge>
+            </div>
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <span>by {project.creator.name}</span>
+              {project.creator.verified && <VerifiedBadge isVerified />} 
             </div>
           </div>
+
+          {/* Middle section: Description */}
+          <p className="text-xs text-muted-foreground line-clamp-2 mb-auto py-1">
+            {project.description}
+          </p>
+          
+          {/* Bottom section: Actions (only for front card) */}
+          {isFront && (
+            <div className="flex justify-between items-center pt-2 border-t border-black/5 -mx-3 px-3 mt-2">
+              <Button size="sm" variant="ghost" className="h-6 px-1 text-xs text-muted-foreground hover:text-foreground">
+                <Info className="h-3 w-3 mr-1" />
+                Details
+              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  size="icon" 
+                  variant="outline" 
+                  className="h-7 w-7 rounded-full bg-red-100 border-red-200 text-red-500 hover:bg-red-200 shadow-sm transition-transform active:scale-90"
+                  onClick={() => {
+                    // Programmatic swipe left
+                    x.set(-200); // Trigger motion value change
+                    onSwipe?.('left');
+                  }}
+                >
+                  <ThumbsDown className="h-3.5 w-3.5" />
+                </Button>
+                <Button 
+                  size="icon" 
+                  variant="outline" 
+                  className="h-7 w-7 rounded-full bg-green-100 border-green-200 text-green-500 hover:bg-green-200 shadow-sm transition-transform active:scale-90"
+                  onClick={() => {
+                    // Programmatic swipe right
+                    x.set(200); // Trigger motion value change
+                    onSwipe?.('right');
+                  }}
+                >
+                  <ThumbsUp className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
-    </TinderCard>
+      </Card>
+    </motion.div>
   )
-})
-
-// Exportar métodos para uso externo
-export const swipeLeft = (cardRef: React.RefObject<TinderCardRef | null>) => {
-  cardRef.current?.swipe('left')
-}
-
-export const swipeRight = (cardRef: React.RefObject<TinderCardRef | null>) => {
-  cardRef.current?.swipe('right')
 } 
