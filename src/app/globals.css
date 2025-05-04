@@ -103,10 +103,21 @@
 }
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  img {
+    -webkit-user-drag: none;
+    -moz-user-drag: none;
+    user-select: none;
+    pointer-events: none;
+  }
+  button,
+  a {
+    transition: all 0.2s ease;
   }
 }
 
@@ -189,7 +200,8 @@
   }
   img {
     -webkit-user-drag: none;
-    user-drag: none;
+    -moz-user-drag: none;
+    user-select: none;
     pointer-events: none;
   }
   button,
@@ -253,19 +265,9 @@
 /* Style for the card underneath */
 /* Updated: Applied directly via inline style in Home */
 .card-swipe.next {
-  /* Remove this if styles are handled inline */
-  /*
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  transform: scale(0.95) translateY(10px);
-  z-index: -1;
-  opacity: 0.7;
-  */
+  /* Styles for cards that are next in the stack */
+  opacity: 0.9;
 }
-
-/* Remove potential conflicting styles */
-/* .card-swipe-container .next removed as .next is now inline */
 
 /* Slide up panel animation */
 .slide-up-panel {
