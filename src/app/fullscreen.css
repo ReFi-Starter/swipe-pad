@@ -1,0 +1,91 @@
+/* Fullscreen layout utilities */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  max-width: 100vw;
+  max-height: 100vh;
+}
+
+:root {
+  --app-height: 100%;
+}
+
+@media screen and (max-width: 768px) {
+  :root {
+    --app-height: 100dvh;
+  }
+}
+
+.fullscreen-container {
+  height: var(--app-height);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.swipe-content {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Tab content areas */
+.tab-swipe-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.tab-discover-content {
+  overflow-y: auto;
+  max-height: 100%;
+  padding-bottom: 80px; /* Space for bottom navigation */
+}
+
+/* Responsive project card */
+.responsive-card-height {
+  width: 100%;
+  height: auto;
+  max-height: 65vh;
+  aspect-ratio: 3/4;
+  margin: 0 auto;
+}
+
+/* Responsive adjustments for different screen sizes */
+@media screen and (max-height: 700px) {
+  .responsive-card-height {
+    max-height: 55vh;
+    aspect-ratio: 4/5;
+  }
+}
+
+@media screen and (max-height: 600px) {
+  .responsive-card-height {
+    max-height: 50vh;
+    aspect-ratio: 1/1;
+  }
+}
+
+@media screen and (max-height: 500px) {
+  .responsive-card-height {
+    max-height: 45vh;
+    aspect-ratio: 5/4;
+  }
+}
+
+/* Card in fullscreen layout */
+.card-fullscreen {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+} 

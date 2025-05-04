@@ -41,6 +41,9 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --minipay-green: 34, 204, 136;
+  --minipay-light-green: 160, 234, 180;
+  --minipay-light-grey: 240, 242, 245;
 }
 
 @layer base {
@@ -182,5 +185,197 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: Arial, Helvetica, sans-serif;
   }
+  img {
+    -webkit-user-drag: none;
+    user-drag: none;
+    pointer-events: none;
+  }
+  button,
+  a {
+    transition: all 0.2s ease;
+  }
+}
+
+/* Custom utilities converted to Tailwind v4 syntax */
+@utility text-balance {
+  text-wrap: balance;
+}
+
+@utility no-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@utility bento-bevel {
+  border-radius: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+@utility gradient-green {
+  background: linear-gradient(135deg, rgb(var(--minipay-green)) 0%, rgb(var(--minipay-light-green)) 100%);
+}
+
+@utility low-trust {
+  opacity: 0.7;
+  filter: grayscale(30%);
+}
+
+/* Card swipe animations */
+.card-swipe-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  perspective: 1000px;
+}
+
+.card-swipe {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease-out;
+}
+
+.card-swipe.swiping-left {
+  transform: translateX(-120%) rotate(-5deg);
+}
+
+.card-swipe.swiping-right {
+  transform: translateX(120%) rotate(5deg);
+}
+
+.card-swipe.next {
+  transform: scale(0.95) translateY(10px);
+  z-index: -1;
+}
+
+/* Slide up panel animation */
+.slide-up-panel {
+  transform: translateY(100%);
+  transition: transform 0.3s ease-out;
+}
+
+.slide-up-panel.open {
+  transform: translateY(0);
+}
+
+/* Haptic feedback simulation */
+@keyframes haptic-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.haptic-feedback {
+  animation: haptic-pulse 0.15s ease-in-out;
+}
+
+/* Card expansion animations */
+.description-container {
+  transition: max-height 0.3s ease;
+  overflow: hidden;
+}
+
+.description-container.expanded {
+  max-height: 1000px;
+}
+
+.description-container:not(.expanded) {
+  max-height: 3em;
+}
+
+.expanded-card {
+  height: auto !important;
+  max-height: 90vh;
+  overflow-y: auto;
+  z-index: 50 !important;
+}
+
+/* Transition for card height */
+.transition-height {
+  transition: height 0.3s ease;
+}
+
+/* Fade in animation for action buttons */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.expanded .action-buttons {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Improve touch feedback */
+@media (hover: hover) {
+  button:hover {
+    transform: translateY(-1px);
+  }
+
+  button:active {
+    transform: translateY(1px);
+  }
+}
+
+/* Swipe indicator animation */
+@keyframes swipeHint {
+  0% {
+    opacity: 0.7;
+    transform: translateX(0);
+  }
+  25% {
+    opacity: 1;
+    transform: translateX(15px);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateX(0);
+  }
+  75% {
+    opacity: 1;
+    transform: translateX(-15px);
+  }
+  100% {
+    opacity: 0.7;
+    transform: translateX(0);
+  }
+}
+
+.swipe-hint {
+  animation: swipeHint 3s ease-in-out infinite;
+  white-space: nowrap;
+}
+
+/* Fix modals in fullscreen layout */
+.swipe-pad-modal {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Fix any references to PennySwipe in CSS */
+.pennyswipe-logo {
+  content: "SwipePad";
 }
