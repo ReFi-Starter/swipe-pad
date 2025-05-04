@@ -4,6 +4,8 @@
     "": {
       "name": "swipe-pad",
       "dependencies": {
+        "@headlessui/react": "2.2.2",
+        "@heroicons/react": "2.2.0",
         "@radix-ui/react-slot": "1.2.0",
         "@rainbow-me/rainbowkit": "2.2.4",
         "class-variance-authority": "0.7.1",
