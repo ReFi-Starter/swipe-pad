@@ -6,6 +6,7 @@ import { WalletProvider } from "@/providers/wallet-provider";
 import { Navbar } from "@/components/navbar";
 import { BatchTransactionProvider } from "@/components/batch-transaction-provider";
 import { TrpcProvider } from "@/providers/TrpcProvider";
+import { BottomNav } from "@/components/bottom-nav";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,9 +27,13 @@ export default function RootLayout({
           <WalletProvider>
             <BatchTransactionProvider>
               <Navbar />
-              <main className="min-h-[calc(100vh-4rem)]">
+              <main className="min-h-[calc(100vh-8rem)] pb-16">
                 {children}
               </main>
+              {/* Fixed bottom navigation */}
+              <div className="fixed bottom-0 left-0 right-0 bg-white">
+                <BottomNav />
+              </div>
               <Toaster position="bottom-center" richColors />
             </BatchTransactionProvider>
           </WalletProvider>
