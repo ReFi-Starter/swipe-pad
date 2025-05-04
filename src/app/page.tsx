@@ -2,19 +2,19 @@
 
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
-import { isOnboardingCompleted } from "@/lib/onboarding"
+import { useOnboarding } from "@/providers/onboarding-provider"
 
 export default function HomePage() {
   const router = useRouter()
+  const { isOnboarded } = useOnboarding()
 
   useEffect(() => {
-    // Check if onboarding is completed
-    if (isOnboardingCompleted()) {
+    if (isOnboarded) {
       router.push('/home')
     } else {
       router.push('/onboarding/1')
     }
-  }, [router])
+  }, [router, isOnboarded])
 
   return null
 }

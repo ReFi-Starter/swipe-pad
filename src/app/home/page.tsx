@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { ThumbsDown, ThumbsUp, List } from 'lucide-react'
@@ -12,9 +12,15 @@ export default function HomePage() {
   const [cards, setCards] = useState<Project[]>(initialProjects)
   const [activeTab, setActiveTab] = useState("swipe")
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+  
+  // Handle client-side mounting
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   const handleSwipe = useCallback((direction: 'left' | 'right') => {
-    if (cards.length > 0 && !isTransitioning) {
+    if (cards.length > 0 && !isTransitioning && isMounted) {
       console.log(`Swiped ${direction} on:`, cards[cards.length - 1].title)
       
       setIsTransitioning(true)
@@ -25,7 +31,7 @@ export default function HomePage() {
     } else {
       console.log("Attempted to swipe with no cards left or during transition.")
     }
-  }, [cards, isTransitioning])
+  }, [cards, isTransitioning, isMounted])
 
   return (
     <main className="h-[100dvh] flex flex-col">
@@ -129,8 +135,8 @@ export default function HomePage() {
                       size="icon" 
                       variant="outline"
                       className="h-10 w-10 rounded-full bg-red-50 border-red-200 text-red-500 hover:bg-red-100 hover:text-red-600 shadow-md transition-transform active:scale-95"
-                      onClick={() => !isTransitioning && handleSwipe("left")} 
-                      disabled={isTransitioning}
+                      onClick={() => isMounted && !isTransitioning && handleSwipe("left")} 
+                      disabled={isTransitioning || !isMounted}
                     >
                       <ThumbsDown className="h-5 w-5" />
                     </Button>
@@ -138,8 +144,8 @@ export default function HomePage() {
                       size="icon" 
                       variant="outline"
                       className="h-10 w-10 rounded-full bg-green-50 border-green-200 text-green-500 hover:bg-green-100 hover:text-green-600 shadow-md transition-transform active:scale-95"
-                      onClick={() => !isTransitioning && handleSwipe("right")}
-                      disabled={isTransitioning}
+                      onClick={() => isMounted && !isTransitioning && handleSwipe("right")}
+                      disabled={isTransitioning || !isMounted}
                     >
                       <ThumbsUp className="h-5 w-5" />
                     </Button>
