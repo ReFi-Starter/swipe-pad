@@ -2,7 +2,8 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { Search, User, ShoppingBag, Pointer } from 'lucide-react'
+import { Pointer, Users, PlusCircle, User } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 interface NavItem {
   path: string
@@ -13,14 +14,19 @@ interface NavItem {
 export function BottomNav() {
   const pathname = usePathname()
   
-  // Función para determinar si un item está activo, comparando con la ruta actual
+  // Don't show bottom navigation on onboarding screens
+  if (pathname.startsWith("/onboarding")) {
+    return null
+  }
+  
+  // Function to determine if an item is active by comparing with current route
   const isItemActive = (itemPath: string) => {
-    // La página principal (/) debe estar activa cuando estamos en la página principal o en /home
+    // Home page (/) should be active when we're on the main page or /home
     if (itemPath === '/' && (pathname === '/' || pathname === '/home')) {
       return true;
     }
     
-    // Para otras páginas, verificar si la ruta comienza con el path del item
+    // For other pages, check if the route starts with the item path
     return pathname.startsWith(itemPath) && itemPath !== '/';
   }
   
@@ -31,24 +37,24 @@ export function BottomNav() {
       icon: <Pointer size={24} />
     },
     {
-      path: '/search',
-      label: 'Search',
-      icon: <Search size={24} />
+      path: '/social',
+      label: 'Social',
+      icon: <Users size={24} />
+    },
+    {
+      path: '/create',
+      label: 'Create',
+      icon: <PlusCircle size={24} />
     },
     {
       path: '/profile',
       label: 'Profile',
       icon: <User size={24} />
-    },
-    {
-      path: '/donations',
-      label: 'Donations',
-      icon: <ShoppingBag size={24} />
     }
   ]
   
   return (
-    <nav className="bottom-nav">
+    <nav className="fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-gray-200 flex items-center justify-around px-4">
       {navItems.map((item) => {
         const active = isItemActive(item.path)
         
@@ -56,10 +62,66 @@ export function BottomNav() {
           <Link 
             href={item.path} 
             key={item.path}
-            className={`bottom-nav-item ${active ? 'active' : ''}`}
+            className="relative flex flex-col items-center justify-center w-16 h-16"
           >
-            {item.icon}
-            <span>{item.label}</span>
+            <motion.div
+              className={`relative ${active ? 'text-blue-600' : 'text-gray-600'}`}
+              initial={false}
+              animate={active ? {
+                y: [0, -8, 0],
+                scale: [1, 1.2, 1],
+                rotate: [0, -10, 10, 0],
+              } : {
+                y: 0,
+                scale: 1,
+                rotate: 0
+              }}
+              transition={active ? {
+                duration: 0.6,
+                times: [0, 0.2, 0.5, 1],
+                ease: "easeOut",
+              } : {
+                duration: 0.3
+              }}
+              whileTap={{ 
+                scale: 0.85,
+                rotate: [-5, 5],
+                transition: { duration: 0.2 }
+              }}
+            >
+              {item.icon}
+              {active && (
+                <motion.div
+                  className="absolute inset-0 bg-blue-400 rounded-full mix-blend-soft-light"
+                  initial={{ opacity: 0, scale: 1 }}
+                  animate={{
+                    opacity: [0, 0.5, 0],
+                    scale: [0.8, 1.4, 1.8],
+                  }}
+                  transition={{
+                    duration: 0.8,
+                    ease: "easeOut",
+                    times: [0, 0.3, 1],
+                    repeat: Infinity,
+                    repeatDelay: 1
+                  }}
+                />
+              )}
+            </motion.div>
+            <motion.span 
+              className={`mt-1 text-xs ${active ? 'text-blue-600 font-medium' : 'text-gray-600'}`}
+              animate={active ? {
+                scale: [1, 1.1, 1],
+                y: [0, -2, 0]
+              } : {}}
+              transition={active ? {
+                duration: 0.4,
+                delay: 0.1,
+                ease: "easeOut"
+              } : {}}
+            >
+              {item.label}
+            </motion.span>
           </Link>
         )
       })}
