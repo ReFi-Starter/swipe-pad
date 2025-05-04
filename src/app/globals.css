@@ -220,39 +220,457 @@
   filter: grayscale(30%);
 }
 
-/* === Card Swipe Styles === */
+/* === Layout Structure === */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: rgb(var(--minipay-light-grey));
+}
+
+main {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  padding-bottom: 80px; /* Espacio para el componente BottomNav (64px altura + margen) */
+}
+
+/* Header and Navigation */
+.nav-container {
+  padding: 0.5rem 1rem;
+  flex-shrink: 0;
+  background: white;
+  border-bottom: 1px solid var(--border);
+  z-index: 40;
+}
+
+.nav-container button {
+  background-color: rgb(var(--minipay-light-grey));
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  height: auto;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.nav-container button:hover {
+  background-color: var(--border);
+}
+
+.filter-container {
+  padding: 0.5rem 0;
+  flex-shrink: 0;
+  background: white;
+  z-index: 40;
+}
+
+.category-filter button {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  cursor: pointer;
+  background-color: rgb(var(--minipay-light-grey));
+  color: var(--muted-foreground);
+}
+
+.category-filter button.active {
+  background-color: rgb(var(--minipay-green));
+  color: white;
+  font-weight: 500;
+}
+
+/* === Card Layout === */
+.card-stack-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 1rem;
+  perspective: 1000px;
+}
+
 .card-swipe-container {
   position: relative;
-  width: 90%; /* Adjust width as needed */
-  height: 85%; /* Adjust height as needed */
-  max-width: 400px; /* Max card width */
-  perspective: 1000px;
-  margin: auto; /* Center the container */
+  width: 100%;
+  max-width: 340px;
+  height: 100%;
+  max-height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
 }
 
-.card-swipe {
-  /* Applied directly to the card element in Home page */
-  transition: transform 0.3s ease-out;
-  transform-origin: top center; /* Correct origin for top-hanging feel */
+/* Card Stack Effect */
+.card-stack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
 }
 
-/* Animation classes applied during swipe */
+/* TinderCard Wrapper Styling */
+.project-card-wrapper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: grab;
+  transform-origin: bottom center;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 10;
+}
+
+/* Próximas cartas en la baraja con efecto blur */
+.project-card-wrapper.next-card {
+  z-index: 5;
+  transform: translateY(6px) scale(0.97);
+  opacity: 0.95;
+  pointer-events: none;
+  filter: blur(2px);
+}
+
+.project-card-wrapper.next-next-card {
+  z-index: 4;
+  transform: translateY(12px) scale(0.94);
+  opacity: 0.9;
+  pointer-events: none;
+  filter: blur(4px);
+}
+
+/* Main card styling with poker card effect */
+.project-card {
+  width: 100%;
+  height: 100%;
+  max-height: 500px;
+  min-height: 320px;
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  transform-origin: bottom center;
+  will-change: transform;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Poker card effect */
+.project-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+  z-index: 12;
+}
+
+/* Mejorar animaciones con menor inercia, más fluidas y tiempo extra */
+.project-card.swipe-left {
+  transform: translateX(-150%) rotate(-15deg) !important;
+  transition: transform 0.55s cubic-bezier(0.2, 0.1, 0.2, 1) !important;
+  opacity: 0 !important;
+}
+
+.project-card.swipe-right {
+  transform: translateX(150%) rotate(15deg) !important;
+  transition: transform 0.55s cubic-bezier(0.2, 0.1, 0.2, 1) !important;
+  opacity: 0 !important;
+}
+
+/* Reduced sensitivity for on-rails animation with less jitter */
+.project-card.moving-left {
+  transform: translateX(calc(var(--x, 0) * 0.5px)) rotate(calc(var(--x, 0) * -0.03deg)) !important;
+  transition: none !important;
+}
+
+.project-card.moving-right {
+  transform: translateX(calc(var(--x, 0) * 0.5px)) rotate(calc(var(--x, 0) * 0.03deg)) !important;
+  transition: none !important;
+}
+
+/* Indicadores visuales de swipe */
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  border-radius: 12px;
+}
+
+.project-card.moving-left::before {
+  opacity: 0.7;
+  background: linear-gradient(to right, rgba(239, 68, 68, 0.2), transparent 70%);
+}
+
+.project-card.moving-right::before {
+  opacity: 0.7;
+  background: linear-gradient(to left, rgba(74, 222, 128, 0.2), transparent 70%);
+}
+
+.project-card.swipe-left::before {
+  opacity: 1;
+  background: linear-gradient(to right, rgba(239, 68, 68, 0.6), transparent);
+}
+
+.project-card.swipe-right::before {
+  opacity: 1;
+  background: linear-gradient(to left, rgba(74, 222, 128, 0.6), transparent);
+}
+
+/* Card reveal animation - más lenta y suave */
+@keyframes cardReveal {
+  0% {
+    transform: translateY(6px) scale(0.97);
+    opacity: 0.95;
+    filter: blur(2px);
+  }
+  50% {
+    filter: blur(0px);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
+.card-reveal {
+  animation: cardReveal 0.45s ease-out forwards;
+}
+
+/* Other card elements styling */
+.project-card-image {
+  position: relative;
+  width: 100%;
+  height: 55%;
+  min-height: 180px;
+  max-height: 300px;
+  background-color: #f0f0f0;
+}
+
+@media (max-height: 700px) {
+  .project-card-image {
+    height: 50%;
+    min-height: 160px;
+  }
+}
+
+.project-card-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* === Action Buttons === */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1rem;
+  padding: 0 1rem;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background-color: white;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.action-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.action-button.like {
+  color: #4ade80;
+}
+
+.action-button.skip {
+  color: #f87171;
+}
+
+.action-button-action {
+  animation: actionPulse 0.4s ease-in-out;
+}
+
+/* Efecto de feedback de swipe completado */
+@keyframes feedbackRipple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.action-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.action-button.like::after {
+  background-color: rgba(74, 222, 128, 0.2);
+}
+
+.action-button.skip::after {
+  background-color: rgba(239, 68, 68, 0.2);
+}
+
+.action-button.pulse::after {
+  animation: feedbackRipple 0.6s ease-out;
+}
+
+/* === TinderCard Additional Styles === */
+/* Feedback visual al swipear */
+.project-card-wrapper .project-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 16px;
+  opacity: 0;
+  z-index: 11;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+/* Indicador de like */
+.project-card.swipe-right::before {
+  background: linear-gradient(135deg, rgba(var(--minipay-green), 0.8) 0%, rgba(var(--minipay-green), 0) 70%);
+  opacity: 0.7;
+}
+
+/* Indicador de dislike */
+.project-card.swipe-left::before {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.8) 0%, rgba(239, 68, 68, 0) 70%);
+  opacity: 0.7;
+}
+
+/* Ajustes para imagen y contenido dentro de la tarjeta */
+.project-card-wrapper .project-card-image {
+  overflow: hidden;
+  will-change: transform;
+  transition: transform 0.3s ease;
+}
+
+.project-card-wrapper .project-card-content {
+  will-change: transform;
+  transition: transform 0.3s ease;
+}
+
+/* === Next Card Preview === */
+.next-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform: scale(0.95) translateY(15px);
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.next-card .project-card {
+  position: relative;
+  transform: none !important;
+  pointer-events: none;
+}
+
+/* === Responsive Adjustments === */
+@media (max-height: 700px) {
+  main {
+    padding-bottom: 70px; /* Ajuste para pantallas pequeñas */
+  }
+
+  .project-card-image {
+    height: 50%;
+  }
+
+  .project-card-content {
+    padding: 0.75rem;
+  }
+
+  .action-buttons {
+    bottom: 65px;
+    gap: 1rem;
+  }
+
+  .action-buttons button {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+/* === Touch Handling === */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* === Swipe Animation States === */
 .card-swipe.swiping-left {
-  transform: translateX(-120%) rotate(-15deg);
+  transform: translateX(-120%) rotate(-15deg) !important;
 }
 
 .card-swipe.swiping-right {
-  transform: translateX(120%) rotate(15deg);
+  transform: translateX(120%) rotate(15deg) !important;
 }
 
-/* Style for the card underneath */
-.card-swipe.next {
-  /* Styles for cards that are next in the stack */
-  opacity: 0.9;
-  transform: scale(0.95) translateY(5px);
-}
-
-/* Slide up panel animation */
+/* === Slide up panel animation === */
 .slide-up-panel {
   transform: translateY(100%);
   transition: transform 0.3s ease-out;
@@ -262,7 +680,7 @@
   transform: translateY(0);
 }
 
-/* Haptic feedback simulation */
+/* === Haptic feedback simulation === */
 @keyframes haptic-pulse {
   0% {
     transform: scale(1);
@@ -279,7 +697,7 @@
   animation: haptic-pulse 0.15s ease-in-out;
 }
 
-/* Card expansion animations */
+/* === Card expansion animations === */
 .description-container {
   transition: max-height 0.3s ease;
   overflow: hidden;
@@ -376,4 +794,119 @@
 /* Fix any references to SwipePad in CSS */
 .swipepad-logo {
   content: "SwipePad";
+}
+
+/* Card stack styles */
+.card-stack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Make navigation elements smaller on small screens */
+@media (max-height: 700px) {
+  .nav-container {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  .filter-container {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+  
+  .tab-list {
+    transform: scale(0.9);
+  }
+  
+  .category-filter {
+    transform: scale(0.9);
+  }
+  
+  .project-card-content {
+    padding: 0.75rem;
+  }
+  
+  .project-card-content h2 {
+    font-size: 1.1rem;
+  }
+  
+  .project-card-content p {
+    font-size: 0.9rem;
+  }
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  padding: 0.75rem 0;
+  background-color: white;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+  z-index: 10;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: #71717a;
+  transition: color 0.2s;
+  height: 3rem;
+}
+
+.bottom-nav-item.active {
+  color: #000;
+  font-weight: 500;
+}
+
+/* Improved touch handling for mobile */
+@media (hover: none) and (pointer: coarse) {
+  .action-button {
+    width: 4rem;
+    height: 4rem;
+  }
+  
+  .action-button svg {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+}
+
+/* For smaller devices */
+@media (max-height: 700px) {
+  .bottom-nav {
+    padding: 0.5rem 0;
+  }
+  
+  .bottom-nav-item {
+    font-size: 0.7rem;
+    height: 2.5rem;
+  }
+  
+  .action-button {
+    width: 3rem;
+    height: 3rem;
+  }
+  
+  .action-button svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+/* Hide scrollbar but allow scrolling if needed */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
 }

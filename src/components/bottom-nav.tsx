@@ -16,10 +16,16 @@ export function BottomNav() {
 
   return (
     <motion.div
-      initial={{ y: 20, opacity: 0 }}
+      initial={{ y: 100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="h-16 bg-white border-t border-slate-200 flex justify-around items-center w-full z-50 shadow-lg"
+      transition={{ 
+        type: "spring", 
+        stiffness: 300, 
+        damping: 30,
+        delay: 0.2
+      }}
+      className="fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-slate-200 flex justify-around items-center w-full z-50 shadow-lg"
+      style={{ willChange: "transform" }}
     >
       <Link href="/home" className="flex flex-col items-center">
         <AnimatedIcon icon={Home} isActive={pathname.startsWith("/home")} activeColor="#22CC88" />

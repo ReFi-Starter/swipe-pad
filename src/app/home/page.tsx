@@ -1,451 +1,248 @@
 "use client"
 
-import type React from "react"
+import { useState, createRef } from "react"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { SwipeCard, swipeLeft, swipeRight } from "@/components/swipe-card"
+import { Button } from "@/components/ui/button"
+import { ThumbsDown, ThumbsUp } from "lucide-react"
+import { formatCurrency } from "@/lib/utils"
 
-import { useState, useRef, useEffect } from "react"
-import { Header } from "@/components/header"
-import { BottomNav } from "@/components/bottom-nav"
-import { CategoryFilter } from "@/components/category-filter"
-import { ProjectCard } from "@/components/project-card"
-import { CommunityNotesPanel } from "@/components/community-notes-panel"
-import { TopUpModal } from "@/components/top-up-modal"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { projects, simulateHapticFeedback, formatCurrency, getUserSettings } from "@/lib/utils"
-import { X, Heart, RotateCcw } from "lucide-react"
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip"
-import { StreakBadge } from "@/components/streak-badge"
-import { EmojiAnimation } from "@/components/emoji-animation"
-import { ComboIndicator } from "@/components/combo-indicator"
-import { motion, AnimatePresence } from "framer-motion"
-import { useBatchTransactions } from "@/components/batch-transaction-provider"
-import { toast } from "sonner"
-import { BatchStatusIndicator } from "@/components/batch-status-indicator"
-import { ProjectDetailDrawer } from "@/components/project-detail-drawer"
-import { ProjectUI } from "@/hooks/useDonationPool"
-
-// Function to convert the project from utils.ts to the ProjectUI format
-function convertToProjectUI(project: any): ProjectUI {
-  return {
-    id: project.id.toString(),
-    title: project.title,
-    description: project.description,
-    imageUrl: project.image,
-    category: project.category,
-    funding: {
-      goal: project.fundingGoal.toString(),
-      raised: project.currentFunding.toString(),
-      progress: Math.floor((project.currentFunding / project.fundingGoal) * 100)
-    },
-    creator: {
-      name: "Project Creator", // We don't have this data in the example projects
-      address: "0x0" // We don't have this data in the example projects
-    },
-    dates: {
-      start: "",
-      end: "" // We don't have dates in the example projects
-    }
-  };
+// Definir el tipo para la referencia TinderCard
+type TinderCardRef = {
+  swipe: (dir: "left" | "right") => Promise<void>
+  restoreCard: () => Promise<void>
 }
 
-export default function Home() {
-  const { addTransaction, cancelTransaction } = useBatchTransactions()
-  const [selectedCategory, setSelectedCategory] = useState("All")
-  const [activeTab, setActiveTab] = useState("swipe")
-  const [currentProjectIndex, setCurrentProjectIndex] = useState(0)
-  const [previousProjectIndex, setPreviousProjectIndex] = useState<number | null>(null)
-  const [showTopUpModal, setShowTopUpModal] = useState(false)
-  const [balance, setBalance] = useState(0.25)
-  const [isDragging, setIsDragging] = useState(false)
-  const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(null)
-  const [showCommunityNotes, setShowCommunityNotes] = useState(false)
-  const [selectedProject, setSelectedProject] = useState<(typeof projects)[0] | null>(null)
-  const [canUndo, setCanUndo] = useState(false)
-  const [streak, setStreak] = useState(7)
-  const [defaultDonationAmount] = useState(0.01)
-  const [showSuccessEmoji, setShowSuccessEmoji] = useState(false)
-  const [showSkipEmoji, setShowSkipEmoji] = useState(false)
-  const [userSettings, setUserSettings] = useState({ currency: "CENTS", language: "en", region: "US" })
-  const [comboCount, setComboCount] = useState(0)
-  const [showCombo, setShowCombo] = useState(false)
-  const [lastTransactionId, setLastTransactionId] = useState<string | null>(null)
-  const [showProjectDetailDrawer, setShowProjectDetailDrawer] = useState(false)
+// Datos de ejemplo para los proyectos con imágenes locales
+const mockProjects = [
+  {
+    id: "1",
+    title: "Eco-friendly Water Purifier",
+    description: "A sustainable solution for clean drinking water in developing regions, using locally sourced materials and solar power.",
+    imageUrl: "/images/projects/eco-water.jpg", // Imagen local
+    donationAmount: 2500,
+    creator: { name: "EcoSolutions", verified: true }
+  },
+  {
+    id: "2",
+    title: "Community Garden Initiative",
+    description: "Transform unused urban spaces into productive community gardens that provide fresh produce and educational opportunities.",
+    imageUrl: "/images/projects/community-garden.jpg", // Imagen local
+    donationAmount: 1800,
+    creator: { name: "Green Urban", verified: true }
+  },
+  {
+    id: "3",
+    title: "Solar Lamps for Education",
+    description: "Provide solar-powered lamps to students in areas without reliable electricity, allowing them to study after dark.",
+    imageUrl: "/images/projects/solar-lamps.jpg", // Imagen local
+    donationAmount: 3200,
+    creator: { name: "Bright Future", verified: false }
+  },
+  {
+    id: "4",
+    title: "Ocean Plastic Recycling",
+    description: "Innovative technology to collect and recycle ocean plastic into useful products, cleaning our seas and providing sustainable materials.",
+    imageUrl: "/images/projects/ocean-plastic.jpg", // Imagen local
+    donationAmount: 5000,
+    creator: { name: "OceanClean", verified: true }
+  },
+  {
+    id: "5",
+    title: "Accessible Healthcare App",
+    description: "A mobile application connecting remote communities with healthcare professionals through telemedicine and AI diagnostics.",
+    imageUrl: "/images/projects/healthcare-app.jpg", // Imagen local
+    donationAmount: 4200,
+    creator: { name: "HealthBridge", verified: true }
+  },
+];
 
-  const touchStartX = useRef<number | null>(null)
-  const cardRef = useRef<HTMLDivElement>(null)
+// Fallback para imágenes en caso de que no existan los archivos locales
+const fallbackImages = [
+  "/placeholder.jpg",
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 800 400'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' x2='0' y1='0' y2='1'%3E%3Cstop offset='0' stop-color='%2378D67A'/%3E%3Cstop offset='1' stop-color='%233EB489'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23a)' width='800' height='400'/%3E%3C/svg%3E"
+];
 
-  useEffect(() => {
-    setUserSettings(getUserSettings())
-  }, [])
-
-  const rawFilteredProjects =
-    selectedCategory === "All"
-      ? [...projects].sort((a, b) => (b.sponsorBoosted ? 1 : 0) - (a.sponsorBoosted ? 1 : 0))
-      : [...projects]
-          .filter((project) => project.category === selectedCategory)
-          .sort((a, b) => (b.sponsorBoosted ? 1 : 0) - (a.sponsorBoosted ? 1 : 0))
-  
-  // Convert the projects to the ProjectUI format
-  const filteredProjects = rawFilteredProjects.map(convertToProjectUI)
-
-  const currentProject = filteredProjects[currentProjectIndex % filteredProjects.length]
-  const nextProject = filteredProjects[(currentProjectIndex + 1) % filteredProjects.length]
-
-  useEffect(() => {
-    if (balance <= 0.05 && !showTopUpModal) {
-      setShowTopUpModal(true)
-    }
-  }, [balance, showTopUpModal])
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX
-    setIsDragging(true)
-  }
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!touchStartX.current || !cardRef.current) return;
-
-    const touchX = e.touches[0].clientX
-    const diff = touchX - touchStartX.current
-
-    // Apply visual feedback during drag
-    const rotation = diff * 0.05; // Adjust rotation sensitivity
-    cardRef.current.style.transform = `translateX(${diff}px) rotate(${rotation}deg)`;
-    cardRef.current.style.transition = 'none'; // Disable transition during drag
-
-    if (Math.abs(diff) > 20) { // Threshold to determine direction
-      setDragDirection(diff > 0 ? "right" : "left")
-    } else {
-      setDragDirection(null)
-    }
-  }
-
-  const handleTouchEnd = () => {
-    if (!touchStartX.current || !cardRef.current) return;
-
-    const touchEndX = cardRef.current.getBoundingClientRect().x;
-    const diff = touchEndX - touchStartX.current;
-    const threshold = window.innerWidth * 0.3;
-
-    if (Math.abs(diff) > threshold) { 
-      const direction = diff > 0 ? "right" : "left";
-      // Directly apply animation style without setting swipeAnimation state
-      cardRef.current.style.transition = 'transform 0.3s ease-out';
-      const targetX = direction === 'right' ? '120%' : '-120%';
-      const targetRotate = direction === 'right' ? '15deg' : '-15deg';
-      cardRef.current.style.transform = `translateX(${targetX}) rotate(${targetRotate}deg)`;
-
-      setTimeout(() => {
-        if (direction === 'right') {
-          handleDonate();
-        } else {
-          handleSkip();
-        }
-        resetCardPosition();
-      }, 300);
-    } else { 
-      resetCardPosition(true);
-    }
-
-    touchStartX.current = null;
-    setIsDragging(false);
-    setDragDirection(null);
-  }
-
-  const resetCardPosition = (animate = false) => {
-    if (!cardRef.current) return;
-    if (animate) {
-      cardRef.current.style.transition = 'transform 0.3s ease-out';
-    } else {
-      cardRef.current.style.transition = 'none';
-    }
-    cardRef.current.style.transform = 'translateX(0px) rotate(0deg)';
-    // No need to reset swipeAnimation state anymore
-  };
-
-  const handleSkip = () => {
-    if (isDragging) return; // Prevent action if still dragging (e.g., during animation back)
-    simulateHapticFeedback()
-    setPreviousProjectIndex(currentProjectIndex)
-    setCurrentProjectIndex((prevIndex) => (prevIndex + 1) % filteredProjects.length)
-    setCanUndo(true)
-    setComboCount(0)
-    setShowSkipEmoji(true)
-    // Card position reset is handled in handleTouchEnd or button click animation
-  }
-
-  const handleDonate = () => {
-     if (isDragging) return; // Prevent action if still dragging
-    simulateHapticFeedback()
-    if (balance <= 0) {
-      setShowTopUpModal(true)
-      resetCardPosition(true); // Animate back if donation fails
-    } else {
-      processDonation()
-      // Card position reset is handled in handleTouchEnd or button click animation
-    }
-  }
-
- const triggerSwipeAnimation = (direction: 'left' | 'right') => {
-    if (!cardRef.current) return;
-    // No need to set state
-    cardRef.current.style.transition = 'transform 0.3s ease-out';
-    const targetX = direction === 'right' ? '120%' : '-120%';
-    const targetRotate = direction === 'right' ? '15deg' : '-15deg';
-    cardRef.current.style.transform = `translateX(${targetX}) rotate(${targetRotate}deg)`;
-
-    setTimeout(() => {
-        if (direction === 'right') {
-            handleDonate();
-        } else {
-            handleSkip();
-        }
-        resetCardPosition(); // Reset for next card
-    }, 300); // Match animation duration
+// Función para intentar usar una imagen local, o caer en un fallback si no existe
+const getImageUrl = (index: number) => {
+  // Devolver una imagen de fallback basada en el índice del proyecto
+  return fallbackImages[index % fallbackImages.length];
 };
 
-
-  const processDonation = () => {
-    const txId = addTransaction(defaultDonationAmount, parseInt(currentProject.id), currentProject.title)
-    setLastTransactionId(txId)
-    setBalance((prev) => prev - defaultDonationAmount)
-    setStreak((prev) => prev + 1)
-    setComboCount((prev) => prev + 1)
-    setShowSuccessEmoji(true)
-    if (comboCount + 1 >= 3) {
-      setShowCombo(true)
+export default function HomePage() {
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [revealingCardIndex, setRevealingCardIndex] = useState<number | null>(null)
+  const [activeTab, setActiveTab] = useState("swipe")
+  
+  // Crear todas las refs necesarias al inicio - usando createRef para asegurar
+  // que cada tarjeta tenga su propia referencia independiente
+  const cardRefs = mockProjects.map(() => createRef<TinderCardRef>());
+  
+  // Procesar las imágenes para asegurarnos de que funcionen
+  const processedProjects = mockProjects.map((project, index) => ({
+    ...project,
+    imageUrl: getImageUrl(index)
+  }));
+  
+  // Función para manejar el swipe
+  const handleSwipe = (direction: "left" | "right") => {
+    // Loguear la acción (like o skip)
+    console.log(`${direction === "right" ? "Liked" : "Skipped"} project: ${processedProjects[currentIndex].title}`);
+    
+    // Actualizar el índice y marcar la siguiente carta como revelándose
+    if (currentIndex < processedProjects.length - 1) {
+      setRevealingCardIndex(currentIndex + 1);
+      
+      // Dar tiempo para que la animación de salida termine antes de mostrar la siguiente
+      setTimeout(() => {
+        setCurrentIndex(prev => prev + 1);
+        
+        // Resetear el estado de revelación después de un breve periodo
+        setTimeout(() => {
+          setRevealingCardIndex(null);
+        }, 450); // Ajustado al tiempo de la animación
+      }, 550); // Aumentado para permitir que la animación de swipe termine
+    } else {
+      // Si era la última carta, simplemente actualizar el índice
+      setTimeout(() => {
+        setCurrentIndex(processedProjects.length);
+      }, 550); // Retrasado para permitir que se vea la animación
     }
-    setPreviousProjectIndex(currentProjectIndex)
-    setCurrentProjectIndex((prevIndex) => (prevIndex + 1) % filteredProjects.length)
-    setCanUndo(true)
-  }
-
-  const handleTopUp = (amount: number) => {
-    setBalance((prev) => prev + amount)
-    setShowTopUpModal(false)
-    toast.success(`Saldo recargado: ${formatCurrency(amount, userSettings.currency)}`, {
-      description: `Tu nuevo saldo es ${formatCurrency(balance + amount, userSettings.currency)}`,
-    })
-  }
-
-  const handleUndo = () => {
-    if (previousProjectIndex !== null) {
-      if (lastTransactionId) {
-        cancelTransaction(lastTransactionId)
-        setLastTransactionId(null)
-      }
-      setCurrentProjectIndex(previousProjectIndex)
-      setPreviousProjectIndex(null)
-      setCanUndo(false)
-      if (comboCount > 0) {
-        setComboCount((prev) => prev - 1)
-      }
-      // Assume undo always reverts a donation for simplicity here
-      setBalance((prev) => prev + defaultDonationAmount)
+  };
+  
+  // Manejar acciones de botones
+  const handleLikeClick = () => {
+    if (cardRefs[currentIndex]?.current) {
+      swipeRight(cardRefs[currentIndex]);
     }
-     resetCardPosition(); // Ensure card is reset visually
-  }
-
-  const handleShowCommunityNotesFromDrawer = (project: (typeof projects)[0] | null) => {
-    if (!project) return; // Guard against null project
-    setSelectedProject(project);
-    setShowCommunityNotes(true);
-    // Note: ProjectDetailDrawer onClose handles closing itself
+  };
+  
+  const handleSkipClick = () => {
+    if (cardRefs[currentIndex]?.current) {
+      swipeLeft(cardRefs[currentIndex]);
+    }
+  };
+  
+  // Reiniciar la baraja
+  const handleResetDeck = () => {
+    setCurrentIndex(0);
   };
 
-  const handleShowCommunityNotes = (project: any) => {
-    // Find the original project for community data
-    const originalProject = projects.find(p => p.id.toString() === project.id);
-    setSelectedProject(originalProject || null)
-    setShowCommunityNotes(true)
-  }
-
-  const handleAddTag = (tag: string) => {
-    console.log(`Added tag: ${tag}`)
-    setShowCommunityNotes(false)
-    toast.success(`Tag added: ${tag}`, {
-      description: "Thank you for contributing to the community",
-    })
-  }
-
-   const handleToggleExpand = () => {
-      // Find the original project for the drawer
-      const originalProject = projects.find(p => p.id.toString() === currentProject.id);
-      setSelectedProject(originalProject || null);
-      setShowProjectDetailDrawer(true);
-   };
-
   return (
-    <div className="flex flex-col h-full">
-      {/* Minimal Header */}
-      <Header title="SwipePad" />
-
-      {/* Balance Row */}
-      <div className="px-4 pt-2 flex justify-between items-center flex-shrink-0">
+    <main>
+      {/* Header */}
+      <div className="nav-container flex items-center justify-between">
+        <h1 className="text-lg font-bold">SwipePad</h1>
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">Balance: {formatCurrency(balance, userSettings.currency)}</span>
-          <button
-            className="text-xs h-7 px-2 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
-            onClick={() => setShowTopUpModal(true)}
-          >
-            Top up
-          </button>
+          <span className="text-sm font-medium">
+            Balance: {formatCurrency(25)}
+          </span>
         </div>
-        <StreakBadge streak={streak} size="sm" />
       </div>
-
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-grow min-h-0">
-         {/* Tab Switcher Row */}
-         <div className="flex justify-center items-center pt-2 flex-shrink-0">
-            <TabsList>
-                <TabsTrigger value="swipe">Swipe</TabsTrigger>
-                <TabsTrigger value="discover">Discover</TabsTrigger>
-            </TabsList>
-         </div>
-
-         {/* Category Filter Row */}
-         <div className="flex justify-center items-center py-2 px-4 overflow-x-auto no-scrollbar flex-shrink-0">
-            <CategoryFilter
-              categories={["All", "Education", "Climate", "Health", "Wildlife"]}
-              selectedCategory={selectedCategory}
-              onChange={setSelectedCategory}
-            />
-         </div>
-
-         {/* Main Content Area (Takes remaining space) */}
-         <main className="flex-grow flex flex-col min-h-0 overflow-hidden">
-            <TabsContent value="swipe" className="flex-grow flex flex-col items-center justify-center p-4 mt-0 relative">
-                {/* Card Stack Area */}
-                <div className="relative w-full h-full flex items-center justify-center">
-                    {/* Next Project Card (Background) */}
-                    <div className="absolute w-full h-full flex items-center justify-center pointer-events-none z-0" style={{transform: 'scale(0.95) translateY(10px)'}}>
-                         {filteredProjects.length > 1 && (
-                              <ProjectCard
-                                project={nextProject}
-                                key={`next-card-${currentProjectIndex + 1}`}
-                                isNext
-                                donationAmount={defaultDonationAmount}
-                              />
-                         )}
-                    </div>
-
-                    {/* Current Project Card (Foreground) */}
-                    <div
-                        ref={cardRef}
-                        className={`absolute w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing z-10 card-swipe`}
-                        onTouchStart={handleTouchStart}
-                        onTouchMove={handleTouchMove}
-                        onTouchEnd={handleTouchEnd}
-                        style={{ touchAction: 'none' }} // Disable scroll interaction on the card itself
-                    >
-                         <ProjectCard
-                            project={currentProject}
-                            onDonate={handleDonate}
-                            onShowCommunityNotes={() => handleShowCommunityNotes(currentProject)}
-                            showOverlay={dragDirection !== null}
-                            overlayDirection={dragDirection}
-                            donationAmount={defaultDonationAmount}
-                            onToggleExpand={handleToggleExpand} // This prop now triggers the drawer
-                        />
-                    </div>
-                 </div>
-
-                 {/* Action buttons below the card stack area */}
-                 <div className={`flex justify-center items-center gap-6 mt-4 pb-2 flex-shrink-0 opacity-100`}>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                           <button onClick={() => triggerSwipeAnimation('left')} className="rounded-full bg-gray-100 p-4 active:scale-95 transition-transform flex items-center justify-center shadow-md">
-                              <X className="h-6 w-6 text-red-500" />
-                           </button>
-                        </TooltipTrigger>
-                        <TooltipContent><p>Skip</p></TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-
-                    {canUndo && (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                              <button onClick={handleUndo} className="rounded-full bg-gray-100 p-3 active:scale-95 transition-transform flex items-center justify-center shadow-sm">
-                                <RotateCcw className="h-5 w-5 text-gray-600" />
-                              </button>
-                          </TooltipTrigger>
-                          <TooltipContent><p>Undo</p></TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                           <button onClick={() => triggerSwipeAnimation('right')} className="rounded-full bg-[#22CC88] p-4 active:scale-95 transition-transform flex items-center justify-center shadow-md">
-                              <Heart className="h-6 w-6 text-white" />
-                           </button>
-                        </TooltipTrigger>
-                        <TooltipContent><p>Donate {formatCurrency(defaultDonationAmount, userSettings.currency)}</p></TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                 </div>
-            </TabsContent>
-
-            <TabsContent value="discover" className="flex-grow overflow-y-auto p-4 mt-0 tab-discover-content">
-              {/* Ensure padding-bottom in CSS (.tab-discover-content) avoids BottomNav */}
-              <AnimatePresence>
-                {filteredProjects.map((project, index) => (
-                  <motion.div
-                    key={project.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="mb-4" // Add margin between list items
+      
+      {/* Tab Navigation */}
+      <div className="nav-container pb-2 border-t-0">
+        <Tabs defaultValue="swipe" className="w-full" value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="swipe">Swipe</TabsTrigger>
+            <TabsTrigger value="discover">Discover</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+      
+      {/* Category Filter */}
+      <div className="filter-container overflow-x-auto no-scrollbar border-t-0">
+        <div className="flex px-4 space-x-2 category-filter">
+          <button className="active">All</button>
+          <button>Environment</button>
+          <button>Education</button>
+          <button>Health</button>
+          <button>Technology</button>
+          <button>Community</button>
+        </div>
+      </div>
+      
+      {/* Card Stack Area */}
+      <div className="card-stack-container">
+        {activeTab === "swipe" ? (
+          <>
+            {/* Mostrar mensaje si no hay más cartas */}
+            {currentIndex >= processedProjects.length ? (
+              <div className="flex flex-col items-center justify-center h-full">
+                <h3 className="text-xl font-semibold mb-4">No more projects</h3>
+                <p className="text-muted-foreground mb-6 text-center">
+                  You&apos;ve viewed all available projects in this category
+                </p>
+                <Button onClick={handleResetDeck}>Reset Deck</Button>
+              </div>
+            ) : (
+              <>
+                <div className="card-swipe-container">
+                  <div className="card-stack">
+                    {/* Renderizar hasta 3 cartas como máximo (la actual y las dos siguientes) */}
+                    {processedProjects.slice(currentIndex, currentIndex + 3).map((project, index) => (
+                      <SwipeCard
+                        key={project.id}
+                        ref={cardRefs[currentIndex + index]}
+                        {...project}
+                        onSwipe={index === 0 ? handleSwipe : undefined}
+                        cardIndex={index}
+                        isRevealing={revealingCardIndex === currentIndex + index}
+                      />
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Action Buttons */}
+                <div className="action-buttons">
+                  <div 
+                    className="action-button skip"
+                    onClick={handleSkipClick}
                   >
-                    <ProjectCard
-                      project={project}
-                      mode="list"
-                      onDonate={() => {
-                        // Need to advance index if donating from list? Maybe not.
-                        setSelectedProject(projects.find(p => p.id.toString() === project.id) || null)
-                        processDonation() // Use processDonation directly for list mode
-                        // Note: List mode donation doesn't affect swipe stack index directly
-                      }}
-                      onShowCommunityNotes={() => handleShowCommunityNotes(project)}
-                      donationAmount={defaultDonationAmount}
-                      // Remove isExpanded/onToggleExpand from list mode
-                    />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </TabsContent>
-         </main>
-      </Tabs>
-
-
-      {/* Modals and Animations */}
-      <EmojiAnimation type="success" show={showSuccessEmoji} onComplete={() => setShowSuccessEmoji(false)} />
-      <EmojiAnimation type="skip" show={showSkipEmoji} onComplete={() => setShowSkipEmoji(false)} />
-      <ComboIndicator combo={comboCount} show={showCombo} onComplete={() => setShowCombo(false)} />
-      <TopUpModal isOpen={showTopUpModal} onClose={() => setShowTopUpModal(false)} onTopUp={handleTopUp} />
-      {selectedProject && (
-        <CommunityNotesPanel
-          isOpen={showCommunityNotes}
-          onClose={() => setShowCommunityNotes(false)}
-          project={selectedProject}
-          onAddTag={handleAddTag}
-        />
-      )}
-      <BatchStatusIndicator />
-
-      {/* Add the new Project Detail Drawer */}
-      <ProjectDetailDrawer
-        isOpen={showProjectDetailDrawer}
-        onClose={() => setShowProjectDetailDrawer(false)}
-        project={selectedProject} // Pass the selected project
-        onShowCommunityNotes={handleShowCommunityNotesFromDrawer} // Pass handler to open notes from drawer
-      />
-
+                    <ThumbsDown size={22} />
+                  </div>
+                  <div 
+                    className="action-button like"
+                    onClick={handleLikeClick}
+                  >
+                    <ThumbsUp size={22} />
+                  </div>
+                </div>
+              </>
+            )}
+          </>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 w-full overflow-y-auto">
+            {processedProjects.map(project => (
+              <SwipeCard 
+                key={project.id} 
+                {...project} 
+                mode="list" 
+              />
+            ))}
+          </div>
+        )}
+      </div>
+      
       {/* Bottom Navigation */}
-      <BottomNav />
-    </div>
+      <div className="bottom-nav">
+        <div className="bottom-nav-item active">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Home</span>
+        </div>
+        <div className="bottom-nav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <span>Search</span>
+        </div>
+        <div className="bottom-nav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Profile</span>
+        </div>
+        <div className="bottom-nav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span>Donations</span>
+        </div>
+      </div>
+    </main>
   )
 }
