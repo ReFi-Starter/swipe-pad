@@ -13,7 +13,7 @@ import { ImpactShareCard } from "@/components/impact-share-card"
 import { UserStatsCard } from "@/components/user-stats-card"
 import { StreakBadge } from "@/components/streak-badge"
 import { achievements, friendsData, getUserStats } from "@/lib/utils"
-import { Settings, Share2 } from "lucide-react"
+import { Settings, Share2, Eye } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 export default function ProfilePage() {
@@ -67,7 +67,13 @@ export default function ProfilePage() {
           <TabsContent value="achievements" className="mt-4 space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="font-medium">Your Achievements</h3>
-              <PrivacyToggle isPublic={isPublic} onChange={() => setIsPublic(!isPublic)} />
+              <PrivacyToggle
+                icon={Eye}
+                label="Visibility"
+                description="Make your achievements visible to others"
+                checked={isPublic}
+                onCheckedChange={setIsPublic}
+              />
             </div>
 
             <div className="grid grid-cols-3 gap-3">
