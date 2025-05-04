@@ -2,6 +2,7 @@
 
 import { motion, useMotionValue, useTransform, useAnimation } from "framer-motion"
 import Image from "next/image"
+import { useEffect, useState } from "react"
 import { VerifiedBadge } from "./verified-badge"
 import { Button } from "./ui/button"
 
@@ -31,6 +32,12 @@ export function ProjectCard({
   // Motion values for tracking swipe
   const x = useMotionValue(0)
   const controls = useAnimation()
+  const [isMounted, setIsMounted] = useState(false)
+
+  // Mount check
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Transform values for visual feedback
   const rotate = useTransform(x, [-150, 150], [-10, 10]) // Less rotation for more subtle effect
@@ -39,6 +46,8 @@ export function ProjectCard({
 
   // Handle drag end
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: { offset: { x: number }; velocity: { x: number } }) => {
+    if (!isMounted) return;
+    
     const offset = info.offset.x
     const velocity = info.velocity.x
 
@@ -94,7 +103,7 @@ export function ProjectCard({
         opacity,
         scale
       }}
-      drag={mode === "swipe" ? "x" : false}
+      drag={isMounted && mode === "swipe" ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.8}
       onDragEnd={handleDragEnd}
