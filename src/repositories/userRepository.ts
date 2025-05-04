@@ -1,5 +1,5 @@
 import { db } from '@/db';
-import { users, userSettings } from '@/db/schema';
+import { users, userSettings, type NewUser } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
 export const userRepository = {
@@ -11,29 +11,32 @@ export const userRepository = {
   },
   
   // Create new user
-  async create(data: { walletAddress: string; username?: string; avatarUrl?: string }) {
-    const newUsers = await db.insert(users).values({
-      walletAddress: data.walletAddress.toLowerCase(),
-      username: data.username,
-      avatarUrl: data.avatarUrl,
-    }).returning();
+  async create(data: NewUser) {
+    const [user] = await db.insert(users)
+      .values({
+        walletAddress: data.walletAddress.toLowerCase(),
+        username: data.username,
+        avatarUrl: data.avatarUrl,
+      })
+      .returning();
     
-    if (newUsers.length > 0) {
-      // Create default user settings
-      await db.insert(userSettings).values({
-        userId: newUsers[0].id,
-      });
-    }
-    
-    return newUsers;
+    // Create default user settings
+    await db.insert(userSettings)
+      .values({
+        userId: user.id,
+      })
+      .onConflictDoNothing();
+      
+    return user;
   },
   
   // Update user streak
   async updateStreak(userId: number, streak: number) {
-    return await db.update(users)
-      .set({ streak, lastActive: new Date() })
+    const [user] = await db.update(users)
+      .set({ streak })
       .where(eq(users.id, userId))
       .returning();
+    return user;
   },
   
   // Update user reputation
@@ -45,15 +48,12 @@ export const userRepository = {
   },
   
   // Update user profile
-  async updateProfile(userId: number, data: { 
-    username?: string; 
-    avatarUrl?: string; 
-    isPublicProfile?: boolean 
-  }) {
-    return await db.update(users)
+  async updateProfile(userId: number, data: Partial<NewUser>) {
+    const [user] = await db.update(users)
       .set(data)
       .where(eq(users.id, userId))
       .returning();
+    return user;
   },
   
   // Get user settings
@@ -64,16 +64,11 @@ export const userRepository = {
   },
   
   // Update user settings
-  async updateUserSettings(userId: number, data: {
-    currency?: string;
-    language?: string;
-    region?: string;
-    defaultDonationAmount?: string;
-    autoBatch?: boolean;
-  }) {
-    return await db.update(userSettings)
+  async updateUserSettings(userId: number, data: Partial<typeof userSettings.$inferInsert>) {
+    const [settings] = await db.update(userSettings)
       .set(data)
       .where(eq(userSettings.userId, userId))
       .returning();
+    return settings;
   }
 }; 

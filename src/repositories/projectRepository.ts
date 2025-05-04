@@ -1,190 +1,149 @@
 import { db } from '@/db';
 import { 
-  cachedProjects, 
   projectMetadata, 
   communityTags, 
-  communityNotes, 
-  communityNoteVotes 
+  communityNotes,
+  communityNoteVotes,
+  cachedProjects,
+  type NewCommunityTag,
+  type NewCommunityNote,
+  type NewCommunityNoteVote
 } from '@/db/schema';
-import { eq, desc, sql, and } from 'drizzle-orm';
+import { eq, desc, and, sql } from 'drizzle-orm';
 
 export const projectRepository = {
-  // Get project by ID
-  async getProjectById(projectId: string) {
-    const project = await db.query.cachedProjects.findFirst({
-      where: eq(cachedProjects.id, projectId),
+  async getProjectById(id: string) {
+    return await db.query.cachedProjects.findFirst({
+      where: eq(cachedProjects.id, id),
+      with: {
+        metadata: true,
+      },
     });
-    
-    if (!project) return null;
-    
-    // Get project metadata
-    const metadata = await db.query.projectMetadata.findFirst({
-      where: eq(projectMetadata.projectId, projectId),
-    });
-    
-    return { ...project, metadata };
   },
-  
-  // Get all projects
-  async getAllProjects(options?: { 
-    limit?: number; 
-    offset?: number; 
+
+  async getAllProjects(params?: {
+    limit?: number;
+    offset?: number;
     category?: string;
     sponsoredFirst?: boolean;
   }) {
-    const { limit = 10, offset = 0, category, sponsoredFirst = true } = options || {};
-    
-    let query = db.select()
+    const query = db.select()
       .from(cachedProjects)
       .leftJoin(projectMetadata, eq(cachedProjects.id, projectMetadata.projectId))
-      .limit(limit)
-      .offset(offset);
-    
-    if (category) {
-      query = query.where(eq(projectMetadata.category, category));
+      .where(eq(cachedProjects.isActive, true));
+
+    if (params?.category) {
+      query.where(eq(projectMetadata.category, params.category));
     }
-    
-    if (sponsoredFirst) {
-      query = query.orderBy(desc(projectMetadata.sponsorBoosted));
+
+    if (params?.sponsoredFirst) {
+      query.orderBy(desc(projectMetadata.sponsorBoosted));
     }
-    
+
+    if (params?.limit) {
+      query.limit(params.limit);
+    }
+
+    if (params?.offset) {
+      query.offset(params.offset);
+    }
+
     return await query;
   },
-  
-  // Create or update project metadata
-  async upsertProjectMetadata(data: {
-    projectId: string;
-    category: string;
-    tags?: string[];
-    sponsorBoosted?: boolean;
-  }) {
-    return await db.insert(projectMetadata)
+
+  async upsertProjectMetadata(data: typeof projectMetadata.$inferInsert) {
+    const [metadata] = await db.insert(projectMetadata)
       .values(data)
       .onConflictDoUpdate({
         target: projectMetadata.projectId,
-        set: {
-          category: data.category,
-          tags: data.tags,
-          sponsorBoosted: data.sponsorBoosted,
-          updatedAt: new Date(),
-        },
+        set: data,
       })
       .returning();
+    return metadata;
   },
-  
-  // Increment view count
+
   async incrementViewCount(projectId: string) {
-    return await db.update(projectMetadata)
+    const [metadata] = await db.update(projectMetadata)
       .set({
         viewsCount: sql`${projectMetadata.viewsCount} + 1`,
       })
-      .where(eq(projectMetadata.projectId, projectId));
+      .where(eq(projectMetadata.projectId, projectId))
+      .returning();
+    return metadata;
   },
-  
-  // Add community tag
-  async addCommunityTag(data: {
-    projectId: string;
-    userId: number;
-    text: string;
-  }) {
-    // Check if tag already exists
+
+  async addCommunityTag(data: NewCommunityTag) {
     const existingTag = await db.query.communityTags.findFirst({
       where: and(
         eq(communityTags.projectId, data.projectId),
-        eq(communityTags.text, data.text)
+        eq(communityTags.text, data.text.toLowerCase())
       ),
     });
-    
+
     if (existingTag) {
-      // Increment count
-      return await db.update(communityTags)
+      const [tag] = await db.update(communityTags)
         .set({
           count: sql`${communityTags.count} + 1`,
         })
-        .where(
-          and(
-            eq(communityTags.projectId, data.projectId),
-            eq(communityTags.text, data.text)
-          )
-        )
+        .where(eq(communityTags.id, existingTag.id))
         .returning();
-    } else {
-      // Create new tag
-      return await db.insert(communityTags)
-        .values(data)
-        .returning();
+      return tag;
     }
+
+    const [tag] = await db.insert(communityTags)
+      .values({
+        ...data,
+        text: data.text.toLowerCase(),
+      })
+      .returning();
+    return tag;
   },
-  
-  // Get project tags
+
   async getProjectTags(projectId: string) {
-    return await db.select()
-      .from(communityTags)
-      .where(eq(communityTags.projectId, projectId))
-      .orderBy(desc(communityTags.count));
+    return await db.query.communityTags.findMany({
+      where: eq(communityTags.projectId, projectId),
+      orderBy: desc(communityTags.count),
+    });
   },
-  
-  // Add community note
-  async addCommunityNote(data: {
-    projectId: string;
-    authorId: number;
-    text: string;
-    tags?: string[];
-  }) {
-    return await db.insert(communityNotes)
+
+  async addCommunityNote(data: NewCommunityNote) {
+    const [note] = await db.insert(communityNotes)
       .values(data)
       .returning();
+    return note;
   },
-  
-  // Get project notes
+
   async getProjectNotes(projectId: string) {
-    return await db.select()
-      .from(communityNotes)
-      .where(eq(communityNotes.projectId, projectId))
-      .orderBy(desc(communityNotes.upvotes));
-  },
-  
-  // Vote on note
-  async voteOnNote(data: {
-    noteId: number;
-    userId: number;
-    isUpvote: boolean;
-  }) {
-    // Check if vote already exists
-    const existingVote = await db.query.communityNoteVotes.findFirst({
-      where: and(
-        eq(communityNoteVotes.noteId, data.noteId),
-        eq(communityNoteVotes.userId, data.userId)
-      ),
+    return await db.query.communityNotes.findMany({
+      where: eq(communityNotes.projectId, projectId),
+      orderBy: desc(communityNotes.upvotes),
+      with: {
+        author: true,
+      },
     });
-    
-    if (existingVote) {
-      // Update vote
-      return await db.update(communityNoteVotes)
-        .set({
-          isUpvote: data.isUpvote,
-        })
-        .where(
-          and(
-            eq(communityNoteVotes.noteId, data.noteId),
-            eq(communityNoteVotes.userId, data.userId)
-          )
-        )
-        .returning();
-    } else {
-      // Create new vote
-      const result = await db.insert(communityNoteVotes)
-        .values(data)
-        .returning();
-      
-      // Update note upvotes count
-      await db.update(communityNotes)
-        .set({
-          upvotes: sql`${communityNotes.upvotes} ${data.isUpvote ? '+' : '-'} 1`,
-        })
-        .where(eq(communityNotes.id, data.noteId));
-      
-      return result;
-    }
+  },
+
+  async voteOnNote(data: NewCommunityNoteVote) {
+    const [vote] = await db.insert(communityNoteVotes)
+      .values(data)
+      .onConflictDoUpdate({
+        target: [communityNoteVotes.noteId, communityNoteVotes.userId],
+        set: { isUpvote: data.isUpvote },
+      })
+      .returning();
+
+    // Update note upvotes count
+    await db.update(communityNotes)
+      .set({
+        upvotes: sql`(
+          SELECT COUNT(*) 
+          FROM ${communityNoteVotes} 
+          WHERE note_id = ${data.noteId} 
+          AND is_upvote = true
+        )`,
+      })
+      .where(eq(communityNotes.id, data.noteId));
+
+    return vote;
   },
 }; 
