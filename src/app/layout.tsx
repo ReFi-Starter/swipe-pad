@@ -1,38 +1,42 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "sonner";
-import { WalletProvider } from "@/providers/wallet-provider";
-import { Navbar } from "@/components/navbar";
-import { BatchTransactionProvider } from "@/components/batch-transaction-provider";
-import { TrpcProvider } from "@/providers/TrpcProvider";
-import { BottomNav } from "@/components/bottom-nav";
+import { Shell, TopBar as ShellTopBar, Content, BottomBar } from '@/components/shell'
+import { Providers } from '@/components/providers'
+import { TopBar } from '@/components/top-bar'
+import { BottomNav } from '@/components/bottom-nav'
+import { ContentView } from '@/components/content-view'
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "SwipePad Donations",
-  description: "Support projects on the Celo blockchain",
+  title: "SwipePad",
+  description: "Discover and support sustainable projects",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <TrpcProvider>
-          <WalletProvider>
-            <BatchTransactionProvider>
-              <Navbar />
-              {children}
+    <html lang="en" className="h-full" suppressHydrationWarning>
+      <body className={`${inter.className} flex flex-col min-h-full bg-gray-50`}>
+        <Providers>
+          <Shell>
+            <ShellTopBar>
+              <TopBar />
+            </ShellTopBar>
+            <Content>
+              <ContentView>
+                {children}
+              </ContentView>
+            </Content>
+            <BottomBar>
               <BottomNav />
-              <Toaster position="bottom-center" richColors />
-            </BatchTransactionProvider>
-          </WalletProvider>
-        </TrpcProvider>
+            </BottomBar>
+          </Shell>
+        </Providers>
       </body>
     </html>
   );
