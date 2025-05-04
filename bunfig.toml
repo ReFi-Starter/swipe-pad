@@ -1,0 +1,3 @@
+[install]
+# Whether to set an exact version in package.json. Default false.
+exact = true
