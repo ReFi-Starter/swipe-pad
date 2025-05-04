@@ -8,7 +8,7 @@ export default function OnboardingStep2() {
   const router = useRouter()
 
   return (
-    <div className="min-h-screen flex flex-col gradient-green">
+    <div className="flex flex-col h-full gradient-green">
       <div className="flex-1 flex flex-col items-center justify-center p-6">
         <div className="w-full max-w-sm">
           <div className="flex justify-between items-center mb-12">

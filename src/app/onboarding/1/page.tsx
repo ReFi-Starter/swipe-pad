@@ -7,7 +7,7 @@ export default function OnboardingStep1() {
   const router = useRouter()
 
   return (
-    <div className="min-h-screen flex flex-col gradient-green">
+    <div className="flex flex-col h-full gradient-green">
       <div className="flex-1 flex flex-col items-center justify-center p-6">
         <div className="w-full max-w-sm">
           <h1 className="text-3xl font-bold text-white text-center mb-8">Welcome to SwipePad</h1>

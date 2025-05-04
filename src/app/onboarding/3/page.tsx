@@ -13,7 +13,7 @@ export default function OnboardingStep3() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex flex-col h-full">
       <div className="flex-1 flex flex-col items-center justify-center p-6">
         <h1 className="text-2xl font-bold mb-4 text-center">Let&apos;s get donating!</h1>
         <p className="text-center text-slate-600 mb-8">Your micro-donations make a macro difference. Ready to start?</p>
