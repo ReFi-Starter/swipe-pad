@@ -27,10 +27,7 @@ export default function RootLayout({
           <WalletProvider>
             <BatchTransactionProvider>
               <Navbar />
-              <main className="min-h-[calc(100vh-8rem)] pb-16">
-                {children}
-              </main>
-              {/* Fixed bottom navigation */}
+              {children}
               <div className="fixed bottom-0 left-0 right-0 bg-white">
                 <BottomNav />
               </div>
