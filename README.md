@@ -1,90 +1,134 @@
-# ReFi Starter - Swipe-to-Donate App
+# SwipePad ― Micro-Donations Made Easy
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<div align="center">
+  
+  ![SwipePad Logo](https://via.placeholder.com/200x200.png?text=SwipePad)
+  
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  [![Celo](https://img.shields.io/badge/Celo-FCFF52?style=flat&logo=celo&logoColor=000000)](https://celo.org/)
+  [![Global Stablecoin Hackathon](https://img.shields.io/badge/Hackathon-May_2025-blue)](https://mentolabs.notion.site/Global-Stablecoin-Hackathon-1c1a2148cc5c808aa42ddee1e3df7883)
 
-This repository contains the frontend application for the Swipe-to-Donate project, part of the ReFi Starter initiative. It's a mobile-first Web3 app built for the Celo ecosystem, designed to make supporting meaningful causes as easy as swiping right.
+  ### **Supporting global impact projects with a simple swipe** ✨
+  
+  *A mobile-first dApp for MiniPay on Celo*
+</div>
 
-Users can discover verified impact projects, donate stablecoins (like cUSD) on Celo, and track impact transparently on the blockchain.
+## 🌟 What is SwipePad?
 
-This project is being built in public. Follow our progress in the [**Documentation**](./docs/README.md).
+SwipePad makes micro-philanthropy effortless by letting users swipe through verified impact projects and donate with Celo stablecoins in seconds.
 
-## ✨ Features (Planned)
+**Problem**: Traditional donation platforms are centralized, slow, and lack transparency. Billions remain financially excluded from global funding systems.
 
-- **Swipe Interface:** Easily browse and discover impact projects.
-- **Micro-Donations:** Support causes with small amounts of Celo stablecoins.
-- **MiniPay Integration:** Seamless experience within the MiniPay wallet.
-- **Project Verification:** Ensuring listed projects meet impact criteria (details TBD).
-- **On-Chain Transparency:** Donations and project funding tracked on Celo.
+**Solution**: A frictionless mobile experience that connects donors directly with verified projects using Celo's stablecoins—making micro-donations accessible to anyone with a phone.
 
-## 🛠 Tech Stack
+## 💫 Key Features
 
-- **Runtime:** [Bun](https://bun.sh/)
-- **Framework:** [Next.js](https://nextjs.org/) (App Router)
-- **Language:** [TypeScript](https://www.typescriptlang.org/)
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-- **Blockchain Interaction:** [Wagmi](https://wagmi.sh/) / [Viem](https://viem.sh/)
-- **Smart Contracts:** [Foundry](https://getfoundry.sh/) (Solidity) - Managed as a git submodule in `./contracts`.
+| Feature | Description |
+|---------|-------------|
+| 👆 **Swipe Interface** | Discover and donate to projects with intuitive swipe gestures |
+| 💰 **Multi-currency** | Support with cUSD, cEUR, cKES, and other Celo stablecoins |
+| 📱 **MiniPay Native** | Seamlessly integrated for 7M+ MiniPay users |
+| ✅ **Verified Projects** | Curated selection of impact-driven initiatives |
+| 🔍 **On-Chain Transparency** | All donations are fully verifiable on Celo |
+
+## 🏗️ How It Works
+
+<div align="center">
+  
+```
+┌───────────┐     ┌──────────────┐     ┌───────────────┐     ┌───────────────┐
+│           │     │              │     │               │     │               │
+│  MiniPay  │────▶│  SwipePad UI │────▶│  Pool Smart   │────▶│  Project      │
+│  User     │     │  (Next.js)   │     │  Contracts    │     │  Wallet       │
+│           │     │              │     │               │     │               │
+└───────────┘     └──────────────┘     └───────────────┘     └───────────────┘
+                         │
+                         ▼
+                  ┌──────────────┐
+                  │  Project     │
+                  │  Metadata    │
+                  │  (Future)    │
+                  └──────────────┘
+```
+
+</div>
+
+1. **Browse** ― User swipes through verified impact projects
+2. **Choose** ― User selects donation amount and currency
+3. **Donate** ― Funds transfer directly via Pool contracts on Celo
+4. **Track** ― Both donor and project can verify the transaction on-chain
+
+## 🧰 Tech Stack
+
+<div align="center">
+  
+| Frontend | Web3 | Contracts | Platform |
+|:--------:|:----:|:---------:|:--------:|
+| Next.js 14 | Wagmi | Solidity | Celo |
+| TypeScript | Viem | Foundry | MiniPay |
+| Tailwind CSS | | | Bun |
+
+</div>
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- [Bun](https://bun.sh/docs/installation) (v1.0 or higher)
+You'll need:
+- [Bun](https://bun.sh/docs/installation) (v1.0+)
 - [Git](https://git-scm.com/)
-- [Foundry](https://book.getfoundry.sh/getting-started/installation) (for contract interaction/testing)
+- [Foundry](https://book.getfoundry.sh/getting-started/installation)
 
-### Installation & Setup
-
-1.  **Clone the repository:**
-    ```bash
-    git clone <your-repo-url>
-    cd swipe-pad
-    ```
-
-2.  **Initialize Submodules:**
-    The project uses git submodules for the smart contracts. Initialize them:
-    ```bash
-    git submodule update --init --recursive
-    ```
-
-3.  **Install Frontend Dependencies:**
-    ```bash
-    bun install
-    ```
-
-4.  **Compile Contracts:**
-    Navigate to the contracts directory and compile:
-    ```bash
-    cd contracts
-    forge build
-    cd ..
-    ```
-
-5.  **Generate Wagmi Hooks:**
-    Ensure contracts are compiled, then generate hooks:
-    ```bash
-    bunx wagmi generate
-    ```
-
-6.  **Environment Variables:**
-    Create a `.env.local` file based on `.env.example` (if one exists) and populate it with necessary keys (e.g., RPC URLs, API keys).
-
-### Running the Development Server
+### Quick Setup
 
 ```bash
+# Clone the repo with submodules
+git clone --recurse-submodules https://github.com/ReFi-Starter/swipe-pad.git
+cd swipe-pad
+
+# Install dependencies
+bun install
+
+# Compile contracts
+cd contracts && forge build && cd ..
+
+# Generate contract hooks
+bunx wagmi generate
+
+# Start development server
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
-## 📚 Documentation
+## 📝 Project Status
 
-Detailed documentation, including milestones, technical decisions (ADRs), and build-in-public updates, can be found in the [`docs/`](./docs/README.md) directory.
+Current milestone: **Initial Setup & Contract Integration** (April-May 2025)
+- ✅ Project bootstrapped with Next.js & Bun
+- ✅ Smart contracts integrated via git submodule
+- ✅ Wagmi hooks generated for contract interaction
+- ✅ Basic project structure established
+- 🔜 UI components & donation flow
 
-## 🤝 Contributing
+[View detailed progress →](./docs/milestones/001-project-setup.md)
 
-Contributions are welcome! Please refer to the `CONTRIBUTING.md` guide (to be created) for details on how to contribute.
+## 👥 Team
 
-## 📄 License
+- **refistarter.eth** - Project Lead
+- **ottox.eth** - Frontend Developer
+- **ozkite.eth** - Smart Contract Developer
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details (to be created).
+## 🔗 Links
+
+- [Demo Video](https://example.com) (Coming soon)
+- [Pitch Deck](https://example.com) (Coming soon)
+- [KarmaGAP Profile](https://gap.karmahq.xyz/project/refi-starter---swipe-2-donate-app)
+
+---
+
+<div align="center">
+  
+  *Built for the [Global Stablecoin Hackathon](https://mentolabs.notion.site/Global-Stablecoin-Hackathon-1c1a2148cc5c808aa42ddee1e3df7883) (May 2025)*
+  
+  **ReFi Starter** | [GitHub](https://github.com/ReFi-Starter) | [Website](https://example.com)
+</div>
