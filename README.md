@@ -84,9 +84,9 @@ See the [complete contract documentation](./docs/milestones/donation-pool.md) fo
   
 | Frontend | Web3 | Contracts | Platform |
 |:--------:|:----:|:---------:|:--------:|
-| Next.js 14 | Wagmi | Solidity | Celo |
+| Next.js 15 | Wagmi 2 | Solidity | Celo |
 | TypeScript | Viem | Foundry | MiniPay |
-| Tailwind CSS | | | Bun |
+| Tailwind CSS 4 | | | Bun |
 
 </div>
 
@@ -106,20 +106,33 @@ You'll need:
 git clone --recurse-submodules https://github.com/ReFi-Starter/swipe-pad.git
 cd swipe-pad
 
-# Install dependencies
-bun install
+# Use our script to set up the project with Bun
+./scripts/bun-postinstall.sh
 
 # Compile contracts
 cd contracts && forge build && cd ..
 
 # Generate contract hooks
-bunx wagmi generate
+./scripts/generate-types.sh
 
 # Start development server
-bun dev
+bun run dev
 ```
 
 Visit [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Important Notes about Bun
+
+This project uses [Bun](https://bun.sh/) instead of npm for package management. Key points:
+
+- **Install packages:** `bun install <package-name>` or `bun add <package-name>`
+- **Run scripts:** `bun run <script-name>` (e.g., `bun run dev`)
+- **Lock file:** Bun uses `bun.lockb` instead of `package-lock.json`
+
+If you run into dependency issues, use our cleanup script:
+```bash
+./scripts/bun-postinstall.sh
+```
 
 ## 📝 Project Status
 

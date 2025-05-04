@@ -6,10 +6,10 @@ import { celo, celoAlfajores } from 'wagmi/chains';
 const celoNetworks = {
   [celo.id]: {
     // You might need to add specific deployment addresses here later
-    // Example: PoolEscrow: '0x...',
+    // Example: DonationPool: '0x...',
   },
   [celoAlfajores.id]: {
-    // Example: PoolEscrow: '0x...',
+    // Example: DonationPool: '0x...',
   },
 };
 
@@ -20,7 +20,8 @@ export default defineConfig({
     foundry({
       project: './contracts', // Explicit relative path
       include: [
-        'Pool.sol/Pool.json', // Be explicit about the main contract artifact
+        'Pool.sol/Pool.json', // Original Pool contract
+        'DonationPool.sol/DonationPool.json', // Adding DonationPool contract
         // Specify contracts to include, or leave empty to include all artifacts
         // Example: 'PoolEscrow.sol/**', 'DirectPay.sol/**'
       ],
