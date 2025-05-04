@@ -296,17 +296,18 @@ main {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  padding: 1rem;
+  padding: 0.5rem;
   perspective: 1000px;
-  max-height: calc(100% - 2rem); /* Ajustar para usar espacio disponible */
+  height: calc(100vh - 6.5rem); /* Account for header and bottom nav */
+  background: #f5f5f5;
 }
 
 .card-swipe-container {
   position: relative;
   width: 100%;
-  max-width: 340px;
+  max-width: 360px;
   height: 100%;
-  max-height: 500px;
+  max-height: calc(100vh - 7.5rem);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -321,312 +322,137 @@ main {
   transform-style: preserve-3d;
 }
 
-/* TinderCard Wrapper Styling */
-.project-card-wrapper {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: grab;
-  transform-origin: bottom center;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  z-index: 10;
-}
-
-/* Próximas cartas en la baraja con efecto blur */
-.project-card-wrapper.next-card {
-  z-index: 5;
-  transform: translateY(6px) scale(0.97);
-  opacity: 0.95;
-  pointer-events: none;
-  filter: blur(2px);
-}
-
-.project-card-wrapper.next-next-card {
-  z-index: 4;
-  transform: translateY(12px) scale(0.94);
-  opacity: 0.9;
-  pointer-events: none;
-  filter: blur(4px);
-}
-
-/* Main card styling with poker card effect */
 .project-card {
+  container-type: inline-size;
+  container-name: project-card;
   width: 100%;
-  height: 100%;
-  max-height: 500px;
-  min-height: 320px;
-  background-color: white;
-  border-radius: 12px;
+  margin-bottom: 1rem;
+  min-height: 200px;
+  background: white;
+  border-radius: 1rem;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  transform-origin: bottom center;
-  will-change: transform;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Poker card effect */
-.project-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 12px;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-  pointer-events: none;
-  z-index: 12;
-}
-
-/* Indicadores visuales de swipe */
-.project-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 30;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-  border-radius: 12px;
-}
-
-/* Efecto de brillo mejorado para la tarjeta */
-.project-card.moving-left {
-  box-shadow: -5px 0 15px rgba(239, 68, 68, 0.2) !important;
-}
-
-.project-card.moving-left::before {
-  opacity: 0.7;
-  background: linear-gradient(to right, rgba(239, 68, 68, 0.3), transparent 70%);
-}
-
-.project-card.moving-right {
-  box-shadow: 5px 0 15px rgba(74, 222, 128, 0.2) !important;
-}
-
-.project-card.moving-right::before {
-  opacity: 0.7;
-  background: linear-gradient(to left, rgba(74, 222, 128, 0.3), transparent 70%);
-}
-
-/* Animación de brillo para el swipe completo */
-@keyframes glowLeft {
-  0% { box-shadow: 0 0 0 rgba(239, 68, 68, 0); }
-  50% { box-shadow: -10px 0 20px rgba(239, 68, 68, 0.4); }
-  100% { box-shadow: -15px 0 25px rgba(239, 68, 68, 0.2); }
-}
-
-@keyframes glowRight {
-  0% { box-shadow: 0 0 0 rgba(74, 222, 128, 0); }
-  50% { box-shadow: 10px 0 20px rgba(74, 222, 128, 0.4); }
-  100% { box-shadow: 15px 0 25px rgba(74, 222, 128, 0.2); }
-}
-
-.project-card.swipe-left {
-  animation: glowLeft 0.5s forwards !important;
-}
-
-.project-card.swipe-left::before {
-  opacity: 1;
-  background: linear-gradient(to right, rgba(239, 68, 68, 0.7), transparent 90%);
-}
-
-.project-card.swipe-right {
-  animation: glowRight 0.5s forwards !important;
-}
-
-.project-card.swipe-right::before {
-  opacity: 1;
-  background: linear-gradient(to left, rgba(74, 222, 128, 0.7), transparent 90%);
-}
-
-/* Efecto de brillo de borde durante el swipe */
-.project-card.moving-left {
-  border-left-color: rgba(239, 68, 68, 0.6) !important;
-}
-
-.project-card.moving-right {
-  border-right-color: rgba(74, 222, 128, 0.6) !important;
-}
-
-/* Card reveal animation - más lenta y suave */
-@keyframes cardReveal {
-  0% {
-    transform: translateY(6px) scale(0.97);
-    opacity: 0.95;
-    filter: blur(2px);
-  }
-  50% {
-    filter: blur(0px);
-  }
-  100% {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-    filter: blur(0px);
-  }
-}
-
-.card-reveal {
-  animation: cardReveal 0.45s ease-out forwards;
-}
-
-/* Other card elements styling */
 .project-card-image {
   position: relative;
   width: 100%;
-  height: 55%;
-  min-height: 180px;
-  max-height: 300px;
-  background-color: #f0f0f0;
-}
-
-@media (max-height: 700px) {
-  .project-card-image {
-    height: 50%;
-    min-height: 160px;
-  }
+  height: 100%;
+  min-height: 200px;
+  overflow: hidden;
 }
 
 .project-card-content {
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  overflow: hidden;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  color: white;
 }
 
-/* === Action Buttons === */
+.project-card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.project-card-subtitle {
+  font-size: 0.875rem;
+  opacity: 0.9;
+  margin-bottom: 0.5rem;
+}
+
+.project-card-badges {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.project-card-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+}
+
+/* Action buttons */
 .action-buttons {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: center;
-  gap: 2rem;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem; /* Asegurar espacio desde la barra de navegación */
-  padding: 0 1rem;
-  z-index: 20; /* Asegurar que estén por encima del contenido pero debajo del nav */
+  gap: 1rem;
+  z-index: 10;
 }
 
 .action-button {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 50%;
-  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: none;
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-  position: relative;
-  overflow: hidden;
+  transition: transform 0.2s;
 }
 
 .action-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  transform: scale(1.1);
 }
 
 .action-button:active {
-  transform: translateY(1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: scale(0.95);
 }
 
 .action-button.like {
-  color: #4ade80;
+  color: #22cc88;
 }
 
 .action-button.skip {
-  color: #f87171;
+  color: #ff4b4b;
 }
 
-.action-button-action {
-  animation: actionPulse 0.4s ease-in-out;
+.action-button.boost {
+  color: #4b7bff;
 }
 
-/* Efecto de feedback de swipe completado */
-@keyframes feedbackRipple {
-  0% {
-    transform: scale(0);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(2);
-    opacity: 0;
-  }
-}
-
-.action-button::after {
-  content: '';
+/* Swipe indicators */
+.swipe-indicator {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  pointer-events: none;
+  top: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-weight: 600;
+  transform: rotate(-15deg);
+  text-transform: uppercase;
+  font-size: 1.25rem;
+  z-index: 10;
   opacity: 0;
+  transition: opacity 0.2s;
 }
 
-.action-button.like::after {
-  background-color: rgba(74, 222, 128, 0.2);
+.swipe-indicator.like {
+  right: 1rem;
+  color: #22cc88;
+  border: 2px solid #22cc88;
 }
 
-.action-button.skip::after {
-  background-color: rgba(239, 68, 68, 0.2);
+.swipe-indicator.skip {
+  left: 1rem;
+  color: #ff4b4b;
+  border: 2px solid #ff4b4b;
 }
 
-.action-button.pulse::after {
-  animation: feedbackRipple 0.6s ease-out;
-}
-
-/* === TinderCard Additional Styles === */
-/* Feedback visual al swipear */
-.project-card-wrapper .project-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 16px;
-  opacity: 0;
-  z-index: 11;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
-}
-
-/* Indicador de like */
-.project-card.swipe-right::before {
-  background: linear-gradient(135deg, rgba(var(--minipay-green), 0.8) 0%, rgba(var(--minipay-green), 0) 70%);
-  opacity: 0.7;
-}
-
-/* Indicador de dislike */
-.project-card.swipe-left::before {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.8) 0%, rgba(239, 68, 68, 0) 70%);
-  opacity: 0.7;
-}
-
-/* Ajustes para imagen y contenido dentro de la tarjeta */
-.project-card-wrapper .project-card-image {
-  overflow: hidden;
-  will-change: transform;
-  transition: transform 0.3s ease;
-}
-
-.project-card-wrapper .project-card-content {
-  will-change: transform;
-  transition: transform 0.3s ease;
+.project-card.swiping-left .swipe-indicator.skip,
+.project-card.swiping-right .swipe-indicator.like {
+  opacity: 1;
 }
 
 /* === Next Card Preview === */
@@ -1157,4 +983,176 @@ main {
 
 .onboarding-active .bottom-nav {
   z-index: 40; /* Lower than the onboarding z-index of 50 */
+}
+
+/* Container Aware Image styles */
+.container-aware-img {
+  display: grid;
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+
+.container-aware-img > * {
+  grid-area: 1/1;
+}
+
+.container-aware-img img {
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border: 0;
+  color: transparent;
+  display: block;
+  height: 100%;
+  margin: 0;
+  max-width: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+  opacity: 0;
+  outline: none;
+  padding: 0;
+  pointer-events: none;
+  position: relative;
+  transition: opacity 0.3s ease;
+  user-select: none;
+  vertical-align: middle;
+  visibility: hidden;
+  width: 100%;
+}
+
+.container-aware-img img.cai-loaded {
+  opacity: 1;
+  visibility: visible;
+}
+
+.container-aware-img .cai-placeholder {
+  background: #f0f0f0;
+  display: block;
+  height: 100%;
+  pointer-events: none;
+  position: relative;
+  transition: opacity 0.3s ease;
+  user-select: none;
+  width: 100%;
+}
+
+/* Main layout adjustments */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1rem;
+  padding-bottom: calc(4rem + env(safe-area-inset-bottom)); /* Account for bottom bar */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@container project-card (min-width: 600px) {
+  .project-card {
+    flex-direction: row;
+    height: 300px;
+  }
+
+  .project-card-image {
+    width: 40%;
+    min-width: 250px;
+    height: 100%;
+  }
+
+  .project-card-content {
+    width: 60%;
+    padding: 1.5rem;
+  }
+}
+
+@container project-card (max-width: 599px) {
+  .project-card {
+    flex-direction: column;
+  }
+
+  .project-card-image {
+    width: 100%;
+    aspect-ratio: 16/9;
+    min-height: 200px;
+  }
+
+  .project-card-content {
+    padding: 1rem;
+  }
+}
+
+@container project-card (max-width: 400px) {
+  .project-card-image {
+    aspect-ratio: 3/2;
+    min-height: 180px;
+  }
+
+  .project-card-description {
+    display: none;
+  }
+}
+
+/* Project Card Overlay & Badge */
+.project-card-image {
+  position: relative;
+  /* other styles */
+}
+
+.project-card-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 25%; /* Covers bottom 25% of the image */
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  color: white;
+}
+
+.project-card-overlay-title {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 600;
+  line-height: 1.3;
+  /* Add text-shadow for better readability if needed */
+}
+
+.project-card-overlay-category {
+  font-size: 0.875rem; /* 14px */
+  opacity: 0.9;
+  margin-top: 0.25rem;
+  line-clamp: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-card-badge-container {
+  position: absolute;
+  top: 1rem; /* 16px */
+  right: 1rem; /* 16px */
+  z-index: 10;
+}
+
+.trusted-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background-color: #22CC88; /* Opera Green */
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px; /* Pill shape */
+  font-size: 0.75rem; /* 12px */
+  font-weight: 500;
+}
+
+.trusted-badge svg {
+  width: 0.75rem; /* 12px */
+  height: 0.75rem; /* 12px */
 }
