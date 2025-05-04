@@ -6,6 +6,9 @@ import * as schema from './schema';
 const sql = neon(process.env.NEON_DATABASE_URL!);
 export const db = drizzle(sql, { schema });
 
+// Export the schema for use in the application
+export * from './schema';
+
 // For environments with persistent connections (optional)
 import { Pool } from 'pg';
 import { drizzle as drizzlePg } from 'drizzle-orm/node-postgres';

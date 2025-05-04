@@ -18,22 +18,7 @@ export const users = pgTable('users', {
   isPublicProfile: boolean('is_public_profile').default(true),
 });
 
-export const userAchievements = pgTable('user_achievements', {
-  id: serial('id').primaryKey(),
-  userId: integer('user_id').references(() => users.id),
-  achievementId: integer('achievement_id').notNull(),
-  unlockedAt: timestamp('unlocked_at').defaultNow(),
-});
-
-export const achievements = pgTable('achievements', {
-  id: serial('id').primaryKey(),
-  icon: text('icon').notNull(),
-  title: varchar('title', { length: 100 }).notNull(),
-  description: text('description').notNull(),
-  criteria: text('criteria'),
-  points: integer('points').default(10),
-});
-
+// User Settings
 export const userSettings = pgTable('user_settings', {
   userId: integer('user_id').primaryKey().references(() => users.id),
   currency: varchar('currency', { length: 10 }).default('CENTS'),
@@ -43,7 +28,25 @@ export const userSettings = pgTable('user_settings', {
   autoBatch: boolean('auto_batch').default(true),
 });
 
-// Project and Metadata
+// Achievements
+export const achievements = pgTable('achievements', {
+  id: serial('id').primaryKey(),
+  icon: text('icon').notNull(),
+  title: varchar('title', { length: 100 }).notNull(),
+  description: text('description').notNull(),
+  criteria: text('criteria'),
+  points: integer('points').default(10),
+});
+
+// User Achievements
+export const userAchievements = pgTable('user_achievements', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id),
+  achievementId: integer('achievement_id').notNull(),
+  unlockedAt: timestamp('unlocked_at').defaultNow(),
+});
+
+// Project Metadata
 export const projectMetadata = pgTable('project_metadata', {
   projectId: varchar('project_id', { length: 100 }).primaryKey(),
   category: varchar('category', { length: 50 }).notNull(),
@@ -53,6 +56,7 @@ export const projectMetadata = pgTable('project_metadata', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+// Categories
 export const categories = pgTable('categories', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 50 }).notNull().unique(),
@@ -61,6 +65,7 @@ export const categories = pgTable('categories', {
   isActive: boolean('is_active').default(true),
 });
 
+// Community Tags
 export const communityTags = pgTable('community_tags', {
   id: serial('id').primaryKey(),
   projectId: varchar('project_id', { length: 100 }).notNull(),
@@ -70,6 +75,7 @@ export const communityTags = pgTable('community_tags', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// Community Notes
 export const communityNotes = pgTable('community_notes', {
   id: serial('id').primaryKey(),
   projectId: varchar('project_id', { length: 100 }).notNull(),
@@ -80,6 +86,7 @@ export const communityNotes = pgTable('community_notes', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// Community Note Votes
 export const communityNoteVotes = pgTable('community_note_votes', {
   id: serial('id').primaryKey(),
   noteId: integer('note_id').references(() => communityNotes.id),
@@ -88,7 +95,7 @@ export const communityNoteVotes = pgTable('community_note_votes', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
-// Social Schema
+// User Connections
 export const userConnections = pgTable('user_connections', {
   id: serial('id').primaryKey(),
   followerId: integer('follower_id').references(() => users.id),
@@ -96,6 +103,7 @@ export const userConnections = pgTable('user_connections', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// User Activities
 export const userActivities = pgTable('user_activities', {
   id: serial('id').primaryKey(),
   userId: integer('user_id').references(() => users.id),
@@ -106,7 +114,7 @@ export const userActivities = pgTable('user_activities', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
-// Cache Schema
+// Cached Projects
 export const cachedProjects = pgTable('cached_projects', {
   id: varchar('id', { length: 100 }).primaryKey(),
   creatorAddress: varchar('creator_address', { length: 42 }).notNull(),
@@ -122,6 +130,7 @@ export const cachedProjects = pgTable('cached_projects', {
   lastSync: timestamp('last_sync').defaultNow(),
 });
 
+// Cached Donations
 export const cachedDonations = pgTable('cached_donations', {
   id: serial('id').primaryKey(),
   txHash: varchar('tx_hash', { length: 66 }).unique(),
