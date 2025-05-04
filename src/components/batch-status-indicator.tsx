@@ -2,73 +2,82 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { useBatchTransactions } from "@/components/batch-transaction-provider"
-import { formatCurrency, getUserSettings } from "@/lib/utils"
-import { Clock, Check } from "lucide-react"
+import { CheckCircle, XCircle, Clock } from "lucide-react"
+import { useBatchTransactions } from "./batch-transaction-provider"
+import { formatCurrency } from "@/lib/utils"
 
 export function BatchStatusIndicator() {
-  const { pendingTransactions } = useBatchTransactions()
-  const [userSettings, setUserSettings] = useState({ currency: "CENTS" })
-  const [timeLeft, setTimeLeft] = useState(5)
-  const [isVisible, setIsVisible] = useState(false)
+  const { pendingTransactions, completedTransactions } = useBatchTransactions()
+  const [showIndicator, setShowIndicator] = useState(false)
+  const [recentTx, setRecentTx] = useState<{
+    id: string;
+    amount: number;
+    projectId: number;
+    projectTitle: string;
+    timestamp: number;
+    status: "pending" | "completed" | "cancelled";
+  } | null>(null)
 
   useEffect(() => {
-    setUserSettings(getUserSettings())
-  }, [])
+    // Check for the most recent transaction
+    const latestPendingTx = pendingTransactions.length > 0 
+      ? pendingTransactions[pendingTransactions.length - 1] 
+      : null
 
-  useEffect(() => {
-    if (pendingTransactions.length > 0) {
-      setIsVisible(true)
-      setTimeLeft(5)
+    if (latestPendingTx) {
+      setRecentTx(latestPendingTx)
+      setShowIndicator(true)
     } else {
-      // Pequeño delay antes de ocultar para mostrar la animación de completado
-      const timer = setTimeout(() => {
-        setIsVisible(false)
-      }, 1500)
-      return () => clearTimeout(timer)
+      // Check for completed transactions in the last 5 seconds
+      const recentCompletedTx = completedTransactions.find(
+        (tx) => tx.timestamp > Date.now() - 5000
+      )
+
+      if (recentCompletedTx) {
+        setRecentTx(recentCompletedTx)
+        setShowIndicator(true)
+
+        // Hide after 3 seconds
+        const timer = setTimeout(() => {
+          setShowIndicator(false)
+        }, 3000)
+
+        return () => clearTimeout(timer)
+      } else {
+        setShowIndicator(false)
+      }
     }
-  }, [pendingTransactions.length])
+  }, [pendingTransactions, completedTransactions])
 
-  // Actualizar el contador regresivo
-  useEffect(() => {
-    if (pendingTransactions.length === 0 || timeLeft <= 0) return
-
-    const timer = setTimeout(() => {
-      setTimeLeft((prev) => Math.max(0, prev - 1))
-    }, 1000)
-
-    return () => clearTimeout(timer)
-  }, [timeLeft, pendingTransactions.length])
-
-  // Calcular el total pendiente
-  const totalPending = pendingTransactions.reduce((sum, tx) => sum + tx.amount, 0)
-
-  if (!isVisible) return null
+  if (!recentTx) return null
 
   return (
     <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
-        className="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-30"
-      >
-        <div className="bg-white rounded-full shadow-lg border border-slate-200 px-4 py-2 flex items-center gap-2">
-          {pendingTransactions.length > 0 ? (
-            <>
-              <Clock className="h-4 w-4 text-slate-500" />
-              <span className="text-sm">
-                Procesando {formatCurrency(totalPending, userSettings.currency)} en {timeLeft}s
-              </span>
-            </>
-          ) : (
-            <>
-              <Check className="h-4 w-4 text-green-500" />
-              <span className="text-sm">¡Batch procesado!</span>
-            </>
-          )}
-        </div>
-      </motion.div>
+      {showIndicator && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          className="fixed bottom-20 left-0 right-0 z-50 flex justify-center pointer-events-none"
+        >
+          <div className="bg-white rounded-lg shadow-lg px-4 py-3 flex items-center gap-3 max-w-xs">
+            {recentTx.status === "pending" && <Clock className="h-5 w-5 text-amber-500" />}
+            {recentTx.status === "completed" && <CheckCircle className="h-5 w-5 text-green-500" />}
+            {recentTx.status === "cancelled" && <XCircle className="h-5 w-5 text-red-500" />}
+
+            <div className="flex-1 text-sm">
+              <div className="font-medium">
+                {recentTx.status === "pending" && "Processing donation..."}
+                {recentTx.status === "completed" && "Donation completed"}
+                {recentTx.status === "cancelled" && "Donation cancelled"}
+              </div>
+              <div className="text-gray-500 text-xs">
+                {formatCurrency(recentTx.amount, "CENTS")} to {recentTx.projectTitle}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
     </AnimatePresence>
   )
 }
