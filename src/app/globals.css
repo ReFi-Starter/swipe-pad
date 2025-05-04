@@ -225,34 +225,47 @@
   filter: grayscale(30%);
 }
 
-/* Card swipe animations */
+/* === Card Swipe Styles === */
 .card-swipe-container {
   position: relative;
-  width: 100%;
-  height: 100%;
+  width: 90%; /* Adjust width as needed */
+  height: 85%; /* Adjust height as needed */
+  max-width: 400px; /* Max card width */
   perspective: 1000px;
+  margin: auto; /* Center the container */
 }
 
 .card-swipe {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
+  /* Applied directly to the card element in Home page */
   transition: transform 0.3s ease-out;
+  transform-origin: top center; /* Correct origin for top-hanging feel */
 }
 
+/* Animation classes applied during swipe */
 .card-swipe.swiping-left {
-  transform: translateX(-120%) rotate(-5deg);
+  transform: translateX(-120%) rotate(-15deg);
 }
 
 .card-swipe.swiping-right {
-  transform: translateX(120%) rotate(5deg);
+  transform: translateX(120%) rotate(15deg);
 }
 
+/* Style for the card underneath */
+/* Updated: Applied directly via inline style in Home */
 .card-swipe.next {
+  /* Remove this if styles are handled inline */
+  /*
+  position: absolute;
+  width: 100%;
+  height: 100%;
   transform: scale(0.95) translateY(10px);
   z-index: -1;
+  opacity: 0.7;
+  */
 }
+
+/* Remove potential conflicting styles */
+/* .card-swipe-container .next removed as .next is now inline */
 
 /* Slide up panel animation */
 .slide-up-panel {

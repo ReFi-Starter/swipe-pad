@@ -30,12 +30,7 @@ html, body {
 }
 
 .swipe-content {
-  position: relative;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  min-height: 0;
+  /* Removed styles, handled by parent flex */
 }
 
 /* Tab content areas */
@@ -52,40 +47,19 @@ html, body {
   padding-bottom: 80px; /* Space for bottom navigation */
 }
 
-/* Responsive project card */
+/* Responsive project card placeholder - Actual sizing managed by card stack */
 .responsive-card-height {
-  width: 100%;
-  height: auto;
-  max-height: 65vh;
-  aspect-ratio: 3/4;
-  margin: 0 auto;
-}
-
-/* Responsive adjustments for different screen sizes */
-@media screen and (max-height: 700px) {
-  .responsive-card-height {
-    max-height: 55vh;
-    aspect-ratio: 4/5;
-  }
-}
-
-@media screen and (max-height: 600px) {
-  .responsive-card-height {
-    max-height: 50vh;
-    aspect-ratio: 1/1;
-  }
-}
-
-@media screen and (max-height: 500px) {
-  .responsive-card-height {
-    max-height: 45vh;
-    aspect-ratio: 5/4;
-  }
+  /* Removed - Sizing is handled by the card stack container now */
 }
 
 /* Card in fullscreen layout */
 .card-fullscreen {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-} 
+  /* Now applied directly in ProjectCard component */
+}
+
+/* --- Card Swipe Styles --- */
+/* Styles moved to globals.css for component co-location */
+
+
+/* --- Remove unused/old styles --- */
+/* Removed old responsive card height media queries */ 
