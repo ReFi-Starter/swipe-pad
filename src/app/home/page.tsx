@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useCallback } from 'react'
+import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { ThumbsDown, ThumbsUp, List } from 'lucide-react'
 import { SwipeCard, Project } from '@/components/swipe-card'
@@ -10,18 +11,21 @@ export default function HomePage() {
   const [initialProjects] = useState<Project[]>(mockProjects)
   const [cards, setCards] = useState<Project[]>(initialProjects)
   const [activeTab, setActiveTab] = useState("swipe")
+  const [isTransitioning, setIsTransitioning] = useState(false)
 
   const handleSwipe = useCallback((direction: 'left' | 'right') => {
-    if (cards.length > 0) {
+    if (cards.length > 0 && !isTransitioning) {
       console.log(`Swiped ${direction} on:`, cards[cards.length - 1].title)
       
+      setIsTransitioning(true)
       setTimeout(() => {
         setCards(prev => prev.slice(0, -1))
-      }, 200)
+        setIsTransitioning(false)
+      }, 250)
     } else {
-      console.log("Attempted to swipe with no cards left.")
+      console.log("Attempted to swipe with no cards left or during transition.")
     }
-  }, [cards])
+  }, [cards, isTransitioning])
 
   return (
     <main className="h-[100dvh] flex flex-col">
@@ -77,7 +81,12 @@ export default function HomePage() {
           <>
             {/* Show message when no cards are left */}
             {cards.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-center px-4">
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="flex flex-col items-center justify-center h-full text-center px-4"
+              >
                 <h3 className="text-xl font-semibold mb-4">No more projects</h3>
                 <p className="text-muted-foreground mb-6">
                   You&apos;ve viewed all available projects in this category.
@@ -86,7 +95,7 @@ export default function HomePage() {
                 <Button onClick={() => setActiveTab('list')}>
                   <List className="mr-2 h-4 w-4" /> View as List
                 </Button>
-              </div>
+              </motion.div>
             ) : (
               /* Render card stack if cards exist */
               <div 
@@ -97,7 +106,7 @@ export default function HomePage() {
                 }}
               >
                 {/* Card Stack */}
-                <div className="relative grid place-items-center isolate"> 
+                <div className="relative grid place-items-center isolate w-[280px] h-[400px]"> 
                   {cards.map((project, index) => (
                     <SwipeCard
                       key={project.id} // Use stable project ID if possible, fallback to index if needed for unique keys during potential future updates
@@ -120,8 +129,8 @@ export default function HomePage() {
                       size="icon" 
                       variant="outline"
                       className="h-10 w-10 rounded-full bg-red-50 border-red-200 text-red-500 hover:bg-red-100 hover:text-red-600 shadow-md transition-transform active:scale-95"
-                      onClick={() => handleSwipe("left")} 
-                      // Disabled state implicitly handled by cards.length check above
+                      onClick={() => !isTransitioning && handleSwipe("left")} 
+                      disabled={isTransitioning}
                     >
                       <ThumbsDown className="h-5 w-5" />
                     </Button>
@@ -129,8 +138,8 @@ export default function HomePage() {
                       size="icon" 
                       variant="outline"
                       className="h-10 w-10 rounded-full bg-green-50 border-green-200 text-green-500 hover:bg-green-100 hover:text-green-600 shadow-md transition-transform active:scale-95"
-                      onClick={() => handleSwipe("right")}
-                      // Disabled state implicitly handled by cards.length check above
+                      onClick={() => !isTransitioning && handleSwipe("right")}
+                      disabled={isTransitioning}
                     >
                       <ThumbsUp className="h-5 w-5" />
                     </Button>
@@ -141,7 +150,12 @@ export default function HomePage() {
           </>
         ) : (
           /* List View */
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 w-full h-full overflow-y-auto scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 w-full h-full overflow-y-auto scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent"
+          >
             {/* Display the original full list here */}
             {initialProjects.map((project: Project) => (
               <SwipeCard 
@@ -150,7 +164,7 @@ export default function HomePage() {
                 mode="list" 
               />
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
     </main>
