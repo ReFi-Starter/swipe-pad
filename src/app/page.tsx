@@ -1,103 +1,208 @@
-import Image from "next/image";
+// "use client";
+
+// /* eslint-disable react-hooks/exhaustive-deps */
+// import { Button } from "@/components/ui/button";
+// import { Input } from "@/components/ui/input";
+// import { useWeb3 } from "@/contexts/useWeb3";
+// import Image from "next/image";
+// import { useEffect, useState } from "react";
+
+// export default function Home() {
+//     const {
+//         address,
+//         getUserAddress,
+//         sendCUSD,
+//         mintMinipayNFT,
+//         getNFTs,
+//         signTransaction,
+//     } = useWeb3();
+
+//     const [cUSDLoading, setCUSDLoading] = useState(false);
+//     const [nftLoading, setNFTLoading] = useState(false);
+//     const [signingLoading, setSigningLoading] = useState(false);
+//     const [userOwnedNFTs, setUserOwnedNFTs] = useState<string[]>([]);
+//     const [tx, setTx] = useState<any>(undefined);
+//     const [amountToSend, setAmountToSend] = useState<string>("0.1");
+//     const [messageSigned, setMessageSigned] = useState<boolean>(false); // State to track if a message was signed
+
+
+//     useEffect(() => {
+//         getUserAddress();
+//     }, []);
+
+//     useEffect(() => {
+//         const getData = async () => {
+//             const tokenURIs = await getNFTs();
+//             setUserOwnedNFTs(tokenURIs);
+//         };
+//         if (address) {
+//             getData();
+//         }
+//     }, [address]);
+
+//     async function sendingCUSD() {
+//         if (address) {
+//             setSigningLoading(true);
+//             try {
+//                 const tx = await sendCUSD(address, amountToSend);
+//                 setTx(tx);
+//             } catch (error) {
+//                 console.log(error);
+//             } finally {
+//                 setSigningLoading(false);
+//             }
+//         }
+//     }
+
+//     async function signMessage() {
+//         setCUSDLoading(true);
+//         try {
+//             await signTransaction();
+//             setMessageSigned(true);
+//         } catch (error) {
+//             console.log(error);
+//         } finally {
+//             setCUSDLoading(false);
+//         }
+//     }
+
+
+//     async function mintNFT() {
+//         setNFTLoading(true);
+//         try {
+//             const tx = await mintMinipayNFT();
+//             const tokenURIs = await getNFTs();
+//             setUserOwnedNFTs(tokenURIs);
+//             setTx(tx);
+//         } catch (error) {
+//             console.log(error);
+//         } finally {
+//             setNFTLoading(false);
+//         }
+//     }
+
+
+
+//     return (
+//         <div className="flex flex-col justify-center items-center">
+//             {!address && (
+//                 <div className="h1">Please install Metamask and connect.</div>
+//             )}
+//             {address && (
+//                 <div className="h1">
+//                     There you go... a canvas for your next Minipay project!
+//                 </div>
+//             )}
+
+//             <a
+//                 href="https://faucet.celo.org/alfajores"
+//                 target="_blank"
+//                 rel="noopener noreferrer"
+//                 className="mt-4 mb-4 rounded-full bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+//             >
+//                 Get Test Tokens
+//             </a>
+
+//             {address && (
+//                 <>
+//                     <div className="h2 text-center">
+//                         Your address:{" "}
+//                         <span className="font-bold text-sm">{address}</span>
+//                     </div>
+//                     {tx && (
+//                         <p className="font-bold mt-4">
+//                             Tx Completed:{" "}
+//                             <a
+//                                 href={`https://alfajores.celoscan.io/tx/${tx.transactionHash}`}
+//                                 target="_blank"
+//                                 rel="noopener noreferrer"
+//                                 className="text-blue-600 underline"
+//                             >
+//                                 {tx.transactionHash.substring(0, 6)}...{tx.transactionHash.substring(tx.transactionHash.length - 6)}
+//                             </a>
+//                         </p>
+//                     )}
+//                     <div className="w-full px-3 mt-7">
+//                         <Input
+//                             type="number"
+//                             value={amountToSend}
+//                             onChange={(e) => setAmountToSend(e.target.value)}
+//                             placeholder="Enter amount to send"
+//                             className="border rounded-md px-3 py-2 w-full mb-3"
+//                         ></Input>
+//                         <Button
+//                             loading={signingLoading}
+//                             onClick={sendingCUSD}
+//                             title={`Send ${amountToSend} cUSD to your own address`}
+//                             widthFull
+//                         />
+//                     </div>
+
+//                     <div className="w-full px-3 mt-6">
+//                         <Button
+//                             loading={cUSDLoading}
+//                             onClick={signMessage}
+//                             title="Sign a Message"
+//                             widthFull
+//                         />
+//                     </div>
+
+//                     {messageSigned && (
+//                         <div className="mt-5 text-green-600 font-bold">
+//                             Message signed successfully!
+//                         </div>
+//                     )}
+
+//                     <div className="w-full px-3 mt-5">
+//                         <Button
+//                             loading={nftLoading}
+//                             onClick={mintNFT}
+//                             title="Mint Minipay NFT"
+//                             widthFull
+//                         />
+//                     </div>
+
+//                     {userOwnedNFTs.length > 0 ? (
+//                         <div className="flex flex-col items-center justify-center w-full mt-7">
+//                             <p className="font-bold">My NFTs</p>
+//                             <div className="w-full grid grid-cols-2 gap-3 mt-3 px-2">
+//                                 {userOwnedNFTs.map((tokenURI, index) => (
+//                                     <div
+//                                         key={index}
+//                                         className="p-2 border-[3px] border-colors-secondary rounded-xl"
+//                                     >
+//                                         <Image
+//                                             alt="MINIPAY NFT"
+//                                             src={tokenURI}
+//                                             className="w-[160px] h-[200px] object-cover"
+//                                             width={160}
+//                                             height={200}
+//                                         />
+//                                     </div>
+//                                 ))}
+//                             </div>
+//                         </div>
+//                     ) : (
+//                         <div className="mt-5">You do not have any NFTs yet</div>
+//                     )}
+
+//                 </>
+//             )}
+//         </div>
+//     );
+// }
+
+"use client"
+
+import { useRouter } from "next/navigation"
+import { useEffect } from "react"
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const router = useRouter()
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+  useEffect(() => {
+    router.push("/onboarding/1")
+  }, [router])
+
+  return null
 }
