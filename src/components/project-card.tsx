@@ -1,102 +1,55 @@
 "use client"
 
 import type React from "react"
-
-import { useState, useRef } from "react"
 import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { X, Heart, MessageSquare, Flame, ExternalLink, Copy, Share2, ChevronDown, ChevronUp } from "lucide-react"
-import { getTagColor, getTrustLevel } from "@/lib/utils"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { X, Heart, MessageSquare, Flame, ExternalLink, ChevronDown } from "lucide-react"
+import { getTagColor, getTrustLevel, projects } from "@/lib/utils"
+
+type BaseProjectType = (typeof projects)[0];
 
 interface ProjectCardProps {
-  project: {
-    id: number
-    title: string
-    category: string
-    description: string
-    image: string
+  project: BaseProjectType & {
     website?: string
-    websiteUrl?: string
-    fundingGoal: number
-    currentFunding: number
     sponsored?: boolean
-    sponsorBoosted?: boolean
-    trustScore?: number
-    communityTags?: Array<{
-      id: number
-      text: string
-      color: string
-      count: number
-    }>
   }
   mode?: "swipe" | "list"
-  onSwipeLeft?: () => void
-  onSwipeRight?: () => void
   onDonate?: () => void
   onShowCommunityNotes?: () => void
   showOverlay?: boolean
   overlayDirection?: "left" | "right" | null
   isNext?: boolean
   donationAmount?: number
-  isExpanded?: boolean
   onToggleExpand?: () => void
 }
 
 export function ProjectCard({
   project,
   mode = "swipe",
-  onSwipeLeft,
-  onSwipeRight,
   onDonate,
   onShowCommunityNotes,
   showOverlay = false,
   overlayDirection = null,
   isNext = false,
   donationAmount = 0.01,
-  isExpanded = false,
   onToggleExpand,
 }: ProjectCardProps) {
   const trustLevel = getTrustLevel(project)
-  const websiteUrl = project.websiteUrl || project.website
-  const [showCopyTooltip, setShowCopyTooltip] = useState(false)
-  const descriptionRef = useRef<HTMLParagraphElement>(null)
+  const websiteUrl = project.websiteUrl ?? project.website ?? undefined;
 
-  const handleCopyDescription = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    navigator.clipboard.writeText(project.description)
-    setShowCopyTooltip(true)
-    setTimeout(() => setShowCopyTooltip(false), 2000)
-  }
-
-  const handleShare = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    if (navigator.share) {
-      navigator
-        .share({
-          title: project.title,
-          text: project.description,
-          url: websiteUrl || window.location.href,
-        })
-        .catch((err) => console.error("Error sharing:", err))
-    } else {
-      alert("Web Share API not supported in your browser")
-    }
-  }
-
-  // Prevent image dragging
   const preventDrag = (e: React.DragEvent) => {
     e.preventDefault()
     return false
   }
 
-  // Prevent event propagation for buttons
   const handleButtonClick = (e: React.MouseEvent, callback?: () => void) => {
     e.stopPropagation()
     if (callback) callback()
   }
+
+  const descriptionExcerpt = project.description.length > 100 ? `${project.description.substring(0, 97)}...` : project.description;
 
   if (mode === "list") {
     return (
@@ -111,7 +64,7 @@ export function ProjectCard({
               draggable={false}
               onDragStart={preventDrag}
             />
-            {(project.sponsored || project.sponsorBoosted) && (
+            {(project.sponsored) && (
               <div className="absolute top-1 left-1 bg-amber-500 text-white p-1 rounded-full">
                 <Flame className="h-3 w-3" />
               </div>
@@ -164,184 +117,105 @@ export function ProjectCard({
     )
   }
 
-  let cardClasses = `w-full overflow-hidden bento-bevel ${trustLevel.className} select-none card-fullscreen`
-  if (isNext) cardClasses += " next"
-  if (isExpanded) cardClasses += " expanded"
+  let cardClasses = `w-full h-full overflow-hidden bento-bevel ${trustLevel.className} select-none flex flex-col`
+  if (isNext) cardClasses += " opacity-50 pointer-events-none"
 
-  // If trust level is low, show warning
-  if (trustLevel.level === "low") {
+  if (trustLevel.level === "low" && !isNext) {
     return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className={`relative ${isNext ? "z-0" : "z-10"}`}>
-              <Card className={cardClasses}>
-                <div className="relative h-64 w-full flex items-center justify-center bg-slate-100">
-                  <div className="text-center p-6">
-                    <div className="text-4xl mb-4">⚠️</div>
-                    <h3 className="text-xl font-semibold mb-2">Insufficient Trust</h3>
-                    <p className="text-sm text-slate-600">
-                      This project has been flagged by the community for potential concerns.
-                    </p>
-                    <Button
-                      variant="outline"
-                      className="mt-4"
-                      onClick={(e) => handleButtonClick(e, onShowCommunityNotes)}
-                    >
-                      View Community Notes
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Community flagged concerns</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <div className={`relative w-full h-full ${isNext ? "z-0" : "z-10"}`}>
+        <Card className={cardClasses}>
+          <div className="flex-1 flex flex-col items-center justify-center bg-slate-100 p-6 text-center">
+            <div className="text-4xl mb-4">⚠️</div>
+            <h3 className="text-xl font-semibold mb-2">Insufficient Trust</h3>
+            <p className="text-sm text-slate-600 mb-4">
+              This project has flagged community concerns.
+            </p>
+            <Button
+              variant="outline"
+              onClick={(e) => handleButtonClick(e, onShowCommunityNotes)}
+            >
+              View Community Notes
+            </Button>
+          </div>
+        </Card>
+      </div>
     )
   }
 
   return (
-    <div className={`relative ${isNext ? "z-0" : "z-10"}`}>
+    <div className={`relative w-full h-full ${isNext ? "z-0" : "z-10"}`}>
       <Card className={cardClasses}>
-        <div 
-          className={`relative w-full transition-height duration-300`} 
-          style={{ 
-            aspectRatio: isExpanded ? 'auto' : '3/4',
-            maxHeight: isExpanded ? '40vh' : 'none'
-          }}
-        >
+        <div className="relative w-full h-[20%] flex-shrink-0 overflow-hidden rounded-t-lg">
           <Image
             src={project.image || "/placeholder.svg"}
-            alt={project.title}
+            alt={`${project.title} banner`}
             fill
-            className="object-cover pointer-events-none"
+            className="object-cover object-center pointer-events-none"
             draggable={false}
             onDragStart={preventDrag}
+            priority={!isNext}
           />
-          <div className="absolute top-2 right-2 bg-[#22CC88] text-white px-2 py-1 rounded-full text-xs">
-            {project.category}
-          </div>
-          {(project.sponsored || project.sponsorBoosted) && (
-            <div className="absolute top-2 left-2 bg-amber-500 text-white p-1 rounded-full">
-              <Flame className="h-3 w-3" />
-            </div>
-          )}
-          <button
-            onClick={(e) => handleButtonClick(e, onShowCommunityNotes)}
-            className="absolute bottom-2 right-2 bg-white/90 text-slate-700 px-2 py-1 rounded-full text-xs flex items-center"
-          >
-            <MessageSquare className="h-3 w-3 mr-1" />
-            Community Notes
-          </button>
         </div>
-        <CardContent className={`p-4 ${isExpanded ? "pb-16" : ""} flex-1 flex flex-col`}>
-          <div className="flex justify-between items-start mb-2">
-            <div>
-              <div className="flex items-center gap-1">
-                <h3 className="text-lg font-semibold">{project.title}</h3>
-                {websiteUrl && (
-                  <a
-                    href={websiteUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
-                )}
-              </div>
-            </div>
-
-            {isExpanded && (
-              <div className="flex gap-2 action-buttons">
-                <TooltipProvider>
-                  <Tooltip open={showCopyTooltip} onOpenChange={setShowCopyTooltip}>
-                    <TooltipTrigger asChild>
-                      <Button variant="ghost" size="sm" onClick={handleCopyDescription} className="h-8 w-8 p-0">
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{showCopyTooltip ? "Copied!" : "Copy description"}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-
-                <Button variant="ghost" size="sm" onClick={handleShare} className="h-8 w-8 p-0">
-                  <Share2 className="h-4 w-4" />
-                </Button>
-              </div>
+        <CardContent className={`p-4 pt-2 flex-grow flex flex-col overflow-hidden`}>
+          <div className="flex items-start justify-between gap-2 mb-1">
+            <h3 className="text-lg font-semibold line-clamp-2 flex-grow">
+              {project.title}
+            </h3>
+            {websiteUrl && (
+              <a
+                href={websiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:text-blue-700 transition-colors flex-shrink-0 p-1 -mr-1"
+                onClick={(e) => e.stopPropagation()}
+                aria-label="Visit project website"
+              >
+                <ExternalLink className="h-4 w-4" />
+              </a>
             )}
           </div>
-
-          {project.communityTags && project.communityTags.length > 0 && (
-            <div className="flex flex-wrap gap-1 mb-2">
-              {project.communityTags.map((tag) => (
-                <span key={tag.id} className={`text-xs px-2 py-0.5 rounded-full ${getTagColor(tag.text)}`}>
-                  {tag.text} ({tag.count})
-                </span>
-              ))}
-            </div>
-          )}
-
-          <div className={`description-container ${isExpanded ? "expanded" : ""}`}>
-            <p ref={descriptionRef} className={`text-sm text-slate-600 mb-3 ${isExpanded ? "" : "line-clamp-2"}`}>
-              {project.description}
-            </p>
+          <p className="text-sm text-slate-600 line-clamp-2 mb-2">{descriptionExcerpt}</p>
+          <div className="flex flex-wrap gap-1 mb-2">
+            {project.communityTags?.filter(t => t.text.includes('Verified')).slice(0, 1).map((tag) => (
+              <span key={tag.id} className={`text-xs px-2 py-0.5 rounded-full ${getTagColor(tag.text)}`}>
+                {tag.text} ({tag.count})
+              </span>
+            ))}
           </div>
-
-          <div className="space-y-2 mb-3">
-            <div className="flex justify-between text-sm">
-              <span>Funding goal</span>
-              <span>${project.fundingGoal}</span>
+          <div className="space-y-1 mt-auto pt-2">
+            <div className="flex justify-between text-xs text-slate-500">
+              <span>Funded</span>
+              <span>${project.currentFunding} / ${project.fundingGoal}</span>
             </div>
-            <Progress value={project.currentFunding} max={project.fundingGoal} />
+            <Progress value={project.currentFunding} max={project.fundingGoal} className="h-1.5"/>
           </div>
-
-          <div className="flex flex-col mt-auto">
-            <div className="flex justify-between items-center text-sm text-slate-500">
-              <button
-                onClick={(e) => handleButtonClick(e, onSwipeLeft)}
-                className="flex items-center gap-1 px-2 py-1 hover:bg-slate-100 rounded-md transition-colors"
-              >
-                <X className="h-4 w-4" /> Skip
-              </button>
+          {!isNext && mode === 'swipe' && (
+            <div className="flex justify-center mt-2 flex-shrink-0">
               <button
                 onClick={(e) => handleButtonClick(e, onToggleExpand)}
-                className="flex items-center gap-1 px-2 py-1 hover:bg-slate-100 rounded-md transition-colors"
+                className={`p-1 rounded-full hover:bg-slate-100 transition-colors text-slate-400 hover:text-slate-600`}
+                aria-label={"Expand card details"}
               >
-                {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-              </button>
-              <button
-                onClick={(e) => handleButtonClick(e, onSwipeRight)}
-                className="flex items-center gap-1 px-2 py-1 hover:bg-slate-100 rounded-md transition-colors"
-              >
-                Donate <Heart className="h-4 w-4" />
+                <ChevronDown className="h-5 w-5" />
               </button>
             </div>
-          </div>
+          )}
         </CardContent>
+        {showOverlay && overlayDirection === "left" && (
+          <div className="absolute inset-0 bg-red-500/20 rounded-2xl flex items-center justify-center pointer-events-none">
+            <div className="bg-red-500/80 w-20 h-20 rounded-full flex items-center justify-center">
+              <X className="text-white h-10 w-10" />
+            </div>
+          </div>
+        )}
+        {showOverlay && overlayDirection === "right" && (
+          <div className="absolute inset-0 bg-[#22CC88]/20 rounded-2xl flex items-center justify-center pointer-events-none">
+            <div className="bg-[#22CC88]/80 w-20 h-20 rounded-full flex items-center justify-center">
+              <Heart className="text-white h-10 w-10" />
+            </div>
+          </div>
+        )}
       </Card>
-
-      {showOverlay && overlayDirection === "left" && (
-        <div className="absolute inset-0 bg-red-500/20 rounded-2xl flex items-center justify-center">
-          <div className="bg-red-500/80 w-20 h-20 rounded-full flex items-center justify-center">
-            <X className="text-white h-10 w-10" />
-          </div>
-        </div>
-      )}
-
-      {showOverlay && overlayDirection === "right" && (
-        <div className="absolute inset-0 bg-[#22CC88]/20 rounded-2xl flex items-center justify-center">
-          <div className="bg-[#22CC88]/80 w-20 h-20 rounded-full flex items-center justify-center">
-            <Heart className="text-white h-10 w-10" />
-          </div>
-        </div>
-      )}
     </div>
   )
 }
