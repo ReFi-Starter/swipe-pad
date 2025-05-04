@@ -1,7 +1,12 @@
 import type { Config } from 'drizzle-kit';
-import 'dotenv/config';
+import * as dotenv from 'dotenv';
 
-if (!process.env.NEON_DATABASE_URL) {
+// Cargar variables de entorno de .env.local
+dotenv.config({ path: '.env.local' });
+
+const { NEON_DATABASE_URL } = process.env;
+
+if (!NEON_DATABASE_URL) {
   throw new Error('NEON_DATABASE_URL is required');
 }
 
@@ -10,8 +15,6 @@ export default {
   out: './src/db/migrations',
   dialect: 'postgresql',
   dbCredentials: {
-    connectionString: process.env.NEON_DATABASE_URL,
+    url: NEON_DATABASE_URL,
   },
-  verbose: true,
-  strict: true,
 } satisfies Config; 
