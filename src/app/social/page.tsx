@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Header } from "@/components/header"
-import { BottomNav } from "@/components/bottom-nav"
+import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { LeaderboardCard } from "@/components/leaderboard-card"
 import { FriendCard } from "@/components/friend-card"
@@ -87,8 +87,6 @@ export default function Social() {
           ))}
         </TabsContent>
       </Tabs>
-
-      <BottomNav />
     </div>
   )
 }

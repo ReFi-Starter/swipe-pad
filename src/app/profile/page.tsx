@@ -3,7 +3,6 @@
 import { useState } from "react"
 import Image from "next/image"
 import { Header } from "@/components/header"
-import { BottomNav } from "@/components/bottom-nav"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
@@ -113,8 +112,6 @@ export default function ProfilePage() {
           </TabsContent>
         </Tabs>
       </div>
-
-      <BottomNav />
     </div>
   )
 }
