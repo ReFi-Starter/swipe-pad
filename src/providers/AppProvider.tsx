@@ -10,8 +10,9 @@ import {
 import { WagmiProvider, createConfig, http } from 'wagmi';
 import { celo, celoAlfajores } from 'wagmi/chains';
 
-import Layout from '../components/layout';
+// import Layout from '../components/layout';
 import { injectedWallet } from '@rainbow-me/rainbowkit/wallets';
+import { BatchTransactionProvider } from '@/components/batch-transaction-provider';
 
 const connectors = connectorsForWallets(
   [
@@ -42,7 +43,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
-          <Layout>{children}</Layout>
+          <BatchTransactionProvider>
+            {/* <Layout> */}
+            {children}
+            {/* </Layout> */}
+          </BatchTransactionProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
