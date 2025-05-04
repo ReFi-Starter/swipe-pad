@@ -30,6 +30,8 @@ SwipePad makes micro-philanthropy effortless by letting users swipe through veri
 | 📱 **MiniPay Native** | Seamlessly integrated for 7M+ MiniPay users |
 | ✅ **Verified Projects** | Curated selection of impact-driven initiatives |
 | 🔍 **On-Chain Transparency** | All donations are fully verifiable on Celo |
+| 🎯 **Flexible Funding Models** | Choose All-or-Nothing or Keep-What-You-Raise |
+| 💸 **Micro-Donations** | Support projects with any amount, no minimum |
 
 ## 🏗️ How It Works
 
@@ -38,8 +40,8 @@ SwipePad makes micro-philanthropy effortless by letting users swipe through veri
 ```
 ┌───────────┐     ┌──────────────┐     ┌───────────────┐     ┌───────────────┐
 │           │     │              │     │               │     │               │
-│  MiniPay  │────▶│  SwipePad UI │────▶│  Pool Smart   │────▶│  Project      │
-│  User     │     │  (Next.js)   │     │  Contracts    │     │  Wallet       │
+│  MiniPay  │────▶│  SwipePad UI │────▶│ DonationPool  │────▶│  Project      │
+│  User     │     │  (Next.js)   │     │  Contract     │     │  Creator      │
 │           │     │              │     │               │     │               │
 └───────────┘     └──────────────┘     └───────────────┘     └───────────────┘
                          │
@@ -47,7 +49,7 @@ SwipePad makes micro-philanthropy effortless by letting users swipe through veri
                   ┌──────────────┐
                   │  Project     │
                   │  Metadata    │
-                  │  (Future)    │
+                  │  (IPFS)      │
                   └──────────────┘
 ```
 
@@ -55,8 +57,26 @@ SwipePad makes micro-philanthropy effortless by letting users swipe through veri
 
 1. **Browse** ― User swipes through verified impact projects
 2. **Choose** ― User selects donation amount and currency
-3. **Donate** ― Funds transfer directly via Pool contracts on Celo
+3. **Donate** ― Funds transfer directly via DonationPool contract on Celo
 4. **Track** ― Both donor and project can verify the transaction on-chain
+
+### Donation Flow
+
+For a detailed explanation of the donation flow, see our [donation flow documentation](./docs/milestones/donation-flow.md).
+
+### Smart Contract Architecture
+
+The DonationPool contract is a purpose-built solution for handling donations with two funding models:
+
+1. **All or Nothing (Kickstarter model)**: 
+   - Creators receive funds only if the funding goal is met
+   - Donors can claim refunds if the goal isn't reached
+
+2. **Keep What You Raise**:
+   - Creators receive all donations regardless of goal achievement
+   - Suitable for projects that can make partial progress
+
+See the [complete contract documentation](./docs/milestones/donation-pool.md) for more details.
 
 ## 🧰 Tech Stack
 
