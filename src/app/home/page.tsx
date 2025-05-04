@@ -21,6 +21,31 @@ import { useBatchTransactions } from "@/components/batch-transaction-provider"
 import { toast } from "sonner"
 import { BatchStatusIndicator } from "@/components/batch-status-indicator"
 import { ProjectDetailDrawer } from "@/components/project-detail-drawer"
+import { ProjectUI } from "@/hooks/useDonationPool"
+
+// Function to convert the project from utils.ts to the ProjectUI format
+function convertToProjectUI(project: any): ProjectUI {
+  return {
+    id: project.id.toString(),
+    title: project.title,
+    description: project.description,
+    imageUrl: project.image,
+    category: project.category,
+    funding: {
+      goal: project.fundingGoal.toString(),
+      raised: project.currentFunding.toString(),
+      progress: Math.floor((project.currentFunding / project.fundingGoal) * 100)
+    },
+    creator: {
+      name: "Project Creator", // We don't have this data in the example projects
+      address: "0x0" // We don't have this data in the example projects
+    },
+    dates: {
+      start: "",
+      end: "" // We don't have dates in the example projects
+    }
+  };
+}
 
 export default function Home() {
   const { addTransaction, cancelTransaction } = useBatchTransactions()
@@ -52,12 +77,15 @@ export default function Home() {
     setUserSettings(getUserSettings())
   }, [])
 
-  const filteredProjects =
+  const rawFilteredProjects =
     selectedCategory === "All"
       ? [...projects].sort((a, b) => (b.sponsorBoosted ? 1 : 0) - (a.sponsorBoosted ? 1 : 0))
       : [...projects]
           .filter((project) => project.category === selectedCategory)
           .sort((a, b) => (b.sponsorBoosted ? 1 : 0) - (a.sponsorBoosted ? 1 : 0))
+  
+  // Convert the projects to the ProjectUI format
+  const filteredProjects = rawFilteredProjects.map(convertToProjectUI)
 
   const currentProject = filteredProjects[currentProjectIndex % filteredProjects.length]
   const nextProject = filteredProjects[(currentProjectIndex + 1) % filteredProjects.length]
@@ -177,7 +205,7 @@ export default function Home() {
 
 
   const processDonation = () => {
-    const txId = addTransaction(defaultDonationAmount, currentProject.id, currentProject.title)
+    const txId = addTransaction(defaultDonationAmount, parseInt(currentProject.id), currentProject.title)
     setLastTransactionId(txId)
     setBalance((prev) => prev - defaultDonationAmount)
     setStreak((prev) => prev + 1)
@@ -224,21 +252,25 @@ export default function Home() {
     // Note: ProjectDetailDrawer onClose handles closing itself
   };
 
-  const handleShowCommunityNotes = (project: (typeof projects)[0]) => {
-    setSelectedProject(project)
+  const handleShowCommunityNotes = (project: any) => {
+    // Find the original project for community data
+    const originalProject = projects.find(p => p.id.toString() === project.id);
+    setSelectedProject(originalProject || null)
     setShowCommunityNotes(true)
   }
 
   const handleAddTag = (tag: string) => {
     console.log(`Added tag: ${tag}`)
     setShowCommunityNotes(false)
-    toast.success(`Etiqueta añadida: ${tag}`, {
-      description: "Gracias por contribuir a la comunidad",
+    toast.success(`Tag added: ${tag}`, {
+      description: "Thank you for contributing to the community",
     })
   }
 
    const handleToggleExpand = () => {
-      setSelectedProject(currentProject);
+      // Find the original project for the drawer
+      const originalProject = projects.find(p => p.id.toString() === currentProject.id);
+      setSelectedProject(originalProject || null);
       setShowProjectDetailDrawer(true);
    };
 
@@ -373,7 +405,7 @@ export default function Home() {
                       mode="list"
                       onDonate={() => {
                         // Need to advance index if donating from list? Maybe not.
-                        setSelectedProject(project)
+                        setSelectedProject(projects.find(p => p.id.toString() === project.id) || null)
                         processDonation() // Use processDonation directly for list mode
                         // Note: List mode donation doesn't affect swipe stack index directly
                       }}
