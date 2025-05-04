@@ -117,4 +117,61 @@ sequenceDiagram
     DonationPool->>DonationPool: Validate eligibility
     DonationPool->>Celo: Transfer funds
     Celo-->>Creator: Receive funds
+```
+
+## Technical Architecture
+
+```
+# SwipePad Technical Architecture
+
+## Overall System Architecture
+
++-------------------+     +-------------------+     +-------------------+
+|                   |     |                   |     |                   |
+|  MiniPay Wallet   | <-> |  SwipePad UI      | <-> |  Smart Contracts  |
+|                   |     |  (Next.js)        |     |  (Solidity)       |
++-------------------+     +-------------------+     +-------------------+
+                                    ^                        ^
+                                    |                        |
+                                    v                        v
+                          +-------------------+     +-------------------+
+                          |                   |     |                   |
+                          |  Project Data     |     |  Celo Blockchain  |
+                          |  (IPFS/Web3)      |     |                   |
+                          +-------------------+     +-------------------+
+
+## Data Flow For Donations
+
++-------------+     +----------------+     +----------------+     +-------------+
+|             |     |                |     |                |     |             |
+|   Donor     | --> |   Donation     | --> |   DonationPool | --> |   Project   |
+|   Wallet    |     |   UI/UX        |     |   Contract     |     |   Creator   |
+|             |     |                |     |                |     |             |
++-------------+     +----------------+     +----------------+     +-------------+
+      ^                                             |
+      |                                             v
+      |                                     +----------------+
+      +-------------------------------------+   Refund       |
+                                            |   (if needed)  |
+                                            +----------------+
+
+## Contract Component Interaction
+
++----------------+     +------------------+     +-------------------+
+|                |     |                  |     |                   |
+| IDonationPool  | <-- | DonationPool     | --> | Library Modules   |
+| Interface      |     | Implementation   |     | - Admin           |
+|                |     |                  |     | - Details         |
++----------------+     +------------------+     | - Balance         |
+                              ^                 | - Events          |
+                              |                 | - Errors          |
+                              v                 +-------------------+
+                      +------------------+
+                      |                  |
+                      | External         |
+                      | Dependencies     |
+                      | - Ownable        |
+                      | - AccessControl  |
+                      | - Pausable       |
+                      +------------------+
 ``` 

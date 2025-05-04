@@ -56,6 +56,69 @@ Creators can specify:
 - **DonationPool**: Main contract implementing the donation platform
 - **Helper Libraries**: Specialized functions for different aspects of the contract
 
+### Architecture Diagram
+
+```
+# DonationPool Smart Contract Architecture
+
+## Core Components
+
++-------------------+     +-------------------+     +-------------------+
+|                   |     |                   |     |                   |
+|    DonationPool   |     |  Libraries        |     |   Interfaces      |
+|    Contract       |     |                   |     |                   |
++--------+----------+     +--------+----------+     +---------+---------+
+         |                         |                          |
+         |                         |                          |
+         v                         v                          v
++--------------------------------------------------------+
+|                                                        |
+|                  User Interactions                     |
+|                                                        |
++--------------------------------------------------------+
+
+## Data Structures
+
++------------------+     +------------------+     +------------------+
+|                  |     |                  |     |                  |
+| PoolAdmin        |     | PoolDetail       |     | PoolBalance      |
+| - creator        |     | - startTime      |     | - totalDonations |
+| - platformFeeRate|     | - endTime        |     | - feesAccumulated|
+| - disputed       |     | - projectName    |     | - feesCollected  |
+|                  |     | - fundingGoal    |     | - balance        |
++------------------+     | - fundingModel   |     +------------------+
+                         +------------------+      
+                                                  +------------------+
+                                                  |                  |
+                                                  | DonorDetail      |
+                                                  | - totalDonated   |
+                                                  | - refundClaimed  |
+                                                  | - hasRefunded    |
+                                                  +------------------+
+
+## State Management
+
++------------------+     +------------------+
+|                  |     |                  |
+| POOLSTATUS Enum  |     | FUNDINGMODEL Enum|
+| - ACTIVE         |     | - ALL_OR_NOTHING |
+| - SUCCESSFUL     |     | - KEEP_WHAT_YOU  |
+| - FAILED         |     |   _RAISE         |
+| - DELETED        |     |                  |
++------------------+     +------------------+
+
+## User Interactions
+
++------------------+     +------------------+     +------------------+
+|                  |     |                  |     |                  |
+| Creator Actions  |     | Donor Actions    |     | Admin Actions    |
+| - createProject  |     | - donate         |     | - pauseContract  |
+| - updateDetails  |     | - claimRefund    |     | - resolveDispute |
+| - withdrawFunds  |     |                  |     | - collectFees    |
+| - cancelProject  |     |                  |     |                  |
++------------------+     +------------------+     +------------------+
+```
+
 ### State Management
 
 Projects can be in one of four states:
