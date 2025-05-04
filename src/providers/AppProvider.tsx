@@ -10,7 +10,7 @@ import {
 import { WagmiProvider, createConfig, http } from 'wagmi';
 import { celo, celoAlfajores } from 'wagmi/chains';
 
-import Layout from '../components/Layout';
+import Layout from '../components/layout';
 import { injectedWallet } from '@rainbow-me/rainbowkit/wallets';
 
 const connectors = connectorsForWallets(
