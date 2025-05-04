@@ -11,7 +11,6 @@ import { leaderboardData, friendsData } from "@/lib/utils"
 
 export default function Social() {
   const [friends, setFriends] = useState(friendsData)
-  const [activeTab, setActiveTab] = useState("donors")
 
   const handleToggleFollow = (id: number) => {
     setFriends(friends.map((friend) => (friend.id === id ? { ...friend, isFollowing: !friend.isFollowing } : friend)))
@@ -26,10 +25,10 @@ export default function Social() {
       <Header title="Social" />
 
       <div className="p-4">
-        <ImpactShareCard totalDonations={8.15} projectsSupported={12} totalPoints={82} onShare={handleShare} />
+        <ImpactShareCard onShare={handleShare} />
       </div>
 
-      <Tabs defaultValue="donors" className="w-full" onValueChange={setActiveTab}>
+      <Tabs defaultValue="donors" className="w-full">
         <div className="px-4">
           <TabsList className="w-full grid grid-cols-3">
             <TabsTrigger value="donors">Top Donors</TabsTrigger>
