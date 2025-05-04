@@ -97,6 +97,12 @@ export function SwipeCard({
   // Estado para controlar la animación de la microinteracción DESPUÉS del swipe
   const [showRightEmoji, setShowRightEmoji] = useState(false)
   const [showLeftEmoji, setShowLeftEmoji] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+  
+  // Effect to handle client-side mounting
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
   
   // Efectos de Tilt y Shine
   const shineOpacity = useTransform(x, [-200, -100, 0, 100, 200], [0.6, 0.3, 0, 0.3, 0.6])
@@ -220,7 +226,7 @@ export function SwipeCard({
           scale: isFront ? 1 : 0.98 - (cardIndex * 0.01),
           y: isFront ? 0 : cardIndex * -3
         }}
-        drag={isFront ? "x" : false}
+        drag={isMounted && isFront ? "x" : false}
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.7}
         onDragEnd={handleDragEnd}
@@ -352,6 +358,7 @@ export function SwipeCard({
                     variant="outline" 
                     className="h-7 w-7 rounded-full bg-red-100 border-red-200 text-red-500 hover:bg-red-200 shadow-sm transition-transform active:scale-90"
                     onClick={() => {
+                      if (!isMounted) return;
                       // Programmatic swipe left
                       x.set(-200); // Trigger motion value change
                       handleDragEnd();
@@ -364,6 +371,7 @@ export function SwipeCard({
                     variant="outline" 
                     className="h-7 w-7 rounded-full bg-green-100 border-green-200 text-green-500 hover:bg-green-200 shadow-sm transition-transform active:scale-90"
                     onClick={() => {
+                      if (!isMounted) return;
                       // Programmatic swipe right
                       x.set(200); // Trigger motion value change
                       handleDragEnd();
