@@ -43,7 +43,6 @@ interface EnhancedProjectCardProps {
   showOverlay?: boolean
   overlayDirection?: "left" | "right" | null
   style?: React.CSSProperties
-  isActive?: boolean
   zIndex?: number
 }
 
@@ -57,7 +56,6 @@ export function EnhancedProjectCard({
   showOverlay = false,
   overlayDirection = null,
   style,
-  isActive = true,
   zIndex = 10,
 }: EnhancedProjectCardProps) {
   const [showCommunityNotes, setShowCommunityNotes] = useState(false)
@@ -83,9 +81,13 @@ export function EnhancedProjectCard({
 
     // Determine swipe direction for visual feedback
     if (deltaX > 50) {
-      if (overlayDirection !== "right") onSwipeRight && onSwipeRight()
+      if (overlayDirection !== "right" && onSwipeRight) {
+        onSwipeRight();
+      }
     } else if (deltaX < -50) {
-      if (overlayDirection !== "left") onSwipeLeft && onSwipeLeft()
+      if (overlayDirection !== "left" && onSwipeLeft) {
+        onSwipeLeft();
+      }
     }
   }
 
@@ -93,10 +95,10 @@ export function EnhancedProjectCard({
     if (dragStartX === null) return
 
     const threshold = 100
-    if (dragPosition.x > threshold) {
-      onSwipeRight && onSwipeRight()
-    } else if (dragPosition.x < -threshold) {
-      onSwipeLeft && onSwipeLeft()
+    if (dragPosition.x > threshold && onSwipeRight) {
+      onSwipeRight();
+    } else if (dragPosition.x < -threshold && onSwipeLeft) {
+      onSwipeLeft();
     }
 
     // Reset position

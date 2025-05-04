@@ -372,19 +372,47 @@ export function getTagColor(tag: string): string {
   return "bg-blue-100 text-blue-700"
 }
 
-export function getTrustLevel(project: any): { level: "high" | "medium" | "low"; className: string } {
+// Define the Project interface for proper typing
+interface CommunityTag {
+  id: number;
+  text: string;
+  color: string;
+  count: number;
+}
+
+interface CommunityNote {
+  id: number;
+  author: string;
+  reputation: number;
+  text: string;
+  tags: string[];
+  upvotes: number;
+}
+
+interface Project {
+  id: number;
+  title: string;
+  category: string;
+  description: string;
+  image: string;
+  fundingGoal: number;
+  currentFunding: number;
+  websiteUrl: string;
+  sponsorBoosted: boolean;
+  communityTags?: CommunityTag[];
+  communityNotes?: CommunityNote[];
+}
+
+export function getTrustLevel(project: Project): { level: "high" | "medium" | "low"; className: string } {
   // Count positive and negative tags
   const positiveTags =
-    project.communityTags?.filter((tag) => tag.text.includes("Verified") || tag.text.includes("Recommended")) || []
+    project.communityTags?.filter((tag: CommunityTag) => tag.text.includes("Verified") || tag.text.includes("Recommended")) || []
 
   const negativeTags =
-    project.communityTags?.filter((tag) => tag.text.includes("Fake") || tag.text.includes("Spam")) || []
+    project.communityTags?.filter((tag: CommunityTag) => tag.text.includes("Fake") || tag.text.includes("Spam")) || []
 
-  const warningTags =
-    project.communityTags?.filter((tag) => tag.text.includes("Unverified") || tag.text.includes("Needs Review")) || []
-
-  const positiveCount = positiveTags.reduce((sum, tag) => sum + tag.count, 0)
-  const negativeCount = negativeTags.reduce((sum, tag) => sum + tag.count, 0)
+  const positiveCount = positiveTags.reduce((sum: number, tag: CommunityTag) => sum + tag.count, 0)
+  const negativeCount = negativeTags.reduce((sum: number, tag: CommunityTag) => sum + tag.count, 0)
 
   if (negativeCount > 5) {
     return { level: "low", className: "opacity-70 border-red-300" }

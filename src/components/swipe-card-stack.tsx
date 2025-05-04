@@ -1,494 +1,169 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import { ProjectCard } from "@/components/project-card"
 import { Button } from "@/components/ui/button"
-import { RotateCcw } from "lucide-react"
-import { simulateHapticFeedback } from "@/lib/utils"
+import { ArrowLeft, ArrowRight, RotateCcw } from "lucide-react"
+import { projects as allProjects, categories } from "@/lib/utils"
 
 interface SwipeCardStackProps {
-  projects: Array<{
-    id: number
-    title: string
-    category: string
-    description: string
-    image: string
-    website?: string
-    websiteUrl?: string
-    fundingGoal: number
-    currentFunding: number
-    sponsored?: boolean
-    sponsorBoosted?: boolean
-    trustScore?: number
-    communityTags?: Array<{
-      id: number
-      text: string
-      color: string
-      count: number
-    }>
-  }>
   onDonate: () => void
-  onShowCommunityNotes: (project: SwipeCardStackProps['projects'][0]) => void
-  donationAmount: number
 }
 
-export function SwipeCardStack({ projects, onDonate, onShowCommunityNotes, donationAmount }: SwipeCardStackProps) {
+export function SwipeCardStack({ onDonate }: SwipeCardStackProps) {
+  // State for managing current card and animations
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [previousIndex, setPreviousIndex] = useState<number | null>(null)
-  const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(null)
+  const [previousIndex, setPreviousIndex] = useState(-1)
   const [isAnimating, setIsAnimating] = useState(false)
+  const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<string>("All")
   const [isExpanded, setIsExpanded] = useState(false)
-  const [isDragging, setIsDragging] = useState(false)
-  const [lastTapTime, setLastTapTime] = useState(0)
-  const [swipeThreshold, setSwipeThreshold] = useState(150) // Default fallback value
 
   // Refs for tracking drag state
   const cardRef = useRef<HTMLDivElement>(null)
-  const startX = useRef<number | null>(null)
-  const startY = useRef<number | null>(null)
-  const currentX = useRef<number>(0)
-  const currentRotation = useRef<number>(0)
-  const isScrolling = useRef<boolean>(false)
-  const animationFrameId = useRef<number | null>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
 
-  const currentProject = projects[currentIndex % projects.length]
-  const nextProject = projects[(currentIndex + 1) % projects.length]
-
-  // Calculate threshold based on screen width (25% of screen width)
-  const getSwipeThreshold = () => {
-    return swipeThreshold
-  }
+  // Filter projects based on selected category
+  const filteredProjects = selectedCategory === "All"
+    ? allProjects
+    : allProjects.filter(project => project.category === selectedCategory)
   
-  // Initialize and update swipe threshold based on window dimensions
-  useEffect(() => {
-    // This will only run on the client side
-    const updateSwipeThreshold = () => {
-      setSwipeThreshold(Math.max(window.innerWidth * 0.25, 150))
-    }
+  const handleSwipeLeft = useCallback(() => {
+    if (isAnimating || currentIndex >= filteredProjects.length - 1) return;
     
-    // Initial calculation
-    updateSwipeThreshold()
+    // Mark as animating
+    setIsAnimating(true);
     
-    // Recalculate on resize
-    window.addEventListener('resize', updateSwipeThreshold)
-    
-    // Cleanup
-    return () => window.removeEventListener('resize', updateSwipeThreshold)
-  }, [])
-
-  // Reset expanded state when changing cards
-  useEffect(() => {
-    setIsExpanded(false)
-  }, [currentIndex])
-
-  // Clean up animation frame on unmount
-  useEffect(() => {
-    return () => {
-      if (animationFrameId.current) {
-        cancelAnimationFrame(animationFrameId.current)
-      }
-    }
-  }, [])
-
-  // Spring animation for returning to center
-  const springToCenter = () => {
-    if (!cardRef.current) return
-
-    const springStrength = 0.15 // Lower = more gentle return
-    const friction = 0.85 // Higher = less oscillation
-
-    const animate = () => {
-      // Apply spring physics
-      const dx = 0 - currentX.current
-      const vx = dx * springStrength
-
-      currentX.current += vx
-      currentRotation.current = currentX.current * 0.05
-
-      // Apply friction
-      currentX.current *= friction
-
-      // Update position
-      if (cardRef.current) {
-        cardRef.current.style.transform = `translateX(${currentX.current}px) rotate(${currentRotation.current}deg)`
-      }
-
-      // Stop animation when close enough to center
-      if (Math.abs(currentX.current) < 0.5) {
-        currentX.current = 0
-        currentRotation.current = 0
-        if (cardRef.current) {
-          cardRef.current.style.transform = `translateX(0) rotate(0deg)`
-        }
-        animationFrameId.current = null
-        return
-      }
-
-      animationFrameId.current = requestAnimationFrame(animate)
-    }
-
-    // Start animation
-    if (animationFrameId.current) {
-      cancelAnimationFrame(animationFrameId.current)
-    }
-    animationFrameId.current = requestAnimationFrame(animate)
-  }
-
-  // Handle animation completion
-  const handleAnimationComplete = () => {
-    setIsAnimating(false)
-    setSwipeDirection(null)
-
-    // Reset transform
-    if (cardRef.current) {
-      cardRef.current.style.transition = "none"
-      cardRef.current.style.transform = "translateX(0) rotate(0deg)"
-    }
-
-    currentX.current = 0
-    currentRotation.current = 0
-  }
-
-  const handleSwipeLeft = () => {
-    if (isAnimating || isExpanded) return
-    setIsAnimating(true)
-    setPreviousIndex(currentIndex)
-    setSwipeDirection("left")
-
-    simulateHapticFeedback()
-
-    // Animate card off screen
-    if (cardRef.current) {
-      cardRef.current.style.transition = "transform 0.3s ease"
-      cardRef.current.style.transform = `translateX(-${window.innerWidth}px) rotate(-15deg)`
-    }
-
+    // Simulate rejection delay
     setTimeout(() => {
-      setCurrentIndex((prev) => (prev + 1) % projects.length)
-      handleAnimationComplete()
-    }, 300)
-  }
+      // Move to next card
+      setCurrentIndex(currentIndex + 1);
+      setSwipeDirection(null);
+      setIsAnimating(false);
+    }, 500);
+  }, [currentIndex, filteredProjects.length, isAnimating]);
 
-  const handleSwipeRight = () => {
-    if (isAnimating || isExpanded) return
-    setIsAnimating(true)
-    setPreviousIndex(currentIndex)
-    setSwipeDirection("right")
-
-    simulateHapticFeedback()
-
-    // Animate card off screen
-    if (cardRef.current) {
-      cardRef.current.style.transition = "transform 0.3s ease"
-      cardRef.current.style.transform = `translateX(${window.innerWidth}px) rotate(15deg)`
-    }
-
-    onDonate()
-
+  const handleSwipeRight = useCallback(() => {
+    if (isAnimating || currentIndex >= filteredProjects.length - 1) return;
+    
+    // Mark as animating
+    setIsAnimating(true);
+    
+    // Call donated callback
+    onDonate();
+    
+    // Show donation summary after animation
     setTimeout(() => {
-      handleAnimationComplete()
-    }, 300)
-  }
+      setIsAnimating(false);
+    }, 500);
+  }, [currentIndex, filteredProjects.length, isAnimating, onDonate]);
 
   const handleUndo = () => {
-    if (previousIndex !== null) {
-      setCurrentIndex(previousIndex)
-      setPreviousIndex(null)
-    }
+    if (isAnimating || currentIndex === 0 || previousIndex === -1) return
+    setCurrentIndex(previousIndex)
+    setPreviousIndex(-1)
   }
 
-  const handleToggleExpand = () => {
-    setIsExpanded(!isExpanded)
-  }
-
-  // Handle when mouse leaves the container
-  const handleMouseLeave = () => {
-    if (isDragging) {
-      // Simulate mouse up to end the drag
-      handleMouseUp()
-    }
-  }
-
-  // Mouse event handlers
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (isAnimating || isExpanded) return
-
-    // Cancel any ongoing animation
-    if (animationFrameId.current) {
-      cancelAnimationFrame(animationFrameId.current)
-      animationFrameId.current = null
-    }
-
-    startX.current = e.clientX
-    startY.current = e.clientY
-    setIsDragging(true)
-    isScrolling.current = false
-
-    // Remove any transition
-    if (cardRef.current) {
-      cardRef.current.style.transition = "none"
-    }
-
-    // Check for double click
-    const now = Date.now()
-    if (now - lastTapTime < 300) {
-      handleToggleExpand()
-    }
-    setLastTapTime(now)
-
-    // Add event listeners for mouse move and up
-    document.addEventListener("mousemove", handleMouseMove)
-    document.addEventListener("mouseup", handleMouseUp)
-  }
-
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!startX.current || isAnimating || isExpanded) return
-
-    const deltaX = e.clientX - startX.current
-    const deltaY = e.clientY - (startY.current ?? 0)
-
-    // Detect if this is a scroll gesture
-    if (!isScrolling.current && Math.abs(deltaY) > Math.abs(deltaX) * 2) {
-      isScrolling.current = true
-      return
-    }
-
-    if (isScrolling.current) return
-
-    // Calculate rotation (decreases as card moves further)
-    const screenWidth = window.innerWidth
-    const rotationFactor = 0.15 * (1 - Math.min(Math.abs(deltaX) / (screenWidth * 0.5), 0.8))
-    const rotation = deltaX * rotationFactor
-
-    // Update refs
-    currentX.current = deltaX
-    currentRotation.current = rotation
-
-    // Apply transform directly
-    if (cardRef.current) {
-      cardRef.current.style.transform = `translateX(${deltaX}px) rotate(${rotation}deg)`
-    }
-  }
-
-  const handleMouseUp = () => {
-    document.removeEventListener("mousemove", handleMouseMove)
-    document.removeEventListener("mouseup", handleMouseUp)
-
-    setIsDragging(false)
-
-    if (isScrolling.current || !startX.current || isAnimating || isExpanded) {
-      startX.current = null
-      startY.current = null
-      return
-    }
-
-    const threshold = getSwipeThreshold()
-
-    if (currentX.current > threshold) {
-      handleSwipeRight()
-    } else if (currentX.current < -threshold) {
-      handleSwipeLeft()
-    } else {
-      // Return to center with spring animation
-      springToCenter()
-    }
-
-    startX.current = null
-    startY.current = null
-  }
-
-  // Touch event handlers
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (isAnimating || isExpanded) return
-
-    // Cancel any ongoing animation
-    if (animationFrameId.current) {
-      cancelAnimationFrame(animationFrameId.current)
-      animationFrameId.current = null
-    }
-
-    startX.current = e.touches[0].clientX
-    startY.current = e.touches[0].clientY
-    setIsDragging(true)
-    isScrolling.current = false
-
-    // Remove any transition
-    if (cardRef.current) {
-      cardRef.current.style.transition = "none"
-    }
-
-    // Check for double tap
-    const now = Date.now()
-    if (now - lastTapTime < 300) {
-      handleToggleExpand()
-    }
-    setLastTapTime(now)
-  }
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!startX.current || isAnimating || isExpanded) return
-
-    const deltaX = e.touches[0].clientX - startX.current
-    const deltaY = e.touches[0].clientY - (startY.current ?? 0)
-
-    // Detect if this is a scroll gesture
-    if (!isScrolling.current && Math.abs(deltaY) > Math.abs(deltaX) * 2) {
-      isScrolling.current = true
-      return
-    }
-
-    if (isScrolling.current) return
-
-    // Prevent default to avoid page scrolling
-    e.preventDefault()
-
-    // Calculate rotation (decreases as card moves further)
-    const screenWidth = window.innerWidth
-    const rotationFactor = 0.15 * (1 - Math.min(Math.abs(deltaX) / (screenWidth * 0.5), 0.8))
-    const rotation = deltaX * rotationFactor
-
-    // Update refs
-    currentX.current = deltaX
-    currentRotation.current = rotation
-
-    // Apply transform directly
-    if (cardRef.current) {
-      cardRef.current.style.transform = `translateX(${deltaX}px) rotate(${rotation}deg)`
-    }
-  }
-
-  const handleTouchEnd = () => {
-    setIsDragging(false)
-
-    if (isScrolling.current || !startX.current || isAnimating || isExpanded) {
-      startX.current = null
-      startY.current = null
-      return
-    }
-
-    const threshold = getSwipeThreshold()
-
-    if (currentX.current > threshold) {
-      handleSwipeRight()
-    } else if (currentX.current < -threshold) {
-      handleSwipeLeft()
-    } else {
-      // Return to center with spring animation
-      springToCenter()
-    }
-
-    startX.current = null
-    startY.current = null
-  }
-
-  // Add keyboard navigation
+  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (isAnimating || isExpanded) return
+      
       if (e.key === "ArrowLeft") {
         handleSwipeLeft()
       } else if (e.key === "ArrowRight") {
         handleSwipeRight()
-      } else if (e.key === "ArrowDown" && !isExpanded) {
-        setIsExpanded(true)
-      } else if (e.key === "ArrowUp" && isExpanded) {
-        setIsExpanded(false)
       }
     }
-
+    
     window.addEventListener("keydown", handleKeyDown)
     return () => {
       window.removeEventListener("keydown", handleKeyDown)
     }
-  }, [currentIndex, isAnimating, isExpanded])
+  }, [handleSwipeLeft, handleSwipeRight, isAnimating, isExpanded])
 
-  // Prevent default behavior for drag events on images
-  useEffect(() => {
-    const preventDragDefault = (e: DragEvent) => {
-      e.preventDefault()
-      return false
-    }
+  // Toggle expand/collapse
+  const handleToggleExpand = () => {
+    setIsExpanded(!isExpanded)
+  }
 
-    const images = document.querySelectorAll("img")
-    images.forEach((img) => {
-      img.addEventListener("dragstart", preventDragDefault)
-    })
-
-    return () => {
-      images.forEach((img) => {
-        img.removeEventListener("dragstart", preventDragDefault)
-      })
-    }
-  }, [currentIndex])
-
-  // Visual indicators for swipe threshold
-  const threshold = getSwipeThreshold()
-  const showLeftIndicator = currentX.current < -threshold * 0.7
-  const showRightIndicator = currentX.current > threshold * 0.7
+  // Render different categories
+  const renderCategorySelector = () => {
+    return (
+      <div className="flex gap-2 overflow-x-auto pb-2 px-4 mt-2 mb-4 scrollbar-hide">
+        {categories.map((category) => (
+          <Button
+            key={category}
+            variant={selectedCategory === category ? "default" : "outline"}
+            size="sm"
+            className="rounded-full whitespace-nowrap"
+            onClick={() => setSelectedCategory(category)}
+          >
+            {category}
+          </Button>
+        ))}
+      </div>
+    )
+  }
 
   return (
-    <div ref={containerRef} className="relative h-[500px] w-full" onMouseLeave={handleMouseLeave}>
-      {/* Next card (peeking from underneath) */}
-      <div className="absolute inset-0" style={{ zIndex: 5 }}>
-        <ProjectCard project={nextProject} mode="swipe" isNext={true} donationAmount={donationAmount} />
+    <div className="flex flex-col h-full">
+      {renderCategorySelector()}
+      
+      <div className="flex-1 flex flex-col items-center justify-center relative">
+        {currentIndex < filteredProjects.length ? (
+          <>
+            <div
+              ref={cardRef}
+              className="w-full max-w-sm mx-auto"
+            >
+              <ProjectCard
+                project={filteredProjects[currentIndex]}
+                onDonate={handleSwipeRight}
+                onShowCommunityNotes={() => {}}
+                showOverlay={!!swipeDirection}
+                overlayDirection={swipeDirection}
+                onToggleExpand={handleToggleExpand}
+              />
+            </div>
+            
+            <div className="flex gap-4 mt-6">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleSwipeLeft}
+                disabled={isAnimating}
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleUndo}
+                disabled={isAnimating || previousIndex === -1}
+              >
+                <RotateCcw className="h-4 w-4" />
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleSwipeRight}
+                disabled={isAnimating}
+              >
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </>
+        ) : (
+          <div className="text-center p-8">
+            <h3 className="text-lg font-semibold mb-2">No more projects</h3>
+            <p className="text-sm text-slate-500 mb-4">You&apos;ve seen all the projects in this category.</p>
+            <Button onClick={() => setCurrentIndex(0)}>Start Over</Button>
+          </div>
+        )}
       </div>
-
-      {/* Current card */}
-      <div
-        ref={cardRef}
-        className={`absolute inset-0 select-none ${isExpanded ? "expanded-card" : ""}`}
-        style={{ zIndex: 10 }}
-        onMouseDown={handleMouseDown}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        <ProjectCard
-          project={currentProject}
-          mode="swipe"
-          onSwipeLeft={handleSwipeLeft}
-          onSwipeRight={handleSwipeRight}
-          onShowCommunityNotes={() => onShowCommunityNotes(currentProject)}
-          showOverlay={!!swipeDirection}
-          overlayDirection={swipeDirection}
-          donationAmount={donationAmount}
-          isExpanded={isExpanded}
-          onToggleExpand={handleToggleExpand}
-        />
-      </div>
-
-      {/* Threshold indicators (subtle visual cues) */}
-      {isDragging && !isExpanded && (
-        <>
-          <div
-            className={`absolute left-0 top-0 bottom-0 w-1 bg-red-500 transition-opacity duration-200 ${showLeftIndicator ? "opacity-70" : "opacity-0"}`}
-            style={{ left: -threshold, zIndex: 20 }}
-          />
-          <div
-            className={`absolute right-0 top-0 bottom-0 w-1 bg-green-500 transition-opacity duration-200 ${showRightIndicator ? "opacity-70" : "opacity-0"}`}
-            style={{ right: -threshold, zIndex: 20 }}
-          />
-        </>
-      )}
-
-      {previousIndex !== null && (
-        <Button
-          variant="secondary"
-          size="sm"
-          className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-1 rounded-full px-4 z-20"
-          onClick={handleUndo}
-        >
-          <RotateCcw className="h-4 w-4" />
-          <span>Undo</span>
-        </Button>
-      )}
-
-      {!isDragging && !isExpanded && !isAnimating && (
-        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 swipe-hint">
-          ← Desliza para interactuar →
-        </div>
-      )}
     </div>
   )
 }

@@ -3,7 +3,6 @@
 import { Trophy, Share2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { useRouter } from "next/navigation"
 
 interface DonationSummaryProps {
   isOpen: boolean
@@ -13,8 +12,6 @@ interface DonationSummaryProps {
 }
 
 export function DonationSummary({ isOpen, onClose, amount, points }: DonationSummaryProps) {
-  const router = useRouter()
-
   if (!isOpen) return null
 
   return (

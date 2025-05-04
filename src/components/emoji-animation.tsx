@@ -51,7 +51,7 @@ export function EmojiAnimation({ type, show, onComplete }: EmojiAnimationProps) 
 
       return () => clearTimeout(timer)
     }
-  }, [show, type])
+  }, [show, config.count, config.duration, onComplete])
 
   if (!show) return null
 

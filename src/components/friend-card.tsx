@@ -31,7 +31,6 @@ interface FriendCardProps {
 
 export function FriendCard({
   friend,
-  id,
   name: propName,
   avatar: propAvatar,
   points: propPoints,

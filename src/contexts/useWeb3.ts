@@ -25,23 +25,23 @@ export const useWeb3 = () => {
 
     const getUserAddress = async () => {
         if (typeof window !== "undefined" && window.ethereum) {
-            let walletClient = createWalletClient({
+            const walletClient = createWalletClient({
                 transport: custom(window.ethereum),
                 chain: celoAlfajores,
             });
 
-            let [address] = await walletClient.getAddresses();
+            const [address] = await walletClient.getAddresses();
             setAddress(address);
         }
     };
 
     const sendCUSD = async (to: string, amount: string) => {
-        let walletClient = createWalletClient({
+        const walletClient = createWalletClient({
             transport: custom(window.ethereum),
             chain: celoAlfajores,
         });
 
-        let [address] = await walletClient.getAddresses();
+        const [address] = await walletClient.getAddresses();
 
         const amountInWei = parseEther(amount);
 
@@ -53,7 +53,7 @@ export const useWeb3 = () => {
             args: [to, amountInWei],
         });
 
-        let receipt = await publicClient.waitForTransactionReceipt({
+        const receipt = await publicClient.waitForTransactionReceipt({
             hash: tx,
         });
 
@@ -61,12 +61,12 @@ export const useWeb3 = () => {
     };
 
     const mintMinipayNFT = async () => {
-        let walletClient = createWalletClient({
+        const walletClient = createWalletClient({
             transport: custom(window.ethereum),
             chain: celoAlfajores,
         });
 
-        let [address] = await walletClient.getAddresses();
+        const [address] = await walletClient.getAddresses();
 
         const tx = await walletClient.writeContract({
             address: MINIPAY_NFT_CONTRACT,
@@ -87,7 +87,7 @@ export const useWeb3 = () => {
     };
 
     const getNFTs = async () => {
-        let walletClient = createWalletClient({
+        const walletClient = createWalletClient({
             transport: custom(window.ethereum),
             chain: celoAlfajores,
         });
@@ -99,11 +99,11 @@ export const useWeb3 = () => {
         });
 
         const [address] = await walletClient.getAddresses();
-        const nfts: any = await minipayNFTContract.read.getNFTsByAddress([
+        const nfts = await minipayNFTContract.read.getNFTsByAddress([
             address,
-        ]);
+        ]) as bigint[];
 
-        let tokenURIs: string[] = [];
+        const tokenURIs: string[] = [];
 
         for (let i = 0; i < nfts.length; i++) {
             const tokenURI: string = (await minipayNFTContract.read.tokenURI([
@@ -115,12 +115,12 @@ export const useWeb3 = () => {
     };
 
     const signTransaction = async () => {
-        let walletClient = createWalletClient({
+        const walletClient = createWalletClient({
             transport: custom(window.ethereum),
             chain: celoAlfajores,
         });
 
-        let [address] = await walletClient.getAddresses();
+        const [address] = await walletClient.getAddresses();
 
         const res = await walletClient.signMessage({
             account: address,

@@ -1,77 +1,71 @@
 "use client"
 
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Share2 } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "./ui/button"
+import { formatCurrency } from "@/lib/utils"
+import { Medal, Share2 } from "lucide-react"
 
 interface ImpactShareCardProps {
   totalDonated?: number
   projectsSupported?: number
-  categoriesSupported?: number
   totalPoints?: number
-  stats?: {
-    totalDonated?: number
-    projectsSupported?: number
-    totalPoints?: number
-  }
-  onShare?: () => void
+  categoriesSupported?: number
+  onShare: () => void
 }
 
 export function ImpactShareCard({
-  totalDonated: propTotalDonated,
-  projectsSupported: propProjectsSupported,
-  categoriesSupported: propCategoriesSupported,
-  totalPoints: propTotalPoints,
-  stats,
+  totalDonated = 8.15,
+  projectsSupported = 12,
+  totalPoints = 82,
+  categoriesSupported = 3,
   onShare,
 }: ImpactShareCardProps) {
-  // Usar valores de stats si están disponibles, de lo contrario usar props directos
-  const totalDonated = stats?.totalDonated || propTotalDonated || 0
-  const projectsSupported = stats?.projectsSupported || propProjectsSupported || 0
-  const categoriesSupported = stats?.categoriesSupported || propCategoriesSupported || 0
-  const totalPoints = stats?.totalPoints || propTotalPoints || 0
-
-  const handleShare = () => {
-    if (onShare) {
-      onShare()
-    } else {
-      alert("Sharing your impact! (This would open a share dialog in a real app)")
-    }
-  }
-
   return (
-    <Card className="mb-4 overflow-hidden border-[#22CC88] border">
-      <CardContent className="p-4">
-        <h3 className="font-semibold text-lg mb-3">Your Impact</h3>
+    <Card className="border-2 border-green-200 bg-gradient-to-br from-white to-green-50 overflow-hidden relative">
+      <div className="absolute top-0 right-0 w-16 h-16 bg-green-100 rounded-bl-full opacity-70"></div>
 
-        <div className="grid grid-cols-3 gap-2 mb-3">
-          <div className="bg-[#22CC88]/10 p-3 rounded-lg text-center">
-            <p className="text-lg font-bold text-[#22CC88]">${totalDonated.toFixed(2)}</p>
-            <p className="text-xs text-slate-600">Donated</p>
+      <CardContent className="pt-6 pb-4 px-4">
+        <h3 className="text-center font-semibold text-lg mb-4">Your Donation Impact</h3>
+
+        <div className="grid grid-cols-3 gap-1 mb-6">
+          <div className="text-center">
+            <div className="font-bold text-xl">{formatCurrency(totalDonated, "CENTS")}</div>
+            <div className="text-xs text-gray-500">Total Donated</div>
           </div>
-
-          <div className="bg-[#22CC88]/10 p-3 rounded-lg text-center">
-            <p className="text-lg font-bold text-[#22CC88]">{projectsSupported}</p>
-            <p className="text-xs text-slate-600">Projects</p>
+          <div className="text-center">
+            <div className="font-bold text-xl">{projectsSupported}</div>
+            <div className="text-xs text-gray-500">Projects</div>
           </div>
-
-          <div className="bg-[#22CC88]/10 p-3 rounded-lg text-center">
-            <p className="text-lg font-bold text-[#22CC88]">{categoriesSupported || totalPoints}</p>
-            <p className="text-xs text-slate-600">{categoriesSupported ? "Categories" : "Points"}</p>
+          <div className="text-center">
+            <div className="font-bold text-xl">{categoriesSupported}</div>
+            <div className="text-xs text-gray-500">Categories</div>
           </div>
         </div>
 
-        <p className="text-sm text-slate-600">
-          You're in the top 15% of donors this month! Share your impact to inspire others.
-        </p>
-      </CardContent>
+        <div className="flex space-x-2 items-center justify-center mb-4">
+          <Medal className="h-4 w-4 text-amber-500" />
+          <div className="text-xs text-amber-600 font-medium">{totalPoints} Impact Points</div>
+        </div>
 
-      <CardFooter className="p-4 pt-0">
-        <Button className="w-full" onClick={handleShare}>
-          <Share2 className="h-4 w-4 mr-2" />
-          Share Your Impact
+        <div className="bg-green-50 rounded-xl p-4 mb-4">
+          <p className="text-sm text-center">
+            You&apos;re in the top 15% of donors this month! Share your impact to inspire others.
+          </p>
+
+          <p className="text-gray-500 text-center mt-1 mb-4">
+            Let&apos;s show the world your impact!
+          </p>
+        </div>
+
+        <Button
+          className="w-full flex items-center justify-center gap-2"
+          onClick={onShare}
+          variant="outline"
+        >
+          <Share2 className="h-4 w-4" />
+          Share My Impact
         </Button>
-      </CardFooter>
+      </CardContent>
     </Card>
   )
 }
