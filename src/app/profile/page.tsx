@@ -34,6 +34,7 @@ export default function ProfilePage() {
                   src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=100&auto=format&fit=crop"
                   alt="Profile"
                   fill
+                  sizes="80px"
                   className="object-cover"
                 />
               </div>

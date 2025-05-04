@@ -7,7 +7,6 @@ import { Navbar } from "@/components/navbar";
 import { BatchTransactionProvider } from "@/components/batch-transaction-provider";
 import { TrpcProvider } from "@/providers/TrpcProvider";
 import { BottomNav } from "@/components/bottom-nav";
-import { OnboardingProvider } from "@/providers/onboarding-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,12 +26,10 @@ export default function RootLayout({
         <TrpcProvider>
           <WalletProvider>
             <BatchTransactionProvider>
-              <OnboardingProvider>
-                <Navbar />
-                {children}
-                <BottomNav />
-                <Toaster position="bottom-center" richColors />
-              </OnboardingProvider>
+              <Navbar />
+              {children}
+              <BottomNav />
+              <Toaster position="bottom-center" richColors />
             </BatchTransactionProvider>
           </WalletProvider>
         </TrpcProvider>
