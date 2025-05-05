@@ -1,6 +1,74 @@
+import { cn } from '@/lib/utils'
+import { RotateCcw, X, Star, Heart, Flame } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { ThumbsDown, ThumbsUp, Sparkles } from 'lucide-react'
 import type { CardActionsProps } from '@/components/types'
+
+interface ActionButtonProps {
+  icon: typeof RotateCcw | typeof X | typeof Star | typeof Heart | typeof Flame;
+  size?: 'small' | 'large';
+  onClick: () => void;
+  disabled?: boolean;
+  title?: string;
+  variant?: 'undo' | 'nope' | 'star' | 'like' | 'boost';
+  className?: string;
+  strokeWidth?: number;
+}
+
+const ActionButton = ({
+  icon: Icon,
+  size = 'small',
+  onClick,
+  disabled = false,
+  title,
+  variant = 'like',
+  className,
+  strokeWidth = 2.5,
+}: ActionButtonProps) => {
+  const buttonSizes = {
+    small: 'h-12 w-12',
+    large: 'h-14 w-14',
+  };
+
+  const colors = {
+    undo: 'text-amber-500',
+    nope: 'text-pink-500',
+    star: 'text-blue-500',
+    like: 'text-green-500',
+    boost: 'text-purple-500',
+  };
+
+  const iconSizes = {
+    small: '[&>svg]:!w-5 [&>svg]:!h-5',  // 24px
+    large: '[&>svg]:!w-8 [&>svg]:!h-8', // 96px - ajustado para el botón grande
+  };
+
+  return (
+    <Button
+      onClick={onClick}
+      disabled={disabled}
+      title={title}
+      variant="outline"
+      size="icon"
+      className={cn(
+        'rounded-full transition-all duration-200',
+        'hover:scale-110 active:scale-95',
+        'shadow-lg border-gray-100',
+        'bg-white hover:bg-white',
+        'flex items-center justify-center',
+        buttonSizes[size],
+        colors[variant],
+        iconSizes[size],
+        disabled && 'opacity-50 cursor-not-allowed hover:scale-100 hover:bg-white',
+        className
+      )}
+    >
+      <Icon 
+        strokeWidth={strokeWidth}
+        fill={variant === 'undo' ? 'none' : 'currentColor'}
+      />
+    </Button>
+  );
+};
 
 export function CardActions({
   onSwipeLeft,
@@ -14,77 +82,73 @@ export function CardActions({
   isFront,
   active
 }: CardActionsProps) {
-  if (!isFront || !active) return null
+  if (!isFront || !active) return null;
 
   return (
-    <div className="absolute top-98 left-0 right-0 flex items-center justify-center gap-4 z-[40] px-4">
-      <Button
-        variant="outline"
-        size="icon"
-        className="h-14 w-14 rounded-full bg-white/95 backdrop-blur-sm border-2 border-red-400 text-red-500 shadow-lg hover:bg-red-50 hover:scale-110 transition-all duration-200"
-        onClick={onSwipeLeft}
-      >
-        <ThumbsDown className="h-6 w-6" />
-      </Button>
-      
-      <Button
-        variant="outline"
-        size="icon"
-        className="h-14 w-14 rounded-full bg-white/95 backdrop-blur-sm border-2 border-blue-400 text-blue-500 shadow-lg hover:bg-blue-50 hover:scale-110 transition-all duration-200"
-        onClick={() => {
-          if (questTokens > 0) {
-            onSuperLike()
-          }
-        }}
-        disabled={questTokens <= 0}
-        title={questTokens > 0 ? `Super Like (10x donation amount)` : `No Super Likes available`}
-      >
-        <Sparkles className="h-6 w-6" />
-      </Button>
-      
-      <Button
-        variant="outline"
-        size="icon"
-        className="h-14 w-14 rounded-full bg-white/95 backdrop-blur-sm border-2 border-purple-400 text-purple-500 shadow-lg hover:bg-purple-50 hover:scale-110 transition-all duration-200"
-        onClick={() => {
-          if (userReputation > topUserThreshold && availableBoosts > 0) {
-            onBoost()
-          }
-        }}
-        disabled={!(userReputation > topUserThreshold && availableBoosts > 0)}
-        title={
-          userReputation > topUserThreshold 
-            ? availableBoosts > 0 
-              ? `Boost this project (${availableBoosts} left this week)` 
-              : `No boosts left this week`
-            : `Need to be in top 0.1% users to boost`
-        }
-      >
-        <svg 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          className="h-6 w-6"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path 
-            d="M12 4L14.5 9.5L20 10.5L16 14.5L17 20L12 17.5L7 20L8 14.5L4 10.5L9.5 9.5L12 4Z" 
-            fill="currentColor" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-          />
-        </svg>
-      </Button>
-      
-      <Button
-        variant="outline"
-        size="icon"
-        className="h-14 w-14 rounded-full bg-white/95 backdrop-blur-sm border-2 border-green-400 text-green-500 shadow-lg hover:bg-green-50 hover:scale-110 transition-all duration-200"
-        onClick={onSwipeRight}
-      >
-        <ThumbsUp className="h-6 w-6" />
-      </Button>
+    <div className="absolute inset-x-0 bottom-0 z-10">
+      <div className="relative w-full">
+        {/* Semi-transparent gradient overlay to ensure button visibility */}
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-white/80 to-transparent pointer-events-none" />
+        
+        {/* Action buttons container */}
+        <div className="relative flex items-center justify-center pb-6 pt-8">
+          <div className="flex items-center gap-2.5 px-3">
+            <ActionButton
+              icon={RotateCcw}
+              onClick={() => {}}
+              size="small"
+              title="Undo last action"
+              variant="undo"
+              strokeWidth={3}
+            />
+            <ActionButton
+              icon={X}
+              onClick={onSwipeLeft}
+              size="large"
+              title="Pass"
+              variant="nope"
+              strokeWidth={3.5}
+            />
+            <ActionButton
+              icon={Star}
+              onClick={() => {
+                if (questTokens > 0) {
+                  onSuperLike()
+                }
+              }}
+              disabled={questTokens <= 0}
+              size="small"
+              title={questTokens > 0 ? `Super-Donate (10x donation amount)` : `No Super-Donate tokens available`}
+              variant="star"
+            />
+            <ActionButton
+              icon={Heart}
+              onClick={onSwipeRight}
+              size="large"
+              title="Donate"
+              variant="like"
+            />
+            <ActionButton
+              icon={Flame}
+              onClick={() => {
+                if (userReputation > topUserThreshold && availableBoosts > 0) {
+                  onBoost()
+                }
+              }}
+              disabled={!(userReputation > topUserThreshold && availableBoosts > 0)}
+              size="small"
+              title={
+                userReputation > topUserThreshold 
+                  ? availableBoosts > 0 
+                    ? `Boost this project (${availableBoosts} left)` 
+                    : `No boosts left`
+                  : `Need to be in top 0.1% users to boost`
+              }
+              variant="boost"
+            />
+          </div>
+        </div>
+      </div>
     </div>
-  )
+  );
 } 

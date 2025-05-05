@@ -83,37 +83,43 @@ export function SwipeCard({
 
   // Swipe mode render
   return (
-    <>
-      <CardSwipeView
-        project={project}
-        x={x}
-        rotate={rotate}
-        rightSwipeOpacity={rightSwipeOpacity}
-        leftSwipeOpacity={leftSwipeOpacity}
-        shineOpacity={shineOpacity}
-        animationState={animationState}
-        isDraggable={isDraggable}
-        handleDragEnd={handleDragEnd}
-        handleTap={handleTap}
-        onOpenNotes={() => setIsNotesOpen(true)}
-        className={className}
-        isFront={isFront}
-        cardIndex={cardIndex}
-        comboCount={comboCount}
-      />
+    <div className="relative w-full h-full">
+      <div className="relative w-full pb-[140%]"> {/* 1.4:1 aspect ratio container */}
+        <div className="absolute inset-0">
+          <CardSwipeView
+            project={project}
+            x={x}
+            rotate={rotate}
+            rightSwipeOpacity={rightSwipeOpacity}
+            leftSwipeOpacity={leftSwipeOpacity}
+            shineOpacity={shineOpacity}
+            animationState={animationState}
+            isDraggable={isDraggable}
+            handleDragEnd={handleDragEnd}
+            handleTap={handleTap}
+            onOpenNotes={() => setIsNotesOpen(true)}
+            className={className}
+            isFront={isFront}
+            cardIndex={cardIndex}
+            comboCount={comboCount}
+          />
 
-      <CardActions
-        onSwipeLeft={() => onSwipe?.('left')}
-        onSwipeRight={() => onSwipe?.('right')}
-        onSuperLike={onSuperLike || (() => {})}
-        onBoost={onBoost || (() => {})}
-        questTokens={questTokens}
-        userReputation={userReputation}
-        topUserThreshold={topUserThreshold}
-        availableBoosts={availableBoosts}
-        isFront={isFront}
-        active={active}
-      />
+          {isFront && active && (
+            <CardActions
+              onSwipeLeft={() => onSwipe?.('left')}
+              onSwipeRight={() => onSwipe?.('right')}
+              onSuperLike={onSuperLike || (() => {})}
+              onBoost={onBoost || (() => {})}
+              questTokens={questTokens}
+              userReputation={userReputation}
+              topUserThreshold={topUserThreshold}
+              availableBoosts={availableBoosts}
+              isFront={isFront}
+              active={active}
+            />
+          )}
+        </div>
+      </div>
 
       <CommunityNotesDrawer
         isOpen={isNotesOpen}
@@ -123,6 +129,6 @@ export function SwipeCard({
         onVote={onVoteNote}
         onFlag={onFlagNote}
       />
-    </>
+    </div>
   )
 } 
