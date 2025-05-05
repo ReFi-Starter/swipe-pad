@@ -25,8 +25,8 @@ export function FloatingTabSwitcher<T extends TabId>({
 }: FloatingTabSwitcherProps<T>) {
   return (
     <div className={cn(
-      'shadow-[0_4px_12px_rgba(0,0,0,0.03)]',
-      'rounded-[999px]',
+      'shadow-[0_1px_2px_rgba(0,0,0,0.1)]',
+      'rounded-full',
       'bg-white/95',
       'backdrop-blur-sm',
       className
@@ -34,7 +34,8 @@ export function FloatingTabSwitcher<T extends TabId>({
       <Tabs value={activeTab} onValueChange={(value) => onChange(value as T)}>
         <TabsList
           className={cn(
-            'h-8 p-[3px] rounded-[999px]',
+            'h-8 p-[3px]',
+            'rounded-full',
             'shadow-[inset_0_1px_1px_rgba(0,0,0,0.04)]',
             'grid grid-cols-2 gap-0',
             'w-[240px] relative'
@@ -42,9 +43,9 @@ export function FloatingTabSwitcher<T extends TabId>({
         >
           <motion.div
             className={cn(
-              'absolute rounded-[999px]',
+              'absolute rounded-full',
               'bg-[#22CC88]',
-              'shadow-[0_2px_4px_rgba(34,204,136,0.2)]',
+              'shadow-[0_1px_2px_rgba(0,0,0,0.1)]',
               'w-[117px] h-[26px]'
             )}
             initial={false}
@@ -66,18 +67,19 @@ export function FloatingTabSwitcher<T extends TabId>({
               key={tab.id}
               value={tab.id}
               className={cn(
-                'relative h-full rounded-[999px]',
+                'relative h-full rounded-full',
                 'data-[state=active]:text-white',
                 'data-[state=active]:shadow-none',
                 'data-[state=active]:bg-transparent',
                 'focus-visible:ring-[#22CC88]',
-                'transition-colors duration-200'
+                'transition-colors duration-200',
+                'text-[#333333]'
               )}
             >
               <span className={cn(
                 'relative z-10',
-                'data-[state=active]:text-shadow-sm',
-                activeTab === tab.id ? 'text-white' : 'text-gray-600'
+                'text-sm font-medium',
+                activeTab === tab.id ? 'text-white' : 'text-[#333333]'
               )}>
                 {tab.label}
               </span>
