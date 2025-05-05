@@ -230,12 +230,12 @@ html, body {
 }
 
 main {
-  height: calc(100dvh - 4rem); /* Altura total menos la altura de la barra */
+  height: calc(100dvh - 56px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  padding-bottom: 0 !important; /* Eliminar padding adicional */
+  padding-bottom: 0 !important;
 }
 
 /* Header and Navigation */
@@ -243,7 +243,6 @@ main {
   padding: 0.5rem 1rem;
   flex-shrink: 0;
   background: white;
-  border-bottom: 1px solid var(--border);
   z-index: 40;
 }
 
@@ -477,7 +476,7 @@ main {
 /* === Responsive Adjustments === */
 @media (max-height: 700px) {
   main {
-    padding-bottom: 70px; /* Ajuste para pantallas pequeñas */
+    height: calc(100dvh - 48px); /* Adjusted for smaller bottom nav */
   }
 
   .project-card-image {
@@ -689,76 +688,79 @@ main {
   bottom: 0;
   left: 0;
   right: 0;
+  height: 56px;
+  background-color: #EFF2FB;
   display: flex;
   justify-content: space-around;
-  padding: 0.75rem 0;
-  background-color: white;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-  z-index: 50; /* Mayor z-index para estar encima de todo el contenido */
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  align-items: center;
+  z-index: 50;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .bottom-nav-item {
+  width: 48px;
+  height: 48px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
-  color: #71717a;
-  transition: color 0.2s;
-  height: 3rem;
-  text-decoration: none; /* Para asegurar que no hay subrayado de link */
-  padding: 0.25rem 0.5rem;
+  color: #7C8591;
+  transition: color 0.2s ease;
 }
 
 .bottom-nav-item.active {
-  color: rgb(var(--minipay-green));
-  font-weight: 500;
+  color: #22CC88;
 }
 
 .bottom-nav-item.active svg {
-  color: rgb(var(--minipay-green));
+  fill: currentColor;
 }
 
-/* Improved touch handling for mobile */
-@media (hover: none) and (pointer: coarse) {
-  .action-button {
-    width: 4rem;
-    height: 4rem;
-  }
-  
-  .action-button svg {
-    width: 1.75rem;
-    height: 1.75rem;
-  }
+/* Bottom nav gradient overlay */
+.bottom-nav-gradient {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 96px;
+  background: linear-gradient(to top, #EFF2FB 40%, transparent);
+  pointer-events: none;
+  z-index: 40;
 }
 
 /* For smaller devices */
 @media (max-height: 700px) {
   .bottom-nav {
-    padding: 0.5rem 0;
+    height: 48px;
   }
   
   .bottom-nav-item {
-    font-size: 0.7rem;
-    height: 2.5rem;
+    width: 40px;
+    height: 40px;
   }
   
-  .action-button {
-    width: 3rem;
-    height: 3rem;
-  }
-  
-  .action-button svg {
-    width: 1.25rem;
-    height: 1.25rem;
+  .bottom-nav-gradient {
+    height: 72px;
   }
 }
 
-/* Hide scrollbar but allow scrolling if needed */
-::-webkit-scrollbar {
-  width: 0px;
-  background: transparent;
+/* Main content adjustments */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1rem;
+  padding-bottom: calc(56px + env(safe-area-inset-bottom));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-height: 700px) {
+  .main-content {
+    padding-bottom: calc(48px + env(safe-area-inset-bottom));
+  }
 }
 
 /* Animación de pulso para la tarjeta al hacer swipe */
@@ -1045,7 +1047,7 @@ main {
   max-width: 640px;
   margin: 0 auto;
   padding: 1rem;
-  padding-bottom: calc(4rem + env(safe-area-inset-bottom)); /* Account for bottom bar */
+  padding-bottom: calc(56px + env(safe-area-inset-bottom)); /* Account for bottom nav */
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -1154,4 +1156,15 @@ main {
 .trusted-badge svg {
   width: 0.75rem; /* 12px */
   height: 0.75rem; /* 12px */
+}
+
+/* For smaller devices */
+@media (max-height: 700px) {
+  main {
+    height: calc(100dvh - 48px); /* Adjusted for smaller bottom nav */
+  }
+  
+  .main-content {
+    padding-bottom: calc(48px + env(safe-area-inset-bottom));
+  }
 }

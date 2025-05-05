@@ -32,11 +32,7 @@ export default function HomePage() {
 
   return (
       <div 
-        className="flex-1 min-h-full relative overflow-hidden pb-[72px] pt-24 px-4"
-        style={{
-          backgroundSize: "24px 24px",
-          backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke-width='1.5' stroke='%23e5e5e5'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e")`,
-        }}
+        className="flex-1 min-h-full relative overflow-hidden pt-32 px-4"
       >
         <div className="flex flex-col relative">
               <ProjectHeader
