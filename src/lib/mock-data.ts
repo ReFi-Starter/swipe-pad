@@ -9,6 +9,7 @@ export const mockProjects: Project[] = [
     donationAmount: 2500,
     category: 'Environment',
     trustStatus: 'verified',
+    boost: true,
     progress: {
       current: 1500,
       target: 2500
@@ -16,7 +17,8 @@ export const mockProjects: Project[] = [
     creator: {
       name: 'EcoSolutions',
       verified: true
-    }
+    },
+    notesCount: 3
   },
   {
     id: '2',
@@ -33,7 +35,8 @@ export const mockProjects: Project[] = [
     creator: {
       name: 'GreenThumb',
       verified: true
-    }
+    },
+    notesCount: 1
   },
   {
     id: '3',
@@ -60,6 +63,7 @@ export const mockProjects: Project[] = [
     donationAmount: 5000,
     category: 'Environment',
     trustStatus: 'verified',
+    boost: true,
     progress: {
       current: 3500,
       target: 5000
@@ -67,7 +71,8 @@ export const mockProjects: Project[] = [
     creator: {
       name: 'OceanClean',
       verified: true
-    }
+    },
+    notesCount: 5
   },
   {
     id: '5',
