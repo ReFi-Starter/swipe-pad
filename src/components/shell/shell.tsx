@@ -21,14 +21,19 @@ interface TopBarProps {
 
 export function TopBar({ children, className }: TopBarProps) {
   return (
-    <header
-      className={cn(
-        'fixed top-0 left-0 right-0 h-14 w-full bg-white z-10 border-b',
-        className
-      )}
-    >
-      {children}
-    </header>
+    <>
+      {/* Top gradient overlay */}
+      <div className="fixed top-0 left-0 right-0 h-24 pointer-events-none z-[9]" />
+      
+      <header
+        className={cn(
+          'fixed top-0 left-0 right-0 h-14 w-full z-10',
+          className
+        )}
+      >
+        {children}
+      </header>
+    </>
   )
 }
 
@@ -59,13 +64,18 @@ interface BottomBarProps {
 
 export function BottomBar({ children, className }: BottomBarProps) {
   return (
-    <footer
-      className={cn(
-        'fixed bottom-0 left-0 right-0 h-14 w-full bg-white z-10 border-t shadow-[0_-1px_2px_rgba(0,0,0,0.1)]',
-        className
-      )}
-    >
-      {children}
-    </footer>
+    <>
+      {/* Bottom gradient overlay */}
+      <div className="fixed bottom-0 left-0 right-0 h-24 pointer-events-none z-[9]" />
+      
+      <footer
+        className={cn(
+          'fixed bottom-0 left-0 right-0 h-14 w-full z-10',
+          className
+        )}
+      >
+        {children}
+      </footer>
+    </>
   )
 } 

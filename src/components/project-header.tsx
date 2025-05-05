@@ -22,7 +22,7 @@ export function ProjectHeader({
 }: ProjectHeaderProps) {
   return (
     <FloatingLayout>
-      <div className="flex flex-col items-center gap-3 w-full">
+      <div className="flex flex-col items-center gap-6 w-full">
         <FloatingTabSwitcher
           tabs={tabs}
           activeTab={activeTab}
