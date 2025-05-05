@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useDonationPool } from "@/hooks/useDonationPool";
-import { useWallet } from "@/hooks/useWallet";
+import { useDonationPool } from "@/hooks/use-donation-pool";
+import { useWallet } from "@/hooks/use-wallet";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
