@@ -2,8 +2,10 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { Pointer, Users, PlusCircle, User } from 'lucide-react'
+import { Users, User, HandHeart, CircleHelp, List } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { cn } from "@/lib/utils"
+import React from "react"
 
 interface NavItem {
   path: string
@@ -19,109 +21,62 @@ export function BottomNav() {
     return null
   }
   
-  // Function to determine if an item is active by comparing with current route
-  const isItemActive = (itemPath: string) => {
-    // Home page (/) should be active when we're on the main page or /home
-    if (itemPath === '/' && (pathname === '/' || pathname === '/home')) {
-      return true;
-    }
-    
-    // For other pages, check if the route starts with the item path
-    return pathname.startsWith(itemPath) && itemPath !== '/';
-  }
-  
   const navItems: NavItem[] = [
     {
-      path: '/',
+      path: '/home',
       label: 'Swipe',
-      icon: <Pointer size={24} />
+      icon: <HandHeart size={20} />
     },
     {
-      path: '/social',
-      label: 'Social',
-      icon: <Users size={24} />
+      path: '/list',
+      label: 'List',
+      icon: <List size={20} />
     },
     {
-      path: '/create',
-      label: 'Create',
-      icon: <PlusCircle size={24} />
+      path: '/community',
+      label: 'Community',
+      icon: <Users size={20} />
     },
     {
       path: '/profile',
       label: 'Profile',
-      icon: <User size={24} />
+      icon: <User size={20} />
+    },
+    {
+      path: '/help',
+      label: 'Help',
+      icon: <CircleHelp size={20} />
     }
   ]
   
   return (
-    <nav className="fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-gray-200 flex items-center justify-around px-4">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 flex justify-around bg-white p-2 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
       {navItems.map((item) => {
-        const active = isItemActive(item.path)
-        
+        const active = pathname === item.path
         return (
           <Link 
             href={item.path} 
             key={item.path}
-            className="relative flex flex-col items-center justify-center w-16 h-16"
+            className={cn(
+              "flex flex-col items-center",
+              active ? "text-primary" : "text-gray-400"
+            )}
           >
-            <motion.div
-              className={`relative ${active ? 'text-blue-600' : 'text-gray-600'}`}
-              initial={false}
-              animate={active ? {
-                y: [0, -8, 0],
-                scale: [1, 1.2, 1],
-                rotate: [0, -10, 10, 0],
-              } : {
-                y: 0,
-                scale: 1,
-                rotate: 0
-              }}
-              transition={active ? {
-                duration: 0.6,
-                times: [0, 0.2, 0.5, 1],
-                ease: "easeOut",
-              } : {
-                duration: 0.3
-              }}
-              whileTap={{ 
-                scale: 0.85,
-                rotate: [-5, 5],
-                transition: { duration: 0.2 }
-              }}
+            <motion.div 
+              whileHover={{ scale: 1.1 }} 
+              whileTap={{ scale: 0.9 }}
+              className="relative"
             >
               {item.icon}
               {active && (
                 <motion.div
-                  className="absolute inset-0 bg-blue-400 rounded-full mix-blend-soft-light"
-                  initial={{ opacity: 0, scale: 1 }}
-                  animate={{
-                    opacity: [0, 0.5, 0],
-                    scale: [0.8, 1.4, 1.8],
-                  }}
-                  transition={{
-                    duration: 0.8,
-                    ease: "easeOut",
-                    times: [0, 0.3, 1],
-                    repeat: Infinity,
-                    repeatDelay: 1
-                  }}
+                  className="absolute -bottom-1 left-1/2 h-[4px] w-4 -translate-x-1/2 rounded-full bg-primary"
+                  layoutId="underline"
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 />
               )}
             </motion.div>
-            <motion.span 
-              className={`mt-1 text-xs ${active ? 'text-blue-600 font-medium' : 'text-gray-600'}`}
-              animate={active ? {
-                scale: [1, 1.1, 1],
-                y: [0, -2, 0]
-              } : {}}
-              transition={active ? {
-                duration: 0.4,
-                delay: 0.1,
-                ease: "easeOut"
-              } : {}}
-            >
-              {item.label}
-            </motion.span>
+            <span className="mt-1 text-[10px]">{item.label}</span>
           </Link>
         )
       })}
