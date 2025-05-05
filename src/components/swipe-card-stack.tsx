@@ -94,39 +94,34 @@ export function SwipeCardStack({
   }, [onFlagNote]);
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 flex flex-col items-center justify-center relative">
+    <div className="flex flex-col h-[calc(100dvh-18rem)]">
+      <div className="flex-1 flex items-center justify-center">
         {currentIndex < filteredProjects.length ? (
-          <>
-            <div className="relative w-full max-w-sm mx-auto">
-              {/* Stack of cards */}
-              {filteredProjects
-                .slice(currentIndex, currentIndex + 3)
-                .map((project, index) => (
-                  <SwipeCard
-                    key={project.id}
-                    project={project}
-                    onSwipe={direction => direction === 'right' ? handleSwipeRight() : handleSwipeLeft()}
-                    onSuperLike={handleSuperLike}
-                    onBoost={handleBoost}
-                    onShowDetails={() => handleShowDetails(project)}
-                    cardIndex={index}
-                    active={index === 0}
-                    comboCount={index === 0 ? comboCount : 0}
-                    questTokens={index === 0 ? questTokens : 0}
-                    userReputation={userReputation}
-                    topUserThreshold={topUserThreshold}
-                    availableBoosts={index === 0 ? availableBoosts : 0}
-                    onAddNote={handleAddNote(project.id)}
-                    onVoteNote={handleVoteNote(project.id)}
-                    onFlagNote={handleFlagNote(project.id)}
-                  />
-                ))}
-            </div>
-            
-            {/* Space for the card buttons */}
-            <div className="h-20"></div>
-          </>
+          <div className="relative w-full max-w-[320px] h-[calc(100dvh-18rem)] mx-auto">
+            {/* Stack of cards */}
+            {filteredProjects
+              .slice(currentIndex, currentIndex + 3)
+              .map((project, index) => (
+                <SwipeCard
+                  key={project.id}
+                  project={project}
+                  onSwipe={direction => direction === 'right' ? handleSwipeRight() : handleSwipeLeft()}
+                  onSuperLike={handleSuperLike}
+                  onBoost={handleBoost}
+                  onShowDetails={() => handleShowDetails(project)}
+                  cardIndex={index}
+                  active={index === 0}
+                  comboCount={index === 0 ? comboCount : 0}
+                  questTokens={index === 0 ? questTokens : 0}
+                  userReputation={userReputation}
+                  topUserThreshold={topUserThreshold}
+                  availableBoosts={index === 0 ? availableBoosts : 0}
+                  onAddNote={handleAddNote(project.id)}
+                  onVoteNote={handleVoteNote(project.id)}
+                  onFlagNote={handleFlagNote(project.id)}
+                />
+              ))}
+          </div>
         ) : (
           <div className="text-center p-8">
             <h3 className="text-lg font-semibold mb-2">No more projects</h3>

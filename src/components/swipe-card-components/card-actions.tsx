@@ -85,14 +85,14 @@ export function CardActions({
   if (!isFront || !active) return null;
 
   return (
-    <div className="absolute inset-x-0 bottom-0 z-10">
+    <div className="absolute inset-x-0 -bottom-8 z-30">
       <div className="relative w-full">
         {/* Semi-transparent gradient overlay to ensure button visibility */}
-        <div className="absolute inset-x-0 bottom-0 h-32 pointer-events-none" />
+        {/* <div className="absolute inset-x-0 bottom-0 h-32 pointer-events-none" /> */}
         
         {/* Action buttons container */}
-        <div className="relative flex items-center justify-center py-14">
-          <div className="flex items-center gap-2.5 px-3">
+        <div className="relative flex items-center justify-center">
+          <div className="flex items-center gap-2.5">
             <ActionButton
               icon={RotateCcw}
               onClick={() => {}}

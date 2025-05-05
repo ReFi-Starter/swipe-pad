@@ -42,10 +42,6 @@ export function SwipeCard({
   // Animation and gesture hooks
   const {
     x,
-    rotate,
-    rightSwipeOpacity,
-    leftSwipeOpacity,
-    shineOpacity,
     animationState,
     handleSwipeComplete,
     handleSuperLike
@@ -83,28 +79,22 @@ export function SwipeCard({
 
   // Swipe mode render
   return (
-    <div className="relative w-full h-full">
-      <div className="relative w-full pb-[140%]"> {/* 1.4:1 aspect ratio container */}
-        <div className="absolute inset-0">
-          <CardSwipeView
-            project={project}
-            x={x}
-            rotate={rotate}
-            rightSwipeOpacity={rightSwipeOpacity}
-            leftSwipeOpacity={leftSwipeOpacity}
-            shineOpacity={shineOpacity}
-            animationState={animationState}
-            isDraggable={isDraggable}
-            handleDragEnd={handleDragEnd}
-            handleTap={handleTap}
-            onOpenNotes={() => setIsNotesOpen(true)}
-            className={className}
-            isFront={isFront}
-            cardIndex={cardIndex}
-            comboCount={comboCount}
-          />
+    <div className="absolute inset-0">
+      <div className="relative h-full">
+        <CardSwipeView
+          project={project}
+          animationState={animationState}
+          isDraggable={isDraggable}
+          handleDragEnd={handleDragEnd}
+          handleTap={handleTap}
+          onOpenNotes={() => setIsNotesOpen(true)}
+          className={className}
+          isFront={isFront}
+          cardIndex={cardIndex}
+          comboCount={comboCount}
+        />
 
-          {isFront && active && (
+        {isFront && active && (
             <CardActions
               onSwipeLeft={() => onSwipe?.('left')}
               onSwipeRight={() => onSwipe?.('right')}
@@ -117,8 +107,7 @@ export function SwipeCard({
               isFront={isFront}
               active={active}
             />
-          )}
-        </div>
+        )}
       </div>
 
       <CommunityNotesDrawer

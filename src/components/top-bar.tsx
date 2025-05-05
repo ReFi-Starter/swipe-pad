@@ -50,7 +50,7 @@ export function TopBar({ className }: TopBarProps) {
         
         {/* Wallet Menu */}
         {isMenuOpen && isConnected && address && (
-          <div className="absolute right-4 top-14 mt-1 w-48 rounded-lg bg-white shadow-lg border border-gray-100 py-1">
+          <div className="absolute right-4 top-14 mt-1 w-48 rounded-lg shadow-lg border border-gray-100 py-1">
             <div className="px-4 py-2 text-sm text-gray-500 truncate">
               {address}
             </div>
