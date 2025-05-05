@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import NextImage from 'next/image'
 
 interface ImageCandidate {
   width: number
@@ -60,8 +61,8 @@ export function ContainerAwareImage({
         containerWidth = entry.contentRect.width
         containerHeight = entry.contentRect.height
       } else {
-        containerWidth = observedContainer.offsetWidth
-        containerHeight = observedContainer.offsetHeight
+        containerWidth = (observedContainer as HTMLElement).offsetWidth
+        containerHeight = (observedContainer as HTMLElement).offsetHeight
       }
 
       const containerAspectRatio = containerWidth / containerHeight
@@ -182,11 +183,13 @@ export function ContainerAwareImage({
 
   return (
     <div ref={containerRef} className="container-aware-img">
-      <img
+      <NextImage
         ref={imgRef}
         src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3C/svg%3E"
         alt={alt}
         className={className}
+        width={candidates[0].width}
+        height={candidates[0].height}
       />
       <div 
         className="cai-placeholder"
