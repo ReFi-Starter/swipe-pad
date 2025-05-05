@@ -1,138 +1,75 @@
-"use client"
-
-import { motion, useMotionValue, useTransform, useAnimation } from "framer-motion"
-import Image from "next/image"
-import { useEffect, useState } from "react"
-import { VerifiedBadge } from "./verified-badge"
-import { Button } from "./ui/button"
+import { CheckCircle } from "lucide-react"
+import { ContainerAwareImage } from "./container-aware-image"
 
 interface ProjectCardProps {
-  id: string
-  title: string
-  description: string
-  imageUrl: string
-  donationAmount: number
-  creator?: {
-    name: string
+  project: {
+    id: string
+    title: string
+    description: string
+    imageUrl: string
+    address: `0x${string}`
     verified?: boolean
+    categories: string[]
+    goal: number
+    raised: number
   }
-  onSwipe?: (direction: "left" | "right") => void
-  mode?: "swipe" | "list"
+  className?: string
 }
 
-export function ProjectCard({
-  title,
-  description,
-  imageUrl,
-  donationAmount,
-  creator,
-  onSwipe,
-  mode = "swipe"
-}: ProjectCardProps) {
-  // Motion values for tracking swipe
-  const x = useMotionValue(0)
-  const controls = useAnimation()
-  const [isMounted, setIsMounted] = useState(false)
-
-  // Mount check
-  useEffect(() => {
-    setIsMounted(true)
-  }, [])
-
-  // Transform values for visual feedback
-  const rotate = useTransform(x, [-150, 150], [-10, 10]) // Less rotation for more subtle effect
-  const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0])
-  const scale = useTransform(x, [-200, -150, 0, 150, 200], [0.7, 0.9, 1, 0.9, 0.7])
-
-  // Handle drag end
-  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: { offset: { x: number }; velocity: { x: number } }) => {
-    if (!isMounted) return;
-    
-    const offset = info.offset.x
-    const velocity = info.velocity.x
-
-    if (Math.abs(velocity) >= 800 || Math.abs(offset) > 100) {
-      const direction = offset > 0 ? "right" : "left"
-      controls.start({ x: offset > 0 ? 500 : -500 })
-      onSwipe?.(direction)
-    } else {
-      controls.start({ x: 0, transition: { type: "spring", stiffness: 400, damping: 40 } })
+export function ProjectCard({ project, className = "" }: ProjectCardProps) {
+  // Generate image candidates based on the original imageUrl
+  const imageCandidates = [
+    {
+      width: 300,
+      height: 225,
+      src: project.imageUrl.replace(/\.(jpg|png|webp)/, "-300x225.$1")
+    },
+    {
+      width: 600,
+      height: 450,
+      src: project.imageUrl.replace(/\.(jpg|png|webp)/, "-600x450.$1")
+    },
+    {
+      width: 900,
+      height: 675,
+      src: project.imageUrl.replace(/\.(jpg|png|webp)/, "-900x675.$1")
+    },
+    // Fallback to original image
+    {
+      width: 1200,
+      height: 900,
+      src: project.imageUrl
     }
-  }
+  ]
 
-  // Render list mode
-  if (mode === "list") {
-    return (
-      <div className="project-card static transform-none cursor-pointer hover:scale-[0.98] transition-transform">
-        <div className="project-card-image">
-          <Image
-            src={imageUrl}
-            alt={title}
-            fill
-            className="object-cover"
-            sizes="(max-width: 340px) 90vw, 340px"
-            priority
-          />
-        </div>
-        <div className="project-card-content">
-          <div className="flex items-center gap-2 mb-2">
-            <h3 className="text-lg font-semibold line-clamp-1">{title}</h3>
-            {creator?.verified && <VerifiedBadge isVerified={true} />}
-          </div>
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{description}</p>
-          <div className="mt-auto pt-2">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium">Goal: ${donationAmount}</span>
-            </div>
-            <Button variant="outline" size="sm" className="w-full">
-              View Details
-            </Button>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  // We might need progress later, keep the calculation for now
+  // const progress = (project.raised / project.goal) * 100
 
-  // Render swipe mode
   return (
-    <motion.div
-      className="project-card"
-      style={{
-        x,
-        rotate,
-        opacity,
-        scale
-      }}
-      drag={isMounted && mode === "swipe" ? "x" : false}
-      dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.8}
-      onDragEnd={handleDragEnd}
-      animate={controls}
-      whileTap={{ cursor: "grabbing" }}
-    >
+    <div className={`project-card ${className}`}>
       <div className="project-card-image">
-        <Image
-          src={imageUrl}
-          alt={title}
-          fill
-          className="object-cover"
-          sizes="(max-width: 340px) 90vw, 340px"
-          priority
+        <ContainerAwareImage
+          candidates={imageCandidates}
+          alt={project.title}
+          observeContainer=".project-card-image"
+          placeholderColor="#e0e0e0"
         />
-      </div>
-      <div className="project-card-content">
-        <div className="flex items-center gap-2 mb-2">
-          <h3 className="text-lg font-semibold line-clamp-1">{title}</h3>
-          {creator?.verified && <VerifiedBadge isVerified={true} />}
-        </div>
-        <p className="text-sm text-muted-foreground line-clamp-3 mb-3">{description}</p>
-        <div className="mt-auto pt-2 border-t border-gray-100">
-          <div className="flex items-center justify-between py-2">
-            <span className="text-sm font-semibold">Goal: ${donationAmount}</span>
-            <Button variant="outline" size="sm">Details</Button>
+        
+        {project.verified && (
+          <div className="project-card-badge-container">
+            <span className="trusted-badge">
+              <CheckCircle /> Trusted
+            </span>
           </div>
+        )}
+
+        <div className="project-card-overlay">
+          <h2 className="project-card-overlay-title line-clamp-2">{project.title}</h2>
+          <p className="project-card-overlay-category">
+            {project.categories.length > 0 ? project.categories[0] : 'Project'}
+          </p>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
-}
+} 
