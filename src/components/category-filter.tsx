@@ -1,30 +1,36 @@
-"use client"
+'use client'
+
+import { Button } from "@/components/ui/button"
+import { categories } from "@/lib/utils"
 
 interface CategoryFilterProps {
-  onChange: (category: string) => void
   selectedCategory: string
-  categories: string[]
+  onCategoryChange: (category: string) => void
+  className?: string
 }
 
-export function CategoryFilter({ onChange, selectedCategory, categories }: CategoryFilterProps) {
+export function CategoryFilter({
+  selectedCategory,
+  onCategoryChange,
+  className = ""
+}: CategoryFilterProps) {
   return (
-    <div className="flex gap-2 overflow-x-auto scrollbar-none py-2 px-1">
-      {categories.map((category) => (
-        <button
+    <div className={`flex gap-2 overflow-x-auto scrollbar-none ${className}`}>
+      {categories.map(category => (
+        <Button
           key={category}
-          className={`
-            h-8 px-3 rounded-full text-sm whitespace-nowrap
-            transition-all duration-200
+          variant={selectedCategory === category ? "default" : "outline"}
+          size="sm"
+          onClick={() => onCategoryChange(category)}
+          className={`relative border border-black/10 text-gray-800
             ${selectedCategory === category 
-              ? "bg-[#22CC88] text-white shadow-[0_1px_2px_rgba(0,0,0,0.1)]" 
-              : "bg-[#F0F2F5] text-[#333333] hover:bg-[#E4E6E9]"
-            }
-          `}
-          onClick={() => onChange(category)}
+              ? 'bg-primary/60 text-primary-foreground' 
+              : 'bg-white/20'
+            }`}
         >
           {category}
-        </button>
+        </Button>
       ))}
     </div>
   )
-}
+} 
