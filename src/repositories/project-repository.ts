@@ -9,7 +9,7 @@ import {
   type NewCommunityNote,
   type NewCommunityNoteVote
 } from '@/db/schema';
-import { eq, desc, and, sql } from 'drizzle-orm';
+import { eq, desc, and, sql, type SQL } from 'drizzle-orm';
 
 export const projectRepository = {
   async getProjectById(id: string) {
@@ -27,24 +27,27 @@ export const projectRepository = {
     category?: string;
     sponsoredFirst?: boolean;
   }) {
-    const query = db.select()
-      .from(cachedProjects)
-      .leftJoin(projectMetadata, eq(cachedProjects.id, projectMetadata.projectId))
-      .where(eq(cachedProjects.isActive, true));
+    const conditions: SQL[] = [eq(cachedProjects.isActive, true)];
 
     if (params?.category) {
-      query.where(eq(projectMetadata.category, params.category));
+      conditions.push(eq(projectMetadata.category, params.category));
     }
+
+    const query = db
+      .select()
+      .from(cachedProjects)
+      .leftJoin(projectMetadata, eq(cachedProjects.id, projectMetadata.projectId))
+      .where(and(...conditions));
 
     if (params?.sponsoredFirst) {
       query.orderBy(desc(projectMetadata.sponsorBoosted));
     }
 
-    if (params?.limit) {
+    if (typeof params?.limit === 'number') {
       query.limit(params.limit);
     }
 
-    if (params?.offset) {
+    if (typeof params?.offset === 'number') {
       query.offset(params.offset);
     }
 
@@ -132,17 +135,20 @@ export const projectRepository = {
       })
       .returning();
 
-    // Update note upvotes count
-    await db.update(communityNotes)
-      .set({
-        upvotes: sql`(
-          SELECT COUNT(*) 
-          FROM ${communityNoteVotes} 
-          WHERE note_id = ${data.noteId} 
-          AND is_upvote = true
-        )`,
-      })
-      .where(eq(communityNotes.id, data.noteId));
+    // Update note upvotes count using a simpler SQL approach
+    const noteId = data.noteId;
+    if (typeof noteId === 'number') {
+      await db.update(communityNotes)
+        .set({
+          upvotes: sql`(
+            SELECT COUNT(*) 
+            FROM ${communityNoteVotes} 
+            WHERE note_id = ${noteId} 
+            AND is_upvote = true
+          )`,
+        })
+        .where(eq(communityNotes.id, noteId));
+    }
 
     return vote;
   },
