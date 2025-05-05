@@ -21,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>
-      <body className={`${inter.className} flex flex-col min-h-full bg-gray-50`}>
+      <body className={`${inter.className} flex flex-col min-h-full`}>
         <Providers>
           <Shell>
             <ShellTopBar>
