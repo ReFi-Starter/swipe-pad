@@ -1016,7 +1016,6 @@ main {
   position: relative;
   transition: opacity 0.3s ease;
   user-select: none;
-  vertical-align: middle;
   visibility: hidden;
   width: 100%;
 }
