@@ -2,7 +2,7 @@
 
 import { FloatingLayout } from "@/components/ui/floating-layout"
 import { FloatingTabSwitcher } from "@/components/ui/floating-tab-switcher"
-import { CategoryFilter } from "@/components/ui/category-filter"
+import { CategoryFilter } from "@/components/category-filter"
 import type { TabItem } from "@/components/ui/floating-tab-switcher"
 
 interface ProjectHeaderProps {

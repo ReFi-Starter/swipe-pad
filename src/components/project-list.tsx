@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Progress } from "@/components/ui/progress";
-import { useDonationPool } from "@/hooks/useDonationPool";
-import { useWallet } from "@/hooks/useWallet";
+import { useDonationPool } from "@/hooks/use-donation-pool";
+import { useWallet } from "@/hooks/use-wallet";
 import Image from "next/image";
 // Type for formatted projects for UI
 interface ProjectUI {
