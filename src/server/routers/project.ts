@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { publicProcedure, router } from '../trpc';
-import { projectRepository } from '@/repositories/projectRepository';
+import { projectRepository } from '@/repositories/project-repository';
 
 export const projectRouter = router({
   byId: publicProcedure

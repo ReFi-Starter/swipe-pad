@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { publicProcedure, router } from '../trpc';
-import { userRepository } from '@/repositories/userRepository';
+import { userRepository } from '@/repositories/user-repository';
 
 export const userRouter = router({
   byWalletAddress: publicProcedure

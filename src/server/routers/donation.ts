@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { publicProcedure, router } from '../trpc';
-import { donationRepository } from '@/repositories/donationRepository';
+import { donationRepository } from '@/repositories/donation-repository';
 
 export const donationRouter = router({
   byProject: publicProcedure
