@@ -22,16 +22,16 @@ export function ProjectHeader({
 }: ProjectHeaderProps) {
   return (
     <FloatingLayout>
-      <div className="flex flex-col items-center gap-2">
+      <div className="flex flex-col items-center gap-3 w-full">
         <FloatingTabSwitcher
           tabs={tabs}
           activeTab={activeTab}
           onChange={onTabChange}
-          />
+        />
         <CategoryFilter
           selectedCategory={selectedCategory}
           onCategoryChange={onCategoryChange}
-          className="px-4"
+          className="w-full max-w-md"
         />
       </div>
     </FloatingLayout>
