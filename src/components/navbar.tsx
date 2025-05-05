@@ -1,28 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { ConnectButton } from "@/components/connect-button";
+// import { ConnectButton } from "@/components/connect-button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { injected } from "wagmi/connectors";
-import { useEffect, useState } from "react";
-import { useConnect } from "wagmi";
+// import { useWallet } from "@/hooks/useWallet";
 
 export function Navbar() {
   const pathname = usePathname();
-  const [hideConnectBtn, setHideConnectBtn] = useState(false)
-  const { connect } = useConnect()
-
-  useEffect(() => {
-    if (window.ethereum && window.ethereum.isMiniPay) {
-      setHideConnectBtn(true)
-      connect({ connector: injected({ target: "metaMask" }) })
-    }
-  }, [connect])
+  // const { isMiniPay } = useWallet();
 
   // Don't show on onboarding screens
   if (pathname.startsWith("/onboarding")) {
-    return null
+    return null;
   }
   
   const navItems = [
@@ -55,11 +45,11 @@ export function Navbar() {
             ))}
           </nav>
         </div>
-        {!hideConnectBtn && (
+        {/* {!isMiniPay && (
           <div className="flex items-center space-x-4 px-4">
             <ConnectButton />
           </div>
-        )}
+        )} */}
       </div>
     </header>
   );
