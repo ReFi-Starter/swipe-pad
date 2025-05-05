@@ -1,6 +1,6 @@
 'use client'
 
-import { useWallet } from '@/hooks/useWallet'
+import { useWallet } from '@/hooks/use-wallet'
 import { LogoSmall } from '@/components/ui/logo-small'
 import { AvatarCircle } from '@/components/ui/avatar-circle'
 import { cn } from '@/lib/utils'
@@ -11,15 +11,12 @@ interface TopBarProps {
 }
 
 export function TopBar({ className }: TopBarProps) {
-  const { address, isConnected, connectWallet } = useWallet()
+  const { address, isConnected, connectWallet, disconnectWallet, isMiniPay } = useWallet()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isMiniPay, setIsMiniPay] = useState(false)
 
   useEffect(() => {
-    // Check if MiniPay is available
+    // Auto connect if it's MiniPay
     if (typeof window !== 'undefined' && window.ethereum?.isMiniPay) {
-      setIsMiniPay(true)
-      // Auto connect if it's MiniPay
       connectWallet()
     }
   }, [connectWallet])
@@ -32,6 +29,9 @@ export function TopBar({ className }: TopBarProps) {
     }
   }
 
+  // Ensure address is in the correct format for AvatarCircle
+  const formattedAddress = address as `0x${string}` | undefined
+
   return (
     <div
       className={cn(
@@ -42,7 +42,7 @@ export function TopBar({ className }: TopBarProps) {
       <LogoSmall />
       <div className="flex items-center">
         <AvatarCircle
-          address={isConnected ? address : undefined}
+          address={isConnected ? formattedAddress : undefined}
           onClick={handleAvatarClick}
           isMiniPay={isMiniPay}
         />
@@ -56,7 +56,8 @@ export function TopBar({ className }: TopBarProps) {
             </div>
             <button
               onClick={() => {
-                setIsMenuOpen(false)
+                disconnectWallet();
+                setIsMenuOpen(false);
               }}
               className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
             >
