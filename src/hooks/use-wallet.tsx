@@ -3,6 +3,8 @@
 import { useConnect, useAccount, useDisconnect } from 'wagmi';
 import { celoAlfajores } from "wagmi/chains";
 import { useEffect, useState } from "react";
+import { injected } from 'wagmi/connectors';
+import { createWalletClient, custom } from 'viem';
 
 /**
  * Hook for wallet connection and network management
@@ -12,28 +14,74 @@ export function useWallet() {
   const [mounted, setMounted] = useState(false);
   
   // Connect related hooks
-  const { connect, connectors, isPending: isConnecting } = useConnect();
-  const { address, isConnected } = useAccount();
+  const { connect, connectors } = useConnect();
+  const { address: wagmiAddress, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
 
   // States to store client window information
   const [isMiniPay, setIsMiniPay] = useState(false);
+  const [miniPayAddress, setMiniPayAddress] = useState<string | null>(null);
   const [currentChainId, setCurrentChainId] = useState(0);
   
-  // Update states when the component mounts
+  // Get the effective address (either from MiniPay or wagmi)
+  const address = miniPayAddress || wagmiAddress;
+
+  // Initial MiniPay detection and address fetch
+  useEffect(() => {
+    const initMiniPay = async () => {
+      if (typeof window !== "undefined" && window.ethereum?.isMiniPay) {
+        setIsMiniPay(true);
+        
+        try {
+          // Create a viem wallet client for direct interaction
+          const walletClient = createWalletClient({
+            chain: celoAlfajores,
+            transport: custom(window.ethereum),
+          });
+
+          // Get address directly from MiniPay
+          const [address] = await walletClient.getAddresses();
+          setMiniPayAddress(address);
+
+          // Also connect through wagmi for other functionality
+          await connect({ 
+            connector: injected({ 
+              target: "metaMask" 
+            })
+          });
+        } catch (error) {
+          console.error("Failed to initialize MiniPay:", error);
+        }
+      }
+    };
+
+    if (!isConnected && mounted) {
+      initMiniPay();
+    }
+  }, [mounted, isConnected, connect]);
+
+  // Handle mounting and chain ID
   useEffect(() => {
     setMounted(true);
     
-    // Detect if MiniPay is available
-    if (typeof window !== "undefined" && window.ethereum?.isMiniPay) {
-      setIsMiniPay(true);
-    }
-    
     // Set current chain ID
-    if (isConnected && typeof window !== "undefined" && window.ethereum?.networkVersion) {
+    if (typeof window !== "undefined" && window.ethereum?.networkVersion) {
       setCurrentChainId(Number(window.ethereum.networkVersion));
     }
-  }, [isConnected]);
+
+    // Listen for chain changes
+    if (typeof window !== "undefined" && window.ethereum) {
+      const handleChainChanged = (chainId: string) => {
+        setCurrentChainId(Number(chainId));
+      };
+
+      window.ethereum.on('chainChanged', handleChainChanged);
+
+      return () => {
+        window.ethereum.removeListener('chainChanged', handleChainChanged);
+      };
+    }
+  }, []);
 
   // Celo Alfajores chain ID
   const celoAlfajoresChainId = celoAlfajores.id;
@@ -49,13 +97,29 @@ export function useWallet() {
     if (!mounted) return;
     
     try {
-      // Find connector
-      const connector = connectors.find(
-        c => isMiniPay ? c.id === 'metaMask' : true
-      );
-      
-      if (connector) {
-        await connect({ connector });
+      if (isMiniPay) {
+        // Create a viem wallet client for direct interaction
+        const walletClient = createWalletClient({
+          chain: celoAlfajores,
+          transport: custom(window.ethereum),
+        });
+
+        // Get address directly from MiniPay
+        const [address] = await walletClient.getAddresses();
+        setMiniPayAddress(address);
+
+        // Also connect through wagmi
+        await connect({ 
+          connector: injected({ 
+            target: "metaMask" 
+          })
+        });
+      } else {
+        // For non-MiniPay, use the first available connector
+        const connector = connectors[0];
+        if (connector) {
+          await connect({ connector });
+        }
       }
     } catch (error) {
       console.error("Failed to connect wallet:", error);
@@ -65,6 +129,7 @@ export function useWallet() {
   // Disconnect wallet
   const disconnectWallet = () => {
     if (!mounted) return;
+    setMiniPayAddress(null);
     disconnect();
   };
   
@@ -132,9 +197,9 @@ export function useWallet() {
   return {
     isMiniPay,
     address,
-    isConnected,
-    isConnecting,
-    isSwitchingNetwork: false, // Placeholder, implement if needed
+    isConnected: Boolean(address),
+    isConnecting: false,
+    isSwitchingNetwork: false,
     connectWallet,
     disconnect,
     disconnectWallet,

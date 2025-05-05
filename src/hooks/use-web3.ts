@@ -1,6 +1,6 @@
 import { useState } from "react";
-import StableTokenABI from "./cusd-abi.json";
-import MinipayNFTABI from "./minipay-nft.json";
+import StableTokenABI from "@/lib/abi/cusd-abi.json";
+import MinipayNFTABI from "@/lib/abi/minipay-nft.json";
 import {
     createPublicClient,
     createWalletClient,

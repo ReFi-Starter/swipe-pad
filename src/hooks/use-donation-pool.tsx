@@ -5,7 +5,7 @@ import {
   useReadContract
 } from 'wagmi';
 import { parseUnits } from 'viem';
-import { useWallet } from "@/hooks/useWallet";
+import { useWallet } from "@/hooks/use-wallet";
 import { celoAlfajores } from "wagmi/chains";
 import { donationPoolAbi } from '@/lib/wagmi/contracts';
 

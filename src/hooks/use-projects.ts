@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { mockProjects } from '@/lib/mock-data'
 import { getUserStats } from '@/lib/utils'
-import type { Project } from '@/components/swipe-card'
 
 interface UserStats {
   reputation: number
