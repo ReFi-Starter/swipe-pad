@@ -1,12 +1,12 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Info } from 'lucide-react'
+import { Info, BadgeCheck } from 'lucide-react'
 import { ProjectImage } from '@/components/project-image'
 import type { CardHeaderProps } from '@/components/types'
 
 export function CardHeader({ project, onOpenNotes }: CardHeaderProps) {
   return (
-    <div className="relative aspect-[4/3.2] w-full">
+    <div className="relative aspect-[4/3] w-full">
       <ProjectImage
         src={project.imageUrl}
         alt={project.title}
@@ -14,6 +14,7 @@ export function CardHeader({ project, onOpenNotes }: CardHeaderProps) {
         fill
         sizes="(max-width: 768px) 100vw, 50vw"
         className="object-cover"
+        priority
       />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
       
@@ -25,14 +26,8 @@ export function CardHeader({ project, onOpenNotes }: CardHeaderProps) {
         {project.category}
       </Badge>
       
-      {/* Trust Tag & Notes */}
-      <div className="absolute top-4 right-4 flex items-center gap-2">
-        <Badge 
-          variant={project.trustStatus === 'verified' ? 'default' : 'destructive'}
-          className="px-2 py-1 text-xs backdrop-blur-sm"
-        >
-          {project.trustStatus === 'verified' ? '✅ Trusted' : '⚠️ Warning'}
-        </Badge>
+      {/* Notes Button */}
+      <div className="absolute top-4 right-4">
         {project.notesCount && (
           <Button
             variant="ghost"
@@ -49,10 +44,20 @@ export function CardHeader({ project, onOpenNotes }: CardHeaderProps) {
         )}
       </div>
       
-      {/* Title */}
-      <h3 className="absolute bottom-4 left-4 right-4 text-xl font-semibold text-white line-clamp-2">
-        {project.title}
-      </h3>
+      {/* Title with Verification Badge */}
+      <div className="absolute bottom-4 left-4 right-4">
+        <div className="flex items-center gap-1.5">
+          <h3 className="text-xl font-semibold text-white line-clamp-2">
+            {project.title}
+          </h3>
+          {project.trustStatus === 'verified' && (
+            <BadgeCheck 
+              className="shrink-0 w-5 h-5 text-white fill-[#1d9bf0] drop-shadow-[0_2px_3px_rgba(0,0,0,0.4)]" 
+              strokeWidth={2.5}
+            />
+          )}
+        </div>
+      </div>
     </div>
   )
 } 

@@ -59,7 +59,7 @@ export function CardSwipeView({
       animate={{ scale: isFront ? 1 : 0.95 - cardIndex * 0.05 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
-      <Card className="relative overflow-hidden rounded-2xl shadow-sm border bg-white">
+      <Card className="relative overflow-hidden rounded-2xl shadow-sm bg-white pt-0 border-none">
         <CardHeader 
           project={project}
           onOpenNotes={onOpenNotes}
