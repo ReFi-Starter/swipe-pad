@@ -177,7 +177,7 @@ export const projects = [
   },
 ]
 
-export const categories = ["All", "Education", "SocFi", "Animal Rescue", "Open Source"]
+export const categories = ["All", "Environment", "Community", "Energy", "Healthcare"]
 
 export const leaderboardData = [
   {
