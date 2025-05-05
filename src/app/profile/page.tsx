@@ -23,7 +23,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen pb-16">
-      <Header title="Profile" />
+      <Header title="Profile" showBack backUrl="/" />
 
       <div className="p-4">
         <Card className="overflow-hidden bento-bevel">
