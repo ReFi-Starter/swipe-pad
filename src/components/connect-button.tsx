@@ -1,6 +1,6 @@
 "use client";
 
-import { useWallet } from "@/hooks/useWallet";
+import { useWallet } from "@/hooks/use-wallet";
 import { Button } from "@/components/ui/button";
 import { 
   DropdownMenu,
