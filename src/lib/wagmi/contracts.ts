@@ -35,7 +35,7 @@ export const donationPoolAbi = [
   {
     type: 'function',
     inputs: [{ name: 'poolId', internalType: 'uint256', type: 'uint256' }],
-    name: 'cancelProject',
+    name: 'cancelCampaign',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -70,9 +70,9 @@ export const donationPoolAbi = [
     inputs: [
       { name: 'startTime', internalType: 'uint40', type: 'uint40' },
       { name: 'endTime', internalType: 'uint40', type: 'uint40' },
-      { name: 'projectName', internalType: 'string', type: 'string' },
-      { name: 'projectDescription', internalType: 'string', type: 'string' },
-      { name: 'projectUrl', internalType: 'string', type: 'string' },
+      { name: 'campaignName', internalType: 'string', type: 'string' },
+      { name: 'campaignDescription', internalType: 'string', type: 'string' },
+      { name: 'campaignUrl', internalType: 'string', type: 'string' },
       { name: 'imageUrl', internalType: 'string', type: 'string' },
       { name: 'fundingGoal', internalType: 'uint256', type: 'uint256' },
       {
@@ -82,7 +82,7 @@ export const donationPoolAbi = [
       },
       { name: 'token', internalType: 'address', type: 'address' },
     ],
-    name: 'createProject',
+    name: 'createCampaign',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'nonpayable',
   },
@@ -92,7 +92,7 @@ export const donationPoolAbi = [
       { name: '', internalType: 'address', type: 'address' },
       { name: '', internalType: 'uint256', type: 'uint256' },
     ],
-    name: 'createdProjects',
+    name: 'createdCampaigns',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
   },
@@ -112,7 +112,7 @@ export const donationPoolAbi = [
       { name: '', internalType: 'address', type: 'address' },
       { name: '', internalType: 'uint256', type: 'uint256' },
     ],
-    name: 'donatedProjects',
+    name: 'donatedCampaigns',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
   },
@@ -153,14 +153,14 @@ export const donationPoolAbi = [
   {
     type: 'function',
     inputs: [{ name: 'poolId', internalType: 'uint256', type: 'uint256' }],
-    name: 'flagProjectAsDisputed',
+    name: 'flagCampaignAsDisputed',
     outputs: [],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
     inputs: [{ name: 'poolId', internalType: 'uint256', type: 'uint256' }],
-    name: 'getAllProjectInfo',
+    name: 'getAllCampaignInfo',
     outputs: [
       {
         name: '_poolAdmin',
@@ -179,13 +179,13 @@ export const donationPoolAbi = [
         components: [
           { name: 'startTime', internalType: 'uint40', type: 'uint40' },
           { name: 'endTime', internalType: 'uint40', type: 'uint40' },
-          { name: 'projectName', internalType: 'string', type: 'string' },
+          { name: 'campaignName', internalType: 'string', type: 'string' },
           {
-            name: 'projectDescription',
+            name: 'campaignDescription',
             internalType: 'string',
             type: 'string',
           },
-          { name: 'projectUrl', internalType: 'string', type: 'string' },
+          { name: 'campaignUrl', internalType: 'string', type: 'string' },
           { name: 'imageUrl', internalType: 'string', type: 'string' },
           { name: 'fundingGoal', internalType: 'uint256', type: 'uint256' },
           {
@@ -218,6 +218,72 @@ export const donationPoolAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: 'poolId', internalType: 'uint256', type: 'uint256' }],
+    name: 'getCampaignBalance',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'poolId', internalType: 'uint256', type: 'uint256' }],
+    name: 'getCampaignCreator',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'poolId', internalType: 'uint256', type: 'uint256' }],
+    name: 'getCampaignDetails',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct IDonationPool.PoolDetail',
+        type: 'tuple',
+        components: [
+          { name: 'startTime', internalType: 'uint40', type: 'uint40' },
+          { name: 'endTime', internalType: 'uint40', type: 'uint40' },
+          { name: 'campaignName', internalType: 'string', type: 'string' },
+          {
+            name: 'campaignDescription',
+            internalType: 'string',
+            type: 'string',
+          },
+          { name: 'campaignUrl', internalType: 'string', type: 'string' },
+          { name: 'imageUrl', internalType: 'string', type: 'string' },
+          { name: 'fundingGoal', internalType: 'uint256', type: 'uint256' },
+          {
+            name: 'fundingModel',
+            internalType: 'enum IDonationPool.FUNDINGMODEL',
+            type: 'uint8',
+          },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'poolId', internalType: 'uint256', type: 'uint256' }],
+    name: 'getCampaignDonors',
+    outputs: [{ name: '', internalType: 'address[]', type: 'address[]' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'creator', internalType: 'address', type: 'address' }],
+    name: 'getCampaignsCreatedBy',
+    outputs: [{ name: '', internalType: 'uint256[]', type: 'uint256[]' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'donor', internalType: 'address', type: 'address' }],
+    name: 'getCampaignsDonatedToBy',
+    outputs: [{ name: '', internalType: 'uint256[]', type: 'uint256[]' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [
       { name: 'poolId', internalType: 'uint256', type: 'uint256' },
       { name: 'donor', internalType: 'address', type: 'address' },
@@ -246,72 +312,6 @@ export const donationPoolAbi = [
   },
   {
     type: 'function',
-    inputs: [{ name: 'poolId', internalType: 'uint256', type: 'uint256' }],
-    name: 'getProjectBalance',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'poolId', internalType: 'uint256', type: 'uint256' }],
-    name: 'getProjectCreator',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'poolId', internalType: 'uint256', type: 'uint256' }],
-    name: 'getProjectDetails',
-    outputs: [
-      {
-        name: '',
-        internalType: 'struct IDonationPool.PoolDetail',
-        type: 'tuple',
-        components: [
-          { name: 'startTime', internalType: 'uint40', type: 'uint40' },
-          { name: 'endTime', internalType: 'uint40', type: 'uint40' },
-          { name: 'projectName', internalType: 'string', type: 'string' },
-          {
-            name: 'projectDescription',
-            internalType: 'string',
-            type: 'string',
-          },
-          { name: 'projectUrl', internalType: 'string', type: 'string' },
-          { name: 'imageUrl', internalType: 'string', type: 'string' },
-          { name: 'fundingGoal', internalType: 'uint256', type: 'uint256' },
-          {
-            name: 'fundingModel',
-            internalType: 'enum IDonationPool.FUNDINGMODEL',
-            type: 'uint8',
-          },
-        ],
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'poolId', internalType: 'uint256', type: 'uint256' }],
-    name: 'getProjectDonors',
-    outputs: [{ name: '', internalType: 'address[]', type: 'address[]' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'creator', internalType: 'address', type: 'address' }],
-    name: 'getProjectsCreatedBy',
-    outputs: [{ name: '', internalType: 'uint256[]', type: 'uint256[]' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'donor', internalType: 'address', type: 'address' }],
-    name: 'getProjectsDonatedToBy',
-    outputs: [{ name: '', internalType: 'uint256[]', type: 'uint256[]' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
     inputs: [{ name: 'role', internalType: 'bytes32', type: 'bytes32' }],
     name: 'getRoleAdmin',
     outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
@@ -330,7 +330,7 @@ export const donationPoolAbi = [
   {
     type: 'function',
     inputs: [{ name: 'poolId', internalType: 'uint256', type: 'uint256' }],
-    name: 'hasProjectFailed',
+    name: 'hasCampaignFailed',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view',
   },
@@ -341,6 +341,13 @@ export const donationPoolAbi = [
       { name: 'account', internalType: 'address', type: 'address' },
     ],
     name: 'hasRole',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'poolId', internalType: 'uint256', type: 'uint256' }],
+    name: 'isCampaignSuccessful',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view',
   },
@@ -361,13 +368,6 @@ export const donationPoolAbi = [
       { name: 'poolId', internalType: 'uint256', type: 'uint256' },
     ],
     name: 'isDonor',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'poolId', internalType: 'uint256', type: 'uint256' }],
-    name: 'isProjectSuccessful',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view',
   },
@@ -450,9 +450,9 @@ export const donationPoolAbi = [
     outputs: [
       { name: 'startTime', internalType: 'uint40', type: 'uint40' },
       { name: 'endTime', internalType: 'uint40', type: 'uint40' },
-      { name: 'projectName', internalType: 'string', type: 'string' },
-      { name: 'projectDescription', internalType: 'string', type: 'string' },
-      { name: 'projectUrl', internalType: 'string', type: 'string' },
+      { name: 'campaignName', internalType: 'string', type: 'string' },
+      { name: 'campaignDescription', internalType: 'string', type: 'string' },
+      { name: 'campaignUrl', internalType: 'string', type: 'string' },
       { name: 'imageUrl', internalType: 'string', type: 'string' },
       { name: 'fundingGoal', internalType: 'uint256', type: 'uint256' },
       {
@@ -559,12 +559,12 @@ export const donationPoolAbi = [
     type: 'function',
     inputs: [
       { name: 'poolId', internalType: 'uint256', type: 'uint256' },
-      { name: 'projectName', internalType: 'string', type: 'string' },
-      { name: 'projectDescription', internalType: 'string', type: 'string' },
-      { name: 'projectUrl', internalType: 'string', type: 'string' },
+      { name: 'campaignName', internalType: 'string', type: 'string' },
+      { name: 'campaignDescription', internalType: 'string', type: 'string' },
+      { name: 'campaignUrl', internalType: 'string', type: 'string' },
       { name: 'imageUrl', internalType: 'string', type: 'string' },
     ],
-    name: 'updateProjectDetails',
+    name: 'updateCampaignDetails',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -574,6 +574,162 @@ export const donationPoolAbi = [
     name: 'withdrawFunds',
     outputs: [],
     stateMutability: 'nonpayable',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'poolId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'creator',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'CampaignCancelled',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'poolId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'creator',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'campaignName',
+        internalType: 'string',
+        type: 'string',
+        indexed: false,
+      },
+      {
+        name: 'fundingGoal',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'fundingModel',
+        internalType: 'enum IDonationPool.FUNDINGMODEL',
+        type: 'uint8',
+        indexed: false,
+      },
+    ],
+    name: 'CampaignCreated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'poolId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'campaignName',
+        internalType: 'string',
+        type: 'string',
+        indexed: false,
+      },
+      {
+        name: 'campaignDescription',
+        internalType: 'string',
+        type: 'string',
+        indexed: false,
+      },
+      {
+        name: 'campaignUrl',
+        internalType: 'string',
+        type: 'string',
+        indexed: false,
+      },
+      {
+        name: 'imageUrl',
+        internalType: 'string',
+        type: 'string',
+        indexed: false,
+      },
+    ],
+    name: 'CampaignDetailsUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'poolId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'reporter',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'CampaignDisputed',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'poolId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'endTime',
+        internalType: 'uint40',
+        type: 'uint40',
+        indexed: false,
+      },
+    ],
+    name: 'CampaignEndTimeChanged',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'poolId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'status',
+        internalType: 'enum IDonationPool.POOLSTATUS',
+        type: 'uint8',
+        indexed: false,
+      },
+    ],
+    name: 'CampaignStatusChanged',
   },
   {
     type: 'event',
@@ -807,162 +963,6 @@ export const donationPoolAbi = [
         indexed: true,
       },
       {
-        name: 'creator',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'ProjectCancelled',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'poolId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: true,
-      },
-      {
-        name: 'creator',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'projectName',
-        internalType: 'string',
-        type: 'string',
-        indexed: false,
-      },
-      {
-        name: 'fundingGoal',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-      {
-        name: 'token',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'fundingModel',
-        internalType: 'enum IDonationPool.FUNDINGMODEL',
-        type: 'uint8',
-        indexed: false,
-      },
-    ],
-    name: 'ProjectCreated',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'poolId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: true,
-      },
-      {
-        name: 'projectName',
-        internalType: 'string',
-        type: 'string',
-        indexed: false,
-      },
-      {
-        name: 'projectDescription',
-        internalType: 'string',
-        type: 'string',
-        indexed: false,
-      },
-      {
-        name: 'projectUrl',
-        internalType: 'string',
-        type: 'string',
-        indexed: false,
-      },
-      {
-        name: 'imageUrl',
-        internalType: 'string',
-        type: 'string',
-        indexed: false,
-      },
-    ],
-    name: 'ProjectDetailsUpdated',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'poolId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: true,
-      },
-      {
-        name: 'reporter',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'ProjectDisputed',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'poolId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: true,
-      },
-      {
-        name: 'endTime',
-        internalType: 'uint40',
-        type: 'uint40',
-        indexed: false,
-      },
-    ],
-    name: 'ProjectEndTimeChanged',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'poolId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: true,
-      },
-      {
-        name: 'status',
-        internalType: 'enum IDonationPool.POOLSTATUS',
-        type: 'uint8',
-        indexed: false,
-      },
-    ],
-    name: 'ProjectStatusChanged',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'poolId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: true,
-      },
-      {
         name: 'donor',
         internalType: 'address',
         type: 'address',
@@ -1061,6 +1061,24 @@ export const donationPoolAbi = [
   },
   {
     type: 'error',
+    inputs: [{ name: 'poolId', internalType: 'uint256', type: 'uint256' }],
+    name: 'CampaignDisputed',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'poolId', internalType: 'uint256', type: 'uint256' },
+      { name: 'totalDonations', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'CampaignHasDonations',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'poolId', internalType: 'uint256', type: 'uint256' }],
+    name: 'CampaignNotActive',
+  },
+  {
+    type: 'error',
     inputs: [
       { name: 'poolId', internalType: 'uint256', type: 'uint256' },
       { name: 'endTime', internalType: 'uint40', type: 'uint40' },
@@ -1136,24 +1154,6 @@ export const donationPoolAbi = [
     type: 'error',
     inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
     name: 'OwnableUnauthorizedAccount',
-  },
-  {
-    type: 'error',
-    inputs: [{ name: 'poolId', internalType: 'uint256', type: 'uint256' }],
-    name: 'ProjectDisputed',
-  },
-  {
-    type: 'error',
-    inputs: [
-      { name: 'poolId', internalType: 'uint256', type: 'uint256' },
-      { name: 'totalDonations', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'ProjectHasDonations',
-  },
-  {
-    type: 'error',
-    inputs: [{ name: 'poolId', internalType: 'uint256', type: 'uint256' }],
-    name: 'ProjectNotActive',
   },
   {
     type: 'error',
