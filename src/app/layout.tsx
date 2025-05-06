@@ -1,43 +1,20 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { Shell, TopBar as ShellTopBar, Content, BottomBar } from '@/components/shell'
+import '@/styles/globals.css'
+
+import AppLayout from '@/components/layout/app-layout'
 import { Providers } from '@/components/providers'
-import { TopBar } from '@/components/top-bar'
-import { BottomNav } from '@/components/bottom-nav'
-import { ContentView } from '@/components/content-view'
+import { inter } from '@/lib/config/fonts'
+import { cn } from '@/lib/styles/tailwind'
 
-const inter = Inter({ subsets: ["latin"] });
+export { metadata, viewport } from '@/lib/config/metadata'
 
-export const metadata: Metadata = {
-  title: "SwipePad",
-  description: "Discover and support sustainable projects",
-};
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="en" className="h-full" suppressHydrationWarning>
-      <body className={`${inter.className} flex flex-col min-h-full`}>
-        <Providers>
-          <Shell>
-            <ShellTopBar>
-              <TopBar />
-            </ShellTopBar>
-            <Content>
-              <ContentView>
-                {children}
-              </ContentView>
-            </Content>
-            <BottomBar>
-              <BottomNav />
-            </BottomBar>
-          </Shell>
-        </Providers>
-      </body>
-    </html>
-  );
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+    return (
+        <html lang='en' suppressHydrationWarning>
+            <body className={cn(inter.className, 'flex h-dvh flex-col')}>
+                <Providers>
+                    <AppLayout>{children}</AppLayout>
+                </Providers>
+            </body>
+        </html>
+    )
 }
