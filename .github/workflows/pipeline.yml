@@ -1,0 +1,133 @@
+name: Unified CI/CD Pipeline
+
+on:
+    push:
+        branches: ['main']
+    pull_request:
+        types: [opened, synchronize, reopened]
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    pull-requests: write
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+env:
+    NEXT_TELEMETRY_DISABLED: 1
+    FORCE_COLOR: true
+
+jobs:
+    build-and-deploy:
+        if: github.repository == 'ReFi-Starter/swipe-pad' && (github.ref == 'refs/heads/main' || github.event_name == 'pull_request')
+        runs-on: ubuntu-22.04
+        environment:
+            name: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
+            url: ${{ steps.deploy.outputs.url }}
+
+        steps:
+            - name: Notify about starting this deployment
+              uses: hasura/comment-progress@v2.3.0
+              if: github.event_name == 'pull_request'
+              with:
+                  github-token: ${{ secrets.COMMENTER_TOKEN }}
+                  repository: ${{ github.repository }}
+                  number: ${{ github.event.pull_request.number }}
+                  id: deploying-comment
+                  message: |
+                      🚀 **Deployment Started!** 🚧
+                      | Details | Link |
+                      | --- | --- |
+                      | **Follow Progress** | [Workflow Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) |
+
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 2
+
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v1
+              with:
+                  bun-version: latest
+
+            - name: Install Vercel CLI
+              run: bun install -g vercel@latest
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '22'
+
+            # Cache Bun dependencies
+            - name: Get bun's cache directory
+              id: bun-cache-dir
+              run: echo "dir=$(bun pm cache dir)" >> $GITHUB_OUTPUT
+
+            - name: Cache bun dependencies
+              uses: actions/cache@v4
+              with:
+                  path: ${{ steps.bun-cache-dir.outputs.dir }}
+                  key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
+                  restore-keys: |
+                      ${{ runner.os }}-bun-
+
+            - name: Install dependencies
+              run: bun install --frozen-lockfile
+
+            # Cache Next.js build
+            - name: Cache Next.js build
+              uses: actions/cache@v4
+              with:
+                  path: |
+                      .next/cache
+                  key: ${{ runner.os }}-nextjs-${{ hashFiles('**/*.{js,jsx,ts,tsx}') }}-${{ hashFiles('**/bun.lockb') }}
+                  restore-keys: |
+                      ${{ runner.os }}-nextjs-
+
+            - name: Pull environment variables
+              run: vercel pull --yes --environment=${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }} --token ${{ secrets.VERCEL_TOKEN }}
+
+            - name: Build the project
+              id: build
+              run: |
+                  echo "🏗️ Building the project with Next.js 22..."
+                  start_time=$(date +%s)
+                  vercel build --token ${{ secrets.VERCEL_TOKEN }} ${{ github.ref == 'refs/heads/main' && '--prod' || '' }}
+                  end_time=$(date +%s)
+                  echo "time=$((end_time-start_time))" >> $GITHUB_OUTPUT
+
+            - name: Run tests
+              run: bun test
+
+            - name: Run type check
+              run: bun run typecheck
+
+            - name: Run lint check
+              run: bun run lint
+
+            - name: Deploy the project
+              id: deploy
+              env:
+                  VERCEL_ORG_ID: ${{ secrets.VERCEL_TEAM_ID }}
+                  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+              run: |
+                  echo "🚀 Deploying the project..."
+                  echo "url=$(vercel deploy --prebuilt --token ${{ secrets.VERCEL_TOKEN }} ${{ github.ref == 'refs/heads/main' && '--prod' || '' }})" >> $GITHUB_OUTPUT
+
+            - name: Notify about the result of this deployment
+              uses: hasura/comment-progress@v2.3.0
+              if: github.event_name == 'pull_request'
+              with:
+                  github-token: ${{ secrets.COMMENTER_TOKEN }}
+                  repository: ${{ github.repository }}
+                  number: ${{ github.event.pull_request.number }}
+                  id: deploying-comment
+                  recreate: true
+                  message: |
+                      ✅ **Deployment Complete!** 🌐
+                      | Details | Link |
+                      | --- | --- |
+                      | **View Deployment** | [Visit Site](${{ steps.deploy.outputs.url }}) |
+                      | **Build Time** | ${{ steps.build.outputs.time }}s |
