@@ -1,137 +1,71 @@
-"use client"
-
-import type React from "react"
-import { useState, useCallback } from "react"
-import { SwipeCard } from "@/components/swipe-card"
-import { Button } from "@/components/ui/button"
-import type { Project } from "@/components/swipe-card"
+import { SwipeCard } from '@/components/swipe-card'
+import { RefreshButton } from '@/components/swipe-card-components/refresh-button'
+import type { Campaign } from '@/types/campaign'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
 
 interface SwipeCardStackProps {
-  onDonate: () => void
-  onSuperLike?: () => void
-  onBoost?: () => void
-  onShowDetails?: (project: Project) => void
-  onAddNote?: (projectId: string, content: string) => Promise<void>
-  onVoteNote?: (projectId: string, noteId: string, vote: 'up' | 'down') => Promise<void>
-  onFlagNote?: (projectId: string, noteId: string) => Promise<void>
-  userReputation?: number
-  topUserThreshold?: number
-  filteredProjects: Project[]
+    campaigns: Campaign[]
+    onSwipe: (campaignId: string, direction: 'left' | 'right' | 'up' | 'down') => void
+    className?: string
 }
 
-export function SwipeCardStack({
-  onDonate,
-  onSuperLike,
-  onBoost,
-  onShowDetails,
-  onAddNote,
-  onVoteNote,
-  onFlagNote,
-  userReputation = 0,
-  topUserThreshold = 100,
-  filteredProjects
-}: SwipeCardStackProps) {
-  // State for managing current card and animations
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [isAnimating, setIsAnimating] = useState(false)
-  const [comboCount, setComboCount] = useState(0)
-  const [questTokens, setQuestTokens] = useState(3)
-  const [availableBoosts, setAvailableBoosts] = useState(3) // 3 boosts per week
+export function SwipeCardStack({ campaigns = [], onSwipe, className = '' }: SwipeCardStackProps) {
+    const [currentIndex, setCurrentIndex] = useState(0)
+    const [isRefreshing, setIsRefreshing] = useState(false)
 
-  const handleSwipeLeft = useCallback(() => {
-    if (isAnimating || currentIndex >= filteredProjects.length - 1) return;
-    
-    setIsAnimating(true);
-    setComboCount(0); // Reset combo on reject
-    
-    setTimeout(() => {
-      setCurrentIndex(currentIndex + 1);
-      setIsAnimating(false);
-    }, 500);
-  }, [currentIndex, filteredProjects.length, isAnimating]);
+    // Debug log for component state
+    useEffect(() => {
+        console.log('SwipeCardStack State:', {
+            campaignsLength: campaigns.length,
+            currentIndex,
+            isRefreshing,
+            hasCurrentCampaign: campaigns.length > 0 && currentIndex < campaigns.length,
+        })
+    }, [campaigns, currentIndex, isRefreshing])
 
-  const handleSwipeRight = useCallback(() => {
-    if (isAnimating || currentIndex >= filteredProjects.length - 1) return;
-    
-    setIsAnimating(true);
-    setComboCount(prev => prev + 1); // Increment combo on donate
-    onDonate();
-    
-    setTimeout(() => {
-      setCurrentIndex(currentIndex + 1);
-      setIsAnimating(false);
-    }, 500);
-  }, [currentIndex, filteredProjects.length, isAnimating, onDonate]);
-
-  const handleSuperLike = useCallback(() => {
-    if (questTokens > 0 && onSuperLike) {
-      setQuestTokens(prev => prev - 1);
-      onSuperLike();
+    const handleSwipe = (direction: 'left' | 'right' | 'up' | 'down') => {
+        if (currentIndex < campaigns.length) {
+            console.log('Handling swipe:', { direction, currentIndex, campaignId: campaigns[currentIndex].id })
+            onSwipe(campaigns[currentIndex].id, direction)
+            setCurrentIndex(prev => prev + 1)
+        }
     }
-  }, [questTokens, onSuperLike]);
 
-  const handleBoost = useCallback(() => {
-    if (availableBoosts > 0 && userReputation > topUserThreshold && onBoost) {
-      setAvailableBoosts(prev => prev - 1);
-      onBoost();
+    const handleRefresh = () => {
+        console.log('Handling refresh, current state:', { currentIndex, campaignsLength: campaigns.length })
+        setIsRefreshing(true)
+        setTimeout(() => {
+            setCurrentIndex(0)
+            setIsRefreshing(false)
+            console.log('Refresh complete, new state:', { currentIndex: 0, campaignsLength: campaigns.length })
+        }, 300)
     }
-  }, [availableBoosts, userReputation, topUserThreshold, onBoost]);
 
-  const handleShowDetails = useCallback((project: Project) => {
-    onShowDetails?.(project);
-  }, [onShowDetails]);
+    // Only get current campaign if we have campaigns and index is valid
+    const currentCampaign = campaigns.length > 0 && currentIndex < campaigns.length ? campaigns[currentIndex] : null
 
-  const handleAddNote = useCallback((projectId: string) => async (content: string) => {
-    await onAddNote?.(projectId, content);
-  }, [onAddNote]);
+    return (
+        <div className={`relative h-full w-full ${className}`}>
+            <AnimatePresence>
+                {currentCampaign && (
+                    <motion.div
+                        key={currentCampaign.id}
+                        className='absolute inset-0'
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.3 }}>
+                        <SwipeCard campaign={currentCampaign} onSwipe={handleSwipe} />
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
-  const handleVoteNote = useCallback((projectId: string) => async (noteId: string, vote: 'up' | 'down') => {
-    await onVoteNote?.(projectId, noteId, vote);
-  }, [onVoteNote]);
-
-  const handleFlagNote = useCallback((projectId: string) => async (noteId: string) => {
-    await onFlagNote?.(projectId, noteId);
-  }, [onFlagNote]);
-
-  return (
-    <div className="flex flex-col h-[calc(100dvh-18rem)]">
-      <div className="flex-1 flex items-center justify-center">
-        {currentIndex < filteredProjects.length ? (
-          <div className="relative w-full max-w-[320px] h-[calc(100dvh-18rem)] mx-auto">
-            {/* Stack of cards */}
-            {filteredProjects
-              .slice(currentIndex, currentIndex + 3)
-              .map((project, index) => (
-                <SwipeCard
-                  key={project.id}
-                  project={project}
-                  onSwipe={direction => direction === 'right' ? handleSwipeRight() : handleSwipeLeft()}
-                  onSuperLike={handleSuperLike}
-                  onBoost={handleBoost}
-                  onShowDetails={() => handleShowDetails(project)}
-                  cardIndex={index}
-                  active={index === 0}
-                  comboCount={index === 0 ? comboCount : 0}
-                  questTokens={index === 0 ? questTokens : 0}
-                  userReputation={userReputation}
-                  topUserThreshold={topUserThreshold}
-                  availableBoosts={index === 0 ? availableBoosts : 0}
-                  onAddNote={handleAddNote(project.id)}
-                  onVoteNote={handleVoteNote(project.id)}
-                  onFlagNote={handleFlagNote(project.id)}
-                />
-              ))}
-          </div>
-        ) : (
-          <div className="text-center p-8">
-            <h3 className="text-lg font-semibold mb-2">No more projects</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              You&apos;ve seen all the projects in this category.
-            </p>
-            <Button onClick={() => setCurrentIndex(0)}>Start Over</Button>
-          </div>
-        )}
-      </div>
-    </div>
-  )
+            {!currentCampaign && !isRefreshing && (
+                <div className='absolute inset-0 flex items-center justify-center'>
+                    <RefreshButton onClick={handleRefresh} />
+                </div>
+            )}
+        </div>
+    )
 }
