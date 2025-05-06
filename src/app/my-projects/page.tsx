@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useWallet } from "@/hooks/useWallet";
+import { useWallet } from "@/hooks/use-wallet";
 import { ProjectList } from "@/components/project-list";
 
 export default function MyProjectsPage() {
@@ -10,7 +10,7 @@ export default function MyProjectsPage() {
   const { isConnected } = useWallet();
   
   // Ensure the component is mounted (client)
-  useEffect(() => {
+  useEffect(() => { 
     setMounted(true);
   }, []);
   

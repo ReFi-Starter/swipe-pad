@@ -13,7 +13,7 @@ import { ImpactShareCard } from "@/components/impact-share-card"
 import { UserStatsCard } from "@/components/user-stats-card"
 import { StreakBadge } from "@/components/streak-badge"
 import { achievements, friendsData, getUserStats } from "@/lib/utils"
-import { Settings, Share2 } from "lucide-react"
+import { Settings, Share2, Eye } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 export default function ProfilePage() {
@@ -23,7 +23,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen pb-16">
-      <Header title="Profile" />
+      <Header title="Profile" showBack backUrl="/" />
 
       <div className="p-4">
         <Card className="overflow-hidden bento-bevel">
@@ -34,6 +34,7 @@ export default function ProfilePage() {
                   src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=100&auto=format&fit=crop"
                   alt="Profile"
                   fill
+                  sizes="80px"
                   className="object-cover"
                 />
               </div>
@@ -67,7 +68,13 @@ export default function ProfilePage() {
           <TabsContent value="achievements" className="mt-4 space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="font-medium">Your Achievements</h3>
-              <PrivacyToggle isPublic={isPublic} onChange={() => setIsPublic(!isPublic)} />
+              <PrivacyToggle
+                icon={Eye}
+                label="Visibility"
+                description="Make your achievements visible to others"
+                checked={isPublic}
+                onCheckedChange={setIsPublic}
+              />
             </div>
 
             <div className="grid grid-cols-3 gap-3">

@@ -1,25 +1,48 @@
-"use client"
+'use client'
+
+import { Button } from "@/components/ui/button"
+import { categories } from "@/lib/utils"
 
 interface CategoryFilterProps {
-  onChange: (category: string) => void
   selectedCategory: string
-  categories: string[]
+  onCategoryChange: (category: string) => void
+  className?: string
 }
 
-export function CategoryFilter({ onChange, selectedCategory, categories }: CategoryFilterProps) {
+export function CategoryFilter({
+  selectedCategory,
+  onCategoryChange,
+  className = ""
+}: CategoryFilterProps) {
   return (
-    <div className="flex gap-2 overflow-x-auto py-2 no-scrollbar">
-      {categories.map((category) => (
-        <button
+    <div 
+      className={`flex gap-2 overflow-x-auto ${className}`}
+      style={{
+        msOverflowStyle: 'none',  /* IE and Edge */
+        scrollbarWidth: 'none',   /* Firefox */
+        WebkitOverflowScrolling: 'touch'
+      }}
+    >
+      <style jsx>{`
+        div::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
+      {categories.map(category => (
+        <Button
           key={category}
-          className={`px-3 py-1 rounded-full text-sm whitespace-nowrap ${
-            selectedCategory === category ? "bg-[#22CC88] text-white" : "bg-[#F0F2F5] text-slate-700"
-          }`}
-          onClick={() => onChange(category)}
+          variant={selectedCategory === category ? "default" : "outline"}
+          size="sm"
+          onClick={() => onCategoryChange(category)}
+          className={`relative shrink-0 border border-black/10 text-gray-800
+            ${selectedCategory === category 
+              ? 'bg-primary/60 text-primary-foreground' 
+              : 'bg-white/20'
+            }`}
         >
           {category}
-        </button>
+        </Button>
       ))}
     </div>
   )
-}
+} 

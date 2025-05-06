@@ -6,8 +6,8 @@ export default function OnboardingLayout({
   children: React.ReactNode
 }) {
   return (
-    <main className="min-h-screen">
+    <div className="fixed inset-0 z-50 min-h-screen w-full bg-white overflow-hidden">
       {children}
-    </main>
+    </div>
   )
 } 

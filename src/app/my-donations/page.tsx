@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useWallet } from "@/hooks/useWallet";
-import { useDonationPool } from "@/hooks/useDonationPool";
+import { useWallet } from "@/hooks/use-wallet";
+import { useDonationPool } from "@/hooks/use-donation-pool";
 
 // Interface for donation objects
 interface Donation {

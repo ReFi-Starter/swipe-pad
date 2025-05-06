@@ -1,39 +1,20 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { Toaster } from "sonner";
-import { WalletProvider } from "@/providers/wallet-provider";
-import { Navbar } from "@/components/navbar";
-import { BatchTransactionProvider } from "@/components/batch-transaction-provider";
-import { TrpcProvider } from "@/providers/TrpcProvider";
-import { BottomNav } from "@/components/bottom-nav";
+import '@/styles/globals.css'
 
-const inter = Inter({ subsets: ["latin"] });
+import AppLayout from '@/components/layout/app-layout'
+import { Providers } from '@/components/providers'
+import { inter } from '@/lib/config/fonts'
+import { cn } from '@/lib/styles/tailwind'
 
-export const metadata: Metadata = {
-  title: "SwipePad Donations",
-  description: "Support projects on the Celo blockchain",
-};
+export { metadata, viewport } from '@/lib/config/metadata'
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en">
-      <body className={inter.className}>
-        <TrpcProvider>
-          <WalletProvider>
-            <BatchTransactionProvider>
-              <Navbar />
-              {children}
-              <BottomNav />
-              <Toaster position="bottom-center" richColors />
-            </BatchTransactionProvider>
-          </WalletProvider>
-        </TrpcProvider>
-      </body>
-    </html>
-  );
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+    return (
+        <html lang='en' suppressHydrationWarning>
+            <body className={cn(inter.className, 'flex h-dvh flex-col')}>
+                <Providers>
+                    <AppLayout>{children}</AppLayout>
+                </Providers>
+            </body>
+        </html>
+    )
 }

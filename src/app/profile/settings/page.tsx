@@ -7,11 +7,13 @@ import { Button } from "@/components/ui/button"
 import { PrivacyToggle } from "@/components/privacy-toggle"
 import { Bell, Users, LogOut, RefreshCw } from "lucide-react"
 import { SwipeSettings } from "@/components/swipe-settings"
-import { resetOnboarding } from "@/lib/onboarding"
 import { useRouter } from "next/navigation"
+import { useAppStore } from "@/store/app-store"
+import { toast } from "sonner"
 
 export default function ProfileSettings() {
   const router = useRouter()
+  const { resetOnboarding } = useAppStore()
   const [isPublicProfile, setIsPublicProfile] = useState(true)
   const [notifications, setNotifications] = useState(true)
   const [friendRequests, setFriendRequests] = useState(true)
@@ -20,7 +22,13 @@ export default function ProfileSettings() {
 
   const handleResetOnboarding = () => {
     resetOnboarding()
-    router.push("/onboarding/1")
+    router.push("/onboarding")
+  }
+
+  const handleResetApp = async () => {
+    resetOnboarding()
+    toast.success("App reset successfully")
+    router.push("/")
   }
 
   return (
@@ -90,6 +98,20 @@ export default function ProfileSettings() {
             </Button>
           </CardContent>
         </Card>
+
+        <div className="rounded-lg border p-4">
+          <h2 className="font-medium mb-2">Reset App</h2>
+          <p className="text-sm text-slate-600 mb-4">
+            This will reset the app to its initial state and show the onboarding screens again.
+          </p>
+          <Button 
+            variant="destructive" 
+            className="w-full"
+            onClick={handleResetApp}
+          >
+            Reset App
+          </Button>
+        </div>
       </div>
     </div>
   )
