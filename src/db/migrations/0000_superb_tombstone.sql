@@ -13,14 +13,14 @@ CREATE TABLE "cached_donations" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"tx_hash" varchar(66),
 	"donor_address" varchar(42) NOT NULL,
-	"project_id" varchar(100) NOT NULL,
+	"campaign_id" varchar(100) NOT NULL,
 	"amount" numeric(20, 0) NOT NULL,
 	"token_address" varchar(42),
 	"donated_at" timestamp DEFAULT now(),
 	CONSTRAINT "cached_donations_tx_hash_unique" UNIQUE("tx_hash")
 );
 --> statement-breakpoint
-CREATE TABLE "cached_projects" (
+CREATE TABLE "cached_campaigns" (
 	"id" varchar(100) PRIMARY KEY NOT NULL,
 	"creator_address" varchar(42) NOT NULL,
 	"name" varchar(200) NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE "community_note_votes" (
 --> statement-breakpoint
 CREATE TABLE "community_notes" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"project_id" varchar(100) NOT NULL,
+	"campaign_id" varchar(100) NOT NULL,
 	"author_id" integer,
 	"text" text NOT NULL,
 	"tags" text[],
@@ -64,15 +64,15 @@ CREATE TABLE "community_notes" (
 --> statement-breakpoint
 CREATE TABLE "community_tags" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"project_id" varchar(100) NOT NULL,
+	"campaign_id" varchar(100) NOT NULL,
 	"user_id" integer,
 	"text" varchar(100) NOT NULL,
 	"count" integer DEFAULT 1,
 	"created_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
-CREATE TABLE "project_metadata" (
-	"project_id" varchar(100) PRIMARY KEY NOT NULL,
+CREATE TABLE "campaign_metadata" (
+	"campaign_id" varchar(100) PRIMARY KEY NOT NULL,
 	"category" varchar(50) NOT NULL,
 	"tags" text[],
 	"sponsor_boosted" boolean DEFAULT false,
@@ -91,7 +91,7 @@ CREATE TABLE "user_activities" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" integer,
 	"activity_type" "activity_type",
-	"project_id" varchar(100),
+	"campaign_id" varchar(100),
 	"tx_hash" varchar(66),
 	"points_earned" integer DEFAULT 0,
 	"created_at" timestamp DEFAULT now()
