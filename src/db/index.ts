@@ -1,34 +1,30 @@
-import { neon } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
-import * as schema from './schema';
+import { drizzle } from 'drizzle-orm/node-postgres'
+import { Pool } from 'pg'
+import * as schema from './schema'
 
-// For serverless environments
-const sql = neon(process.env.NEON_DATABASE_URL!);
-export const db = drizzle(sql, { schema });
-
-// Export the schema for use in the application
-export * from './schema';
-
-// For environments with persistent connections (optional)
-import { Pool } from 'pg';
-import { drizzle as drizzlePg } from 'drizzle-orm/node-postgres';
-
-let pool: Pool;
-
-if (process.env.NODE_ENV === 'production') {
-  pool = new Pool({
-    connectionString: process.env.NEON_DATABASE_URL,
-  });
-} else {
-  // @ts-expect-error - Global type augmentation for dev environment
-  if (!global.pool) {
-    // @ts-expect-error - Global type augmentation for dev environment
-    global.pool = new Pool({
-      connectionString: process.env.NEON_DATABASE_URL,
-    });
-  }
-  // @ts-expect-error - Global type augmentation for dev environment
-  pool = global.pool;
+if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL environment variable is required')
 }
 
-export const dbPool = drizzlePg(pool, { schema }); 
+let pool: Pool
+
+if (process.env.NODE_ENV === 'production') {
+    pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false },
+    })
+} else {
+    // Use connection pooling in development
+    if (!(global as any).pool) {
+        ;(global as any).pool = new Pool({
+            connectionString: process.env.DATABASE_URL,
+        })
+    }
+    pool = (global as any).pool
+}
+
+// Create the database connection
+export const db = drizzle(pool, { schema })
+
+// Export the schema for use in the application
+export * from './schema'
