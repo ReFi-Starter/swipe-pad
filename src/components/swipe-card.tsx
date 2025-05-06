@@ -1,123 +1,51 @@
-"use client"
+'use client'
 
-import React, { useState } from 'react'
-import { CommunityNotesDrawer } from '@/components/community-notes-drawer'
-import { CardListView } from './swipe-card-components/card-list-view'
-import { CardSwipeView } from './swipe-card-components/card-swipe-view'
-import { CardActions } from './swipe-card-components/card-actions'
-import { useSwipeAnimation } from './swipe-card-hooks/use-swipe-animation'
-import { useSwipeGestures } from './swipe-card-hooks/use-swipe-gestures'
-import { swipeLeft as swipeLeftHelper, swipeRight as swipeRightHelper } from './utils'
-import type { SwipeCardProps } from './types'
+import { CampaignImage } from '@/components/campaign-image'
+import type { Campaign } from '@/types/campaign'
+import type { SwipeDirection } from '@/types/swipe'
 
-// Re-export helper functions for external use
-export const swipeLeft = swipeLeftHelper;
-export const swipeRight = swipeRightHelper;
+interface SwipeCardProps {
+    campaign: Campaign
+    onSwipe?: (direction: SwipeDirection) => void
+    onSuperLike?: () => void
+    onBoost?: () => void
+    onShowDetails?: () => void
+    active?: boolean
+    className?: string
+    cardIndex?: number
+    mode?: 'swipe' | 'list'
+    comboCount?: number
+    questTokens?: number
+    userReputation?: number
+    topUserThreshold?: number
+    availableBoosts?: number
+    onAddNote?: (content: string) => Promise<void>
+    onVoteNote?: (noteId: string, vote: 'up' | 'down') => Promise<void>
+    onFlagNote?: (noteId: string) => Promise<void>
+}
 
-// Re-export types
-export * from './types';
-
-export function SwipeCard({
-  project,
-  onSwipe,
-  onSuperLike,
-  onBoost,
-  onShowDetails,
-  active = true,
-  className = "",
-  cardIndex = 0,
-  mode = 'swipe',
-  comboCount = 0,
-  questTokens = 0,
-  userReputation = 0,
-  topUserThreshold = 100,
-  availableBoosts = 0,
-  onAddNote,
-  onVoteNote,
-  onFlagNote
-}: SwipeCardProps) {
-  const [isNotesOpen, setIsNotesOpen] = useState(false)
-  const isFront = cardIndex === 0
-
-  // Animation and gesture hooks
-  const {
-    x,
-    animationState,
-    handleSwipeComplete,
-    handleSuperLike
-  } = useSwipeAnimation(cardIndex)
-
-  const {
-    isDraggable,
-    handleDragEnd,
-    handleTap
-  } = useSwipeGestures({
-    x,
-    onSwipe: (direction) => {
-      handleSwipeComplete(direction)
-      onSwipe?.(direction)
-    },
-    onSuperLike: () => {
-      handleSuperLike()
-      onSuperLike?.()
-    },
-    onShowDetails: onShowDetails || (() => {}),
-    active
-  })
-
-  // List mode render
-  if (mode === 'list') {
+export function SwipeCard({ campaign }: SwipeCardProps) {
     return (
-      <CardListView
-        project={project}
-        onShowDetails={onShowDetails}
-        onOpenNotes={() => setIsNotesOpen(true)}
-        className={className}
-      />
+        <div className='relative h-full w-full'>
+            <div className='absolute inset-0 overflow-hidden rounded-2xl'>
+                <CampaignImage src={campaign.imageUrl} alt={campaign.title} className='h-full w-full object-cover' />
+            </div>
+            <div className='absolute inset-0 rounded-2xl bg-gradient-to-t from-black/60 to-transparent'>
+                <div className='absolute bottom-0 left-0 p-6 text-white'>
+                    <h2 className='mb-2 text-2xl font-bold'>{campaign.title}</h2>
+                    <p className='mb-4 text-sm opacity-90'>{campaign.description}</p>
+                    <div className='flex items-center gap-4'>
+                        <div className='flex items-center gap-2'>
+                            <span className='text-sm opacity-80'>Goal:</span>
+                            <span className='font-semibold'>${campaign.fundingGoal}</span>
+                        </div>
+                        <div className='flex items-center gap-2'>
+                            <span className='text-sm opacity-80'>Raised:</span>
+                            <span className='font-semibold'>${campaign.currentFunding}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     )
-  }
-
-  // Swipe mode render
-  return (
-    <div className="absolute inset-0">
-      <div className="relative h-full">
-        <CardSwipeView
-          project={project}
-          animationState={animationState}
-          isDraggable={isDraggable}
-          handleDragEnd={handleDragEnd}
-          handleTap={handleTap}
-          onOpenNotes={() => setIsNotesOpen(true)}
-          className={className}
-          isFront={isFront}
-          cardIndex={cardIndex}
-          comboCount={comboCount}
-        />
-
-        {isFront && active && (
-            <CardActions
-              onSwipeLeft={() => onSwipe?.('left')}
-              onSwipeRight={() => onSwipe?.('right')}
-              onSuperLike={onSuperLike || (() => {})}
-              onBoost={onBoost || (() => {})}
-              questTokens={questTokens}
-              userReputation={userReputation}
-              topUserThreshold={topUserThreshold}
-              availableBoosts={availableBoosts}
-              isFront={isFront}
-              active={active}
-            />
-        )}
-      </div>
-
-      <CommunityNotesDrawer
-        isOpen={isNotesOpen}
-        onClose={() => setIsNotesOpen(false)}
-        notes={project.notes || []}
-        onAddNote={onAddNote}
-        onVote={onVoteNote}
-        onFlag={onFlagNote}
-      />
-    </div>
-  )
-} 
+}

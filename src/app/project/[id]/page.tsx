@@ -1,26 +1,24 @@
-"use client";
+'use client'
 
-import { useParams } from "next/navigation";
-import { ProjectDetails } from "@/components/project-details";
-import { ConnectButton } from "@/components/connect-button";
+import { CampaignDetails } from '@/components/campaign-details'
+import { ConnectButton } from '@/components/connect-button'
+import { useParams } from 'next/navigation'
 
-export default function ProjectPage() {
-  const params = useParams();
-  const projectId = BigInt(params.id as string);
-  
-  return (
-    <main className="container py-10">
-      <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-6">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Project Details</h1>
-          <p className="text-gray-500">
-            View and support this project
-          </p>
-        </div>
-        <ConnectButton />
-      </div>
-      
-      <ProjectDetails projectId={projectId} />
-    </main>
-  );
-} 
+export default function CampaignPage() {
+    const params = useParams()
+    const campaignId = BigInt(params.id as string)
+
+    return (
+        <main className='container py-10'>
+            <div className='mb-6 flex flex-col items-start justify-between gap-6 md:flex-row'>
+                <div>
+                    <h1 className='mb-2 text-3xl font-bold'>Campaign Details</h1>
+                    <p className='text-gray-500'>View and support this campaign</p>
+                </div>
+                <ConnectButton />
+            </div>
+
+            <CampaignDetails campaignId={campaignId} />
+        </main>
+    )
+}
