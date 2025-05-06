@@ -1,12 +1,12 @@
-import { router } from '../trpc';
-import { userRouter } from './user';
-import { projectRouter } from './project';
-import { donationRouter } from './donation';
+import { router } from '../trpc'
+import { campaignRouter } from './campaign'
+import { donationRouter } from './donation'
+import { userRouter } from './user'
 
 export const appRouter = router({
-  user: userRouter,
-  project: projectRouter,
-  donation: donationRouter,
-});
+    user: userRouter,
+    campaign: campaignRouter,
+    donation: donationRouter,
+})
 
-export type AppRouter = typeof appRouter; 
+export type AppRouter = typeof appRouter

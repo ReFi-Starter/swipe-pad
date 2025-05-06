@@ -1,46 +1,46 @@
 import { db } from '@/db';
-import { 
-  projectMetadata, 
-  communityTags, 
+import {
+  cachedCampaigns,
+  campaignMetadata,
   communityNotes,
   communityNoteVotes,
-  cachedProjects,
-  type NewCommunityTag,
+  communityTags,
   type NewCommunityNote,
-  type NewCommunityNoteVote
+  type NewCommunityNoteVote,
+  type NewCommunityTag
 } from '@/db/schema';
-import { eq, desc, and, sql, type SQL } from 'drizzle-orm';
+import { and, desc, eq, sql, type SQL } from 'drizzle-orm';
 
-export const projectRepository = {
-  async getProjectById(id: string) {
-    return await db.query.cachedProjects.findFirst({
-      where: eq(cachedProjects.id, id),
+export const campaignRepository = {
+  async getCampaignById(id: string) {
+    return await db.query.cachedCampaigns.findFirst({
+      where: eq(cachedCampaigns.id, id),
       with: {
         metadata: true,
       },
     });
   },
 
-  async getAllProjects(params?: {
+  async getAllCampaigns(params?: {
     limit?: number;
     offset?: number;
     category?: string;
     sponsoredFirst?: boolean;
   }) {
-    const conditions: SQL[] = [eq(cachedProjects.isActive, true)];
+    const conditions: SQL[] = [eq(cachedCampaigns.isActive, true)];
 
     if (params?.category) {
-      conditions.push(eq(projectMetadata.category, params.category));
+      conditions.push(eq(campaignMetadata.category, params.category));
     }
 
     const query = db
       .select()
-      .from(cachedProjects)
-      .leftJoin(projectMetadata, eq(cachedProjects.id, projectMetadata.projectId))
+      .from(cachedCampaigns)
+      .leftJoin(campaignMetadata, eq(cachedCampaigns.id, campaignMetadata.campaignId))
       .where(and(...conditions));
 
     if (params?.sponsoredFirst) {
-      query.orderBy(desc(projectMetadata.sponsorBoosted));
+      query.orderBy(desc(campaignMetadata.sponsorBoosted));
     }
 
     if (typeof params?.limit === 'number') {
@@ -54,23 +54,23 @@ export const projectRepository = {
     return await query;
   },
 
-  async upsertProjectMetadata(data: typeof projectMetadata.$inferInsert) {
-    const [metadata] = await db.insert(projectMetadata)
+  async upsertCampaignMetadata(data: typeof campaignMetadata.$inferInsert) {
+    const [metadata] = await db.insert(campaignMetadata)
       .values(data)
       .onConflictDoUpdate({
-        target: projectMetadata.projectId,
+        target: campaignMetadata.campaignId,
         set: data,
       })
       .returning();
     return metadata;
   },
 
-  async incrementViewCount(projectId: string) {
-    const [metadata] = await db.update(projectMetadata)
+  async incrementViewCount(campaignId: string) {
+    const [metadata] = await db.update(campaignMetadata)
       .set({
-        viewsCount: sql`${projectMetadata.viewsCount} + 1`,
+        viewsCount: sql`${campaignMetadata.viewsCount} + 1`,
       })
-      .where(eq(projectMetadata.projectId, projectId))
+      .where(eq(campaignMetadata.campaignId, campaignId))
       .returning();
     return metadata;
   },
@@ -78,7 +78,7 @@ export const projectRepository = {
   async addCommunityTag(data: NewCommunityTag) {
     const existingTag = await db.query.communityTags.findFirst({
       where: and(
-        eq(communityTags.projectId, data.projectId),
+        eq(communityTags.campaignId, data.campaignId),
         eq(communityTags.text, data.text.toLowerCase())
       ),
     });
@@ -102,9 +102,9 @@ export const projectRepository = {
     return tag;
   },
 
-  async getProjectTags(projectId: string) {
+  async getCampaignTags(campaignId: string) {
     return await db.query.communityTags.findMany({
-      where: eq(communityTags.projectId, projectId),
+      where: eq(communityTags.campaignId, campaignId),
       orderBy: desc(communityTags.count),
     });
   },
@@ -116,9 +116,9 @@ export const projectRepository = {
     return note;
   },
 
-  async getProjectNotes(projectId: string) {
+  async getCampaignNotes(campaignId: string) {
     return await db.query.communityNotes.findMany({
-      where: eq(communityNotes.projectId, projectId),
+      where: eq(communityNotes.campaignId, campaignId),
       orderBy: desc(communityNotes.upvotes),
       with: {
         author: true,
