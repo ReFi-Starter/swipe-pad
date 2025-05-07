@@ -42,23 +42,30 @@ export const campaignRouter = router({
     addTag: publicProcedure
         .input(
             z.object({
-                campaignId: z.string(),
+                campaignId: z.number(),
                 userId: z.number(),
                 text: z.string(),
+                color: z.string(),
+                count: z.number().optional(),
+                id: z.number().optional(),
+                createdAt: z.date().optional(),
+                upvotes: z.number().optional(),
+                isUpvote: z.boolean().optional(),
+                noteId: z.number().optional(),
             }),
         )
         .mutation(async ({ input }) => {
             return await campaignRepository.addCommunityTag(input)
         }),
 
-    getCampaignTags: publicProcedure.input(z.string()).query(async ({ input }) => {
+    getCampaignTags: publicProcedure.input(z.preprocess(Number, z.number())).query(async ({ input }) => {
         return await campaignRepository.getCampaignTags(input)
     }),
 
     addNote: publicProcedure
         .input(
             z.object({
-                campaignId: z.string(),
+                campaignId: z.number(),
                 authorId: z.number(),
                 text: z.string(),
                 tags: z.array(z.string()).optional(),
@@ -68,7 +75,7 @@ export const campaignRouter = router({
             return await campaignRepository.addCommunityNote(input)
         }),
 
-    getCampaignNotes: publicProcedure.input(z.string()).query(async ({ input }) => {
+    getCampaignNotes: publicProcedure.input(z.preprocess(Number, z.number())).query(async ({ input }) => {
         return await campaignRepository.getCampaignNotes(input)
     }),
 
