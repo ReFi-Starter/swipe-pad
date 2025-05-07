@@ -1,0 +1,27 @@
+{
+    "mcpServers": {
+        "neon": {
+            "command": "bunx",
+            "args": ["mcp-remote", "https://mcp.neon.tech/sse"]
+        },
+        "github": {
+            "command": "docker",
+            "args": ["run", "-i", "--rm", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN", "ghcr.io/github/github-mcp-server"],
+            "env": {
+                "GITHUB_PERSONAL_ACCESS_TOKEN": "${input:github_token}"
+            }
+        }
+    },
+    "inputs": [
+        {
+            "type": "promptString",
+            "id": "github_token",
+            "description": "GitHub Personal Access Token",
+            "password": true
+        }
+    ],
+    "enableYoloMode": true,
+    "environmentVariables": {
+        "NODE_ENV": "development"
+    }
+}
