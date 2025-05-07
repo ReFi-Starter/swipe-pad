@@ -1,4 +1,4 @@
-<a name="top"></a>
+# <a name="top"></a>
 
 <div align="center">
   <!-- Simple header design with gradients, compatible with GitHub -->
@@ -16,6 +16,17 @@
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge" alt="License: MIT" />
   </p>
 </div>
+
+> ⚠️ **IMPORTANT DISCLAIMER**
+>
+> SwipePad is currently a **hackathon project** developed for the Global Stablecoin Hackathon (May 2025). Please note:
+>
+> - This is an **experimental project** and should not be used in production
+> - The smart contracts are **not audited** and may contain vulnerabilities
+> - **DO NOT** use this system with significant amounts of funds
+> - The project is under active development and may undergo significant changes
+>
+> We're excited about the potential of SwipePad, but please treat it as a proof of concept at this stage.
 
 <h2>Table of Contents</h2>
 

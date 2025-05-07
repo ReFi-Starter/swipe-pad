@@ -1,0 +1,22 @@
+# Ignore contracts/lib directory - these are external dependencies
+contracts/lib/
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+
+# Ignore sensitive files
+.env*
+!.env.local.example
+
+# Ignore large generated files
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Ignore node_modules
+node_modules/
+
+# Ignore build directories
+.next/
+out/
+build/
+dist/ 

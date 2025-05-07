@@ -1,0 +1,20 @@
+# Inherit from .gitignore
+# .gitignore is respected automatically 
+
+# Ignore large library folders from indexing but allow access if needed
+contracts/lib/
+contracts/out/
+contracts/cache/
+
+# Ignore node_modules from indexing
+node_modules/
+
+# Ignore large generated files
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Ignore build directories
+.next/
+out/
+build/
+dist/ 
