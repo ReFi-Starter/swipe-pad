@@ -1,171 +1,161 @@
-import { db } from '@/db';
+import { db } from '@/db'
 import {
-  cachedCampaigns,
-  campaignMetadata,
-  communityNotes,
-  communityNoteVotes,
-  communityTags,
-  type NewCommunityNote,
-  type NewCommunityNoteVote,
-  type NewCommunityTag
-} from '@/db/schema';
-<<<<<<<< HEAD:src/repositories/campaign-repository.ts
-import { and, desc, eq, sql, type SQL } from 'drizzle-orm';
-========
-import { eq, desc, and, sql, type SQL } from 'drizzle-orm';
->>>>>>>> 22ed457 (✨ feat(repositories): implement donation, project, and user repositories for data management):src/repositories/project-repository.ts
+    cachedCampaigns,
+    campaignMetadata,
+    communityNotes,
+    communityNoteVotes,
+    communityTags,
+    type NewCommunityNote,
+    type NewCommunityNoteVote,
+    type NewCommunityTag,
+} from '@/db/schema'
+import { and, desc, eq, sql, type SQL } from 'drizzle-orm'
 
-export const campaignRepository = {
-  async getCampaignById(id: string) {
-    return await db.query.cachedCampaigns.findFirst({
-      where: eq(cachedCampaigns.id, id),
-      with: {
-        metadata: true,
-      },
-    });
-  },
-
-  async getAllCampaigns(params?: {
-    limit?: number;
-    offset?: number;
-    category?: string;
-    sponsoredFirst?: boolean;
-  }) {
-<<<<<<<< HEAD:src/repositories/campaign-repository.ts
-    const conditions: SQL[] = [eq(cachedCampaigns.isActive, true)];
-
-    if (params?.category) {
-      conditions.push(eq(campaignMetadata.category, params.category));
-========
-    const conditions: SQL[] = [eq(cachedProjects.isActive, true)];
-
-    if (params?.category) {
-      conditions.push(eq(projectMetadata.category, params.category));
->>>>>>>> 22ed457 (✨ feat(repositories): implement donation, project, and user repositories for data management):src/repositories/project-repository.ts
-    }
-
-    const query = db
-      .select()
-<<<<<<<< HEAD:src/repositories/campaign-repository.ts
-      .from(cachedCampaigns)
-      .leftJoin(campaignMetadata, eq(cachedCampaigns.id, campaignMetadata.campaignId))
-========
-      .from(cachedProjects)
-      .leftJoin(projectMetadata, eq(cachedProjects.id, projectMetadata.projectId))
->>>>>>>> 22ed457 (✨ feat(repositories): implement donation, project, and user repositories for data management):src/repositories/project-repository.ts
-      .where(and(...conditions));
-
-    if (params?.sponsoredFirst) {
-      query.orderBy(desc(campaignMetadata.sponsorBoosted));
-    }
-
-    if (typeof params?.limit === 'number') {
-      query.limit(params.limit);
-    }
-
-    if (typeof params?.offset === 'number') {
-      query.offset(params.offset);
-    }
-
-    return await query;
-  },
-
-  async upsertCampaignMetadata(data: typeof campaignMetadata.$inferInsert) {
-    const [metadata] = await db.insert(campaignMetadata)
-      .values(data)
-      .onConflictDoUpdate({
-        target: campaignMetadata.campaignId,
-        set: data,
-      })
-      .returning();
-    return metadata;
-  },
-
-  async incrementViewCount(campaignId: string) {
-    const [metadata] = await db.update(campaignMetadata)
-      .set({
-        viewsCount: sql`${campaignMetadata.viewsCount} + 1`,
-      })
-      .where(eq(campaignMetadata.campaignId, campaignId))
-      .returning();
-    return metadata;
-  },
-
-  async addCommunityTag(data: NewCommunityTag) {
-    const existingTag = await db.query.communityTags.findFirst({
-      where: and(
-        eq(communityTags.campaignId, data.campaignId),
-        eq(communityTags.text, data.text.toLowerCase())
-      ),
-    });
-
-    if (existingTag) {
-      const [tag] = await db.update(communityTags)
-        .set({
-          count: sql`${communityTags.count} + 1`,
+export const projectRepository = {
+    async getProjectById(id: string) {
+        return await db.query.cachedCampaigns.findFirst({
+            where: eq(cachedCampaigns.id, id),
+            with: {
+                metadata: true,
+            },
         })
-        .where(eq(communityTags.id, existingTag.id))
-        .returning();
-      return tag;
-    }
+    },
 
-    const [tag] = await db.insert(communityTags)
-      .values({
-        ...data,
-        text: data.text.toLowerCase(),
-      })
-      .returning();
-    return tag;
-  },
+    async getAllProjects(params?: { limit?: number; offset?: number; category?: string; sponsoredFirst?: boolean }) {
+        const conditions: SQL[] = [eq(cachedCampaigns.isActive, true)]
 
-  async getCampaignTags(campaignId: string) {
-    return await db.query.communityTags.findMany({
-      where: eq(communityTags.campaignId, campaignId),
-      orderBy: desc(communityTags.count),
-    });
-  },
+        if (params?.category) {
+            conditions.push(eq(campaignMetadata.category, params.category))
+        }
 
-  async addCommunityNote(data: NewCommunityNote) {
-    const [note] = await db.insert(communityNotes)
-      .values(data)
-      .returning();
-    return note;
-  },
+        const query = db
+            .select()
+            .from(cachedCampaigns)
+            .leftJoin(campaignMetadata, eq(cachedCampaigns.id, campaignMetadata.campaignId))
+            .where(and(...conditions))
 
-  async getCampaignNotes(campaignId: string) {
-    return await db.query.communityNotes.findMany({
-      where: eq(communityNotes.campaignId, campaignId),
-      orderBy: desc(communityNotes.upvotes),
-      with: {
-        author: true,
-      },
-    });
-  },
+        if (params?.sponsoredFirst) {
+            query.orderBy(desc(campaignMetadata.sponsorBoosted))
+        }
 
-  async voteOnNote(data: NewCommunityNoteVote) {
-    const [vote] = await db.insert(communityNoteVotes)
-      .values(data)
-      .onConflictDoUpdate({
-        target: [communityNoteVotes.noteId, communityNoteVotes.userId],
-        set: { isUpvote: data.isUpvote },
-      })
-      .returning();
+        if (typeof params?.limit === 'number') {
+            query.limit(params.limit)
+        }
 
-    // Update note upvotes count using a simpler SQL approach
-    const noteId = data.noteId;
-    if (typeof noteId === 'number') {
-      await db.update(communityNotes)
-        .set({
-          upvotes: sql`(
+        if (typeof params?.offset === 'number') {
+            query.offset(params.offset)
+        }
+
+        return await query
+    },
+
+    async upsertProjectMetadata(data: typeof campaignMetadata.$inferInsert) {
+        const [metadata] = await db
+            .insert(campaignMetadata)
+            .values(data)
+            .onConflictDoUpdate({
+                target: campaignMetadata.campaignId,
+                set: data,
+            })
+            .returning()
+        return metadata
+    },
+
+    async incrementViewCount(projectId: string) {
+        const [metadata] = await db
+            .update(campaignMetadata)
+            .set({
+                viewsCount: sql`${campaignMetadata.viewsCount} + 1`,
+            })
+            .where(eq(campaignMetadata.campaignId, projectId))
+            .returning()
+        return metadata
+    },
+
+    async addCommunityTag(data: NewCommunityTag) {
+        const existingTag = await db.query.communityTags.findFirst({
+            where: and(
+                eq(communityTags.campaignId, Number(data.campaignId)),
+                eq(communityTags.text, data.text.toLowerCase()),
+            ),
+        })
+
+        if (existingTag) {
+            const [tag] = await db
+                .update(communityTags)
+                .set({
+                    count: sql`${communityTags.count} + 1`,
+                })
+                .where(eq(communityTags.id, existingTag.id))
+                .returning()
+            return tag
+        }
+
+        const [tag] = await db
+            .insert(communityTags)
+            .values({
+                ...data,
+                campaignId: Number(data.campaignId),
+                text: data.text.toLowerCase(),
+            })
+            .returning()
+        return tag
+    },
+
+    async getProjectTags(projectId: string) {
+        return await db.query.communityTags.findMany({
+            where: eq(communityTags.campaignId, Number(projectId)),
+            orderBy: desc(communityTags.count),
+        })
+    },
+
+    async addCommunityNote(data: NewCommunityNote) {
+        const [note] = await db
+            .insert(communityNotes)
+            .values({
+                ...data,
+                campaignId: Number(data.campaignId),
+            })
+            .returning()
+        return note
+    },
+
+    async getProjectNotes(projectId: string) {
+        return await db.query.communityNotes.findMany({
+            where: eq(communityNotes.campaignId, Number(projectId)),
+            orderBy: desc(communityNotes.upvotes),
+            with: {
+                author: true,
+            },
+        })
+    },
+
+    async voteOnNote(data: NewCommunityNoteVote) {
+        const [vote] = await db
+            .insert(communityNoteVotes)
+            .values(data)
+            .onConflictDoUpdate({
+                target: [communityNoteVotes.noteId, communityNoteVotes.userId],
+                set: { isUpvote: data.isUpvote },
+            })
+            .returning()
+
+        // Update note upvotes count using a simpler SQL approach
+        const noteId = data.noteId
+        if (typeof noteId === 'number') {
+            await db
+                .update(communityNotes)
+                .set({
+                    upvotes: sql`(
             SELECT COUNT(*) 
             FROM ${communityNoteVotes} 
             WHERE note_id = ${noteId} 
             AND is_upvote = true
           )`,
-        })
-        .where(eq(communityNotes.id, noteId));
-    }
+                })
+                .where(eq(communityNotes.id, noteId))
+        }
 
-    return vote;
-  },
-}; 
+        return vote
+    },
+}
