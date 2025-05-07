@@ -27,7 +27,7 @@
         ".npmrc": "ini"
     },
     "files.exclude": {
-        "contracts/lib": true
+        "contracts/lib": false
     },
     "search.exclude": {
         "contracts/lib": true

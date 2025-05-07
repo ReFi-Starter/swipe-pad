@@ -1,0 +1,53 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# SwipePad Project Rules
+
+ALWAYS USE BUN COMMANDS INSTEAD OF NPM OR OTHER CLIENTS. WE USE BUN.
+
+SwipePad is a mobile-first dApp designed for Celo's MiniPay, allowing micro-donations to impact campaigns with simple swipe gestures.
+
+## Project Structure
+- `src/` - Main application code
+- `contracts/` - Smart contract code (Solidity)
+- `db/` - Database schemas and migrations
+- `public/` - Static assets
+- `docs/` - Documentation files
+
+## Tech Stack
+- Next.js with App Router
+- React
+- TypeScript
+- Tailwind CSS
+- Drizzle ORM
+- Neon Database (PostgreSQL)
+- Foundry for smart contracts
+
+## General Guidelines
+- Follow a mobile-first approach for UI components
+- Use functional components with React hooks
+- Follow the Conventional Commits standard for commit messages
+- Use Gitmoji in commit messages
+- Keep functions small and focused on a single responsibility
+- Write descriptive variable and function names
+
+## Code Style
+- Use 2 space indentation
+- Use explicit return types for functions
+- Prefer const over let when possible
+- Use async/await over promise chains
+- Use named exports over default exports
+
+## UI Components
+- Use Tailwind CSS for styling
+- Add responsive design for all components
+- Ensure accessibility (ARIA attributes, keyboard navigation)
+- Follow mobile-first design principles
+
+## Smart Contracts
+- Follow the checks-effects-interactions pattern
+- Document all functions with NatSpec comments
+- Write comprehensive tests for all contracts
+- Use OpenZeppelin contracts where appropriate
