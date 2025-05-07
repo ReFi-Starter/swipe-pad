@@ -5,8 +5,6 @@ alwaysApply: true
 ---
 # SwipePad Project Rules
 
-ALWAYS USE BUN COMMANDS INSTEAD OF NPM OR OTHER CLIENTS. WE USE BUN.
-
 SwipePad is a mobile-first dApp designed for Celo's MiniPay, allowing micro-donations to impact campaigns with simple swipe gestures.
 
 ## Project Structure
@@ -32,6 +30,7 @@ SwipePad is a mobile-first dApp designed for Celo's MiniPay, allowing micro-dona
 - Use Gitmoji in commit messages
 - Keep functions small and focused on a single responsibility
 - Write descriptive variable and function names
+- Always use bun commands instad of npm or other clients.
 
 ## Code Style
 - Use 2 space indentation
