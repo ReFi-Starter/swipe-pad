@@ -1,0 +1,52 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Next.js Best Practices
+
+## App Router Guidelines
+
+- Use the App Router architecture for all new components
+- Follow the recommended folder structure:
+  - `src/app/*`: Routes and layouts
+  - `src/components/*`: Reusable components
+  - `src/lib/*`: Utilities and shared code
+
+## Server Components
+
+- Use Server Components by default
+- Only use Client Components when necessary:
+  - Interactive UI
+  - Browser APIs
+  - React hooks
+- Add 'use client' directive at the top of Client Components
+- Keep heavy logic in Server Components when possible
+
+## Data Fetching
+
+- Prefer Server Components for data fetching
+- Use React Server Actions for mutations
+- Implement proper error handling and loading states
+- Cache API responses appropriately
+
+## Performance Optimization
+
+- Implement proper code splitting
+- Use Image component for all images
+- Prefer static rendering when possible
+- Implement proper ISR/SSG strategies
+
+## Styling
+
+- Use Tailwind CSS for styling
+- Maintain consistent naming conventions
+- Ensure responsive design for all components
+- Use CSS variables for theming
+
+## Forms and Validation
+
+- Use React Hook Form for client-side forms
+- Implement proper server-side validation
+- Use Zod for type validation
+- Handle form errors gracefully
