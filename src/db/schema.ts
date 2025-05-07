@@ -88,7 +88,9 @@ export const categories = pgTable('categories', {
 // Community Tags
 export const communityTags = pgTable('community_tags', {
     id: serial('id').primaryKey(),
-    campaignId: integer('campaign_id').references(() => campaigns.id, { onDelete: 'cascade' }),
+    campaignId: integer('campaign_id')
+        .references(() => campaigns.id, { onDelete: 'cascade' })
+        .notNull(),
     text: text('text').notNull(),
     color: text('color').notNull(),
     count: integer('count').default(0),
