@@ -34,6 +34,7 @@ graph TB
         K --> O[Smart Contracts]
     end
 ```
+
 ## 2. User Journey Flow
 
 ```mermaid
@@ -100,10 +101,11 @@ sequenceDiagram
     Divvi->>SwipePad: Update Impact Metrics
     KarmaGAP->>SwipePad: Update Impact Metrics
     SwipePad->>User: Display Impact Confirmation
- end
+    end
 ```
 
 3. Project Submission Flow
+   
 ```mermaid
 sequenceDiagram
     participant ProjectSubmitter
@@ -158,12 +160,12 @@ sequenceDiagram
     ProjectRegistry->>Divvi: Register Project
     PrivateDB-->>SwipePad: Project Available for Display
     SwipePad->>ProjectSubmitter: Project Submission Confirmed
-end
+    end
 ```
     ```
 4. Self Protocol Integration Flow 
 
-
+```mermaid
 graph TB
     subgraph "Self Protocol Integration"
         A[User/Project Submitter] --> B[SwipePad App]
@@ -182,10 +184,12 @@ graph TB
         F --> I
         F --> K
     end
-'''
+```
 
 
 5. Impact Tracking & Rewards Flow
+
+```mermaid
 graph TB
     subgraph "Impact Tracking & Rewards"
         A[Donation] --> B[Donation Contract]
@@ -208,8 +212,11 @@ graph TB
         G --> J
         G --> L
     end
+```
 
 6. Complete System Architecture
+
+```mermaid
 graph TB
     subgraph "User Entry Points"
         A[Farcaster App] --> B[Farcaster Profile Auth]
@@ -268,10 +275,12 @@ graph TB
     W --> BB
     X --> M
     Y --> AA
-end
-'''
+    end
+```
 
 7. Reward System Flow
+
+```mermaid
 sequenceDiagram
     participant User
     participant SwipePad
@@ -302,7 +311,8 @@ sequenceDiagram
     SwipePad->>RewardsContract: Trigger Submission Reward
     RewardsContract->>TokenContract: Mint Reward Tokens
     TokenContract->>User: Transfer Reward Tokens
-   '''
+    end
+```
    
 
    
