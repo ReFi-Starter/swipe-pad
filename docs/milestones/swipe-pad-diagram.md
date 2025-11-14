@@ -101,11 +101,10 @@ sequenceDiagram
     Divvi->>SwipePad: Update Impact Metrics
     KarmaGAP->>SwipePad: Update Impact Metrics
     SwipePad->>User: Display Impact Confirmation
-    end
 ```
 
-3. Project Submission Flow
-   
+## 3. Project Submission Flow
+
 ```mermaid
 sequenceDiagram
     participant ProjectSubmitter
@@ -160,10 +159,9 @@ sequenceDiagram
     ProjectRegistry->>Divvi: Register Project
     PrivateDB-->>SwipePad: Project Available for Display
     SwipePad->>ProjectSubmitter: Project Submission Confirmed
-    end
 ```
-    ```
-4. Self Protocol Integration Flow 
+
+## 4. Self Protocol Integration Flow
 
 ```mermaid
 graph TB
@@ -186,8 +184,7 @@ graph TB
     end
 ```
 
-
-5. Impact Tracking & Rewards Flow
+## 5. Impact Tracking & Rewards Flow
 
 ```mermaid
 graph TB
@@ -214,7 +211,7 @@ graph TB
     end
 ```
 
-6. Complete System Architecture
+## 6. Complete System Architecture
 
 ```mermaid
 graph TB
@@ -275,10 +272,9 @@ graph TB
     W --> BB
     X --> M
     Y --> AA
-    end
 ```
 
-7. Reward System Flow
+## 7. Reward System Flow
 
 ```mermaid
 sequenceDiagram
@@ -311,11 +307,4 @@ sequenceDiagram
     SwipePad->>RewardsContract: Trigger Submission Reward
     RewardsContract->>TokenContract: Mint Reward Tokens
     TokenContract->>User: Transfer Reward Tokens
-    end
 ```
-   
-
-   
-
-
-    
