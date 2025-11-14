@@ -104,7 +104,7 @@ sequenceDiagram
 ```
 
 3. Project Submission Flow
-4. 
+   
 ```mermaid
 sequenceDiagram
     participant ProjectSubmitter
@@ -159,5 +159,7 @@ sequenceDiagram
     ProjectRegistry->>Divvi: Register Project
     PrivateDB-->>SwipePad: Project Available for Display
     SwipePad->>ProjectSubmitter: Project Submission Confirmed
+end
+```
     ```
-
+4. Self Protocol Integration Flow 
