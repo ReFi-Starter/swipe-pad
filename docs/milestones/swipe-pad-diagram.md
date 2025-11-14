@@ -33,6 +33,7 @@ graph TB
         K --> N[Card Randomizer]
         K --> O[Smart Contracts]
     end
+
 ## 2. User Journey Flow
 
 ```mermaid
