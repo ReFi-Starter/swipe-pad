@@ -100,4 +100,64 @@ sequenceDiagram
     Divvi->>SwipePad: Update Impact Metrics
     KarmaGAP->>SwipePad: Update Impact Metrics
     SwipePad->>User: Display Impact Confirmation
+ end
 ```
+
+3. Project Submission Flow
+4. 
+```mermaid
+sequenceDiagram
+    participant ProjectSubmitter
+    participant Platform as Farcaster/MiniPay/Browser
+    participant SwipePad
+    participant Auth as Auth System
+    participant SelfProtocol
+    participant AdminSystem
+    participant ProjectRegistry
+    participant PrivateDB
+    participant KarmaGAP
+    participant Divvi
+
+    %% Entry and Authentication
+    ProjectSubmitter->>Platform: Opens SwipePad
+    Platform->>SwipePad: Load SwipePad MiniApp
+    
+    alt Browser Entry
+        SwipePad->>Auth: Show ThirdWeb Wallet Component
+        ProjectSubmitter->>Auth: Connect Wallet
+        Auth-->>SwipePad: Wallet Connected
+    else Farcaster Entry
+        SwipePad->>Auth: Use Farcaster Profile
+        Auth-->>SwipePad: Profile Authenticated
+    else MiniPay Entry
+        SwipePad->>Auth: Use MiniPay Wallet
+        Auth-->>SwipePad: Wallet Authenticated
+    end
+    
+    %% Mandatory Self ID Verification for Project Submission
+    SwipePad->>ProjectSubmitter: Show Project Submission Form
+    ProjectSubmitter->>SwipePad: Submit Project Details
+    SwipePad->>SelfProtocol: Check Verification Status
+    alt Not Verified
+        SelfProtocol-->>SwipePad: User Not Verified
+        SwipePad->>ProjectSubmitter: Require ID Verification
+        ProjectSubmitter->>SelfProtocol: Initiate ID Verification
+        SelfProtocol->>ProjectSubmitter: Request Verification Data
+        ProjectSubmitter->>SelfProtocol: Submit Verification Data
+        SelfProtocol->>SelfProtocol: Process Verification
+        SelfProtocol-->>SwipePad: Verification Complete
+    end
+    
+    %% Project Approval Process
+    SwipePad->>AdminSystem: Submit Project for Review
+    AdminSystem->>AdminSystem: Review Project Details
+    AdminSystem->>ProjectSubmitter: Request Additional Info if Needed
+    ProjectSubmitter->>AdminSystem: Provide Additional Info
+    AdminSystem->>ProjectRegistry: Approve Project
+    ProjectRegistry->>PrivateDB: Add Project to Database
+    ProjectRegistry->>KarmaGAP: Register Project
+    ProjectRegistry->>Divvi: Register Project
+    PrivateDB-->>SwipePad: Project Available for Display
+    SwipePad->>ProjectSubmitter: Project Submission Confirmed
+    ```
+
