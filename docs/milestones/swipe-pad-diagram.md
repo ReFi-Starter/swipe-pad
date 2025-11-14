@@ -104,7 +104,6 @@ sequenceDiagram
 ```
 
 3. Project Submission Flow
-   
 ```mermaid
 sequenceDiagram
     participant ProjectSubmitter
@@ -163,3 +162,150 @@ end
 ```
     ```
 4. Self Protocol Integration Flow 
+
+
+graph TB
+    subgraph "Self Protocol Integration"
+        A[User/Project Submitter] --> B[SwipePad App]
+        B --> C[Self Protocol API]
+        C --> D[Identity Verification]
+        D --> E[DID Generation]
+        E --> F[Verification Status]
+        F --> G[Smart Contract]
+        G --> H[Rewards System]
+        
+        subgraph "Verification Types"
+            I[User Verification] --> J[Donation Rewards]
+            K[Project Verification] --> L[Submission Privileges]
+        end
+        
+        F --> I
+        F --> K
+    end
+'''
+
+
+5. Impact Tracking & Rewards Flow
+graph TB
+    subgraph "Impact Tracking & Rewards"
+        A[Donation] --> B[Donation Contract]
+        B --> C[Karma GAP]
+        B --> D[Divvi]
+        
+        C --> E[Impact Metrics]
+        D --> F[Impact Analytics]
+        
+        E --> G[User Dashboard]
+        F --> G
+        
+        subgraph "Rewards System"
+            H[Verification Rewards] --> I[Token Distribution]
+            J[Impact Badges] --> K[NFT Badges]
+            L[Referral Rewards] --> M[Token Distribution]
+        end
+        
+        G --> H
+        G --> J
+        G --> L
+    end
+
+6. Complete System Architecture
+graph TB
+    subgraph "User Entry Points"
+        A[Farcaster App] --> B[Farcaster Profile Auth]
+        C[MiniPay Wallet] --> D[MiniPay Wallet Auth]
+        E[Browser/Next.js] --> F[ThirdWeb Wallet Component]
+    end
+    
+    subgraph "SwipePad MiniApp"
+        B --> G[SwipePad on Farcaster]
+        D --> H[SwipePad on MiniPay]
+        F --> I[SwipePad on Web]
+    end
+    
+    subgraph "Application Layer"
+        G --> J[Next.js Frontend]
+        H --> J
+        I --> J
+        J --> K[API Layer]
+        J --> L[ThirdWeb SDK]
+        J --> M[Self Protocol]
+        L --> N[Wallet Integration]
+        M --> O[Identity Verification]
+        K --> P[Card Randomizer]
+        K --> Q[Project Database]
+        K --> R[Admin System]
+    end
+    
+    subgraph "Blockchain Layer"
+        S[Celo Network] --> T[Smart Contracts]
+        T --> U[Donation Contract]
+        T --> V[Project Registry]
+        T --> W[Mento Integration]
+        T --> X[Self Protocol Integration]
+        T --> Y[Rewards Contract]
+    end
+    
+    subgraph "External Services"
+        Z[Karma GAP] --> AA[Impact Tracking]
+        BB[Divvi] --> CC[Impact Analytics]
+        DD[IPFS/Phala/Filecoin] --> EE[Decentralized Storage]
+    end
+    
+    subgraph "Data Storage"
+        FF[Private Project Database] --> GG[Project Cards]
+        FF --> HH[Project Images]
+        FF --> II[Project URLs]
+        FF --> JJ[Project Public Wallets]
+        KK[Centralized Randomizer] --> P
+    end
+    
+    Q --> FF
+    P --> KK
+    R --> V
+    U --> Z
+    V --> DD
+    W --> BB
+    X --> M
+    Y --> AA
+end
+'''
+
+7. Reward System Flow
+sequenceDiagram
+    participant User
+    participant SwipePad
+    participant SelfProtocol
+    participant RewardsContract
+    participant TokenContract
+    
+    %% User Verification Reward
+    User->>SwipePad: Complete Self ID Verification
+    SwipePad->>SelfProtocol: Verify User Identity
+    SelfProtocol-->>SwipePad: Verification Confirmed
+    SwipePad->>RewardsContract: Trigger Verification Reward
+    RewardsContract->>TokenContract: Mint Reward Tokens
+    TokenContract->>User: Transfer Reward Tokens
+    
+    %% Donation Reward for Verified Users
+    User->>SwipePad: Make Donation
+    SwipePad->>RewardsContract: Check Verification Status
+    alt User is Verified
+        RewardsContract->>TokenContract: Mint Additional Reward Tokens
+        TokenContract->>User: Transfer Additional Rewards
+    end
+    
+    %% Project Submission Reward
+    User->>SwipePad: Submit Project
+    SwipePad->>SelfProtocol: Verify Project Submitter
+    SelfProtocol-->>SwipePad: Verification Confirmed
+    SwipePad->>RewardsContract: Trigger Submission Reward
+    RewardsContract->>TokenContract: Mint Reward Tokens
+    TokenContract->>User: Transfer Reward Tokens
+   '''
+   
+
+   
+
+
+    
