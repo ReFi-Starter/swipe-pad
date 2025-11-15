@@ -1,4 +1,6 @@
-1. User Entry Points & Authentication Flow
+# SwipePad Architecture & User Journey Diagrams
+
+## 1. User Entry Points & Authentication Flow
 
 ```mermaid
 graph TB
@@ -31,11 +33,9 @@ graph TB
     end
 ```
 
-2. Complete User Journey Flow with Donation Configuration
-
+## 2. Complete User Journey Flow with Donation Configuration
 
 ```mermaid
-
 sequenceDiagram
     participant User
     participant Platform as Farcaster/MiniPay/Browser
@@ -127,7 +127,7 @@ sequenceDiagram
     end
 ```
 
-3. Category Filtering & View Modes Flow
+## 3. Category Filtering & View Modes Flow
 
 ```mermaid
 sequenceDiagram
@@ -158,7 +158,7 @@ sequenceDiagram
     end
 ```
 
-4. Trending & Boost System Flow
+## 4. Trending & Boost System Flow
 
 ```mermaid
 sequenceDiagram
@@ -201,7 +201,7 @@ sequenceDiagram
     end
 ```
 
-5. Shopping Cart & Donation History Flow
+## 5. Shopping Cart & Donation History Flow
 
 ```mermaid
 sequenceDiagram
@@ -237,8 +237,7 @@ sequenceDiagram
     DonationHistory->>User: Display Chronological List
 ```
 
-6. User Profile & Activity Tracking System
-
+## 6. User Profile & Activity Tracking System
 
 ```mermaid
 sequenceDiagram
@@ -293,8 +292,7 @@ sequenceDiagram
     User->>ProfileSystem: Click "Save Profile"
 ```
 
-7. Platform-Specific Stablecoin Configuration
-
+## 7. Platform-Specific Stablecoin Configuration
 
 ```mermaid
 graph TB
@@ -323,8 +321,7 @@ graph TB
     end
 ```
 
-8. Project Interaction & Social Engagement Flow
-
+## 8. Project Interaction & Social Engagement Flow
 
 ```mermaid
 sequenceDiagram
@@ -371,9 +368,7 @@ sequenceDiagram
     end
 ```
 
-
-9. Complete System Architecture (Updated)
-
+## 9. Complete System Architecture (Updated)
 
 ```mermaid
 graph TB
@@ -450,8 +445,7 @@ graph TB
     Y --> AS
 ```
 
-10. Reward System Flow
-
+## 10. Reward System Flow
 
 ```mermaid
 sequenceDiagram
@@ -487,8 +481,7 @@ sequenceDiagram
     TokenContract->>User: Transfer Reward Tokens
 ```
 
-11. Project Submission Flow
-
+## 11. Project Submission Flow
 
 ```mermaid
 sequenceDiagram
@@ -542,6 +535,5 @@ sequenceDiagram
     ProjectRegistry->>KarmaGAP: Register Project
     ProjectRegistry->>Divvi: Register Project
     PrivateDB-->>SwipePad: Project Available for Display
-```
     SwipePad->>ProjectSubmitter: Show "Submit Project" Success Confirmation
-
+```
