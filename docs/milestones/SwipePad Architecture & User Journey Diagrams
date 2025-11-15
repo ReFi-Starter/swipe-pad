@@ -1,4 +1,6 @@
+1. User Entry Points & Authentication Flow
 
+```mermaid
 graph TB
     subgraph "User Entry Points"
         A[Mobile User] --> B[Farcaster App]
@@ -27,6 +29,12 @@ graph TB
         K --> N[Card Randomizer]
         K --> O[Smart Contracts]
     end
+```
+
+2. Complete User Journey Flow with Donation Configuration
+
+
+```mermaid
 
 sequenceDiagram
     participant User
@@ -117,7 +125,11 @@ sequenceDiagram
         ThirdWeb-->>SwipePad: All Donations Successful
         SwipePad->>User: Show Success & Impact
     end
+```
 
+3. Category Filtering & View Modes Flow
+
+```mermaid
 sequenceDiagram
     participant User
     participant SwipePad
@@ -144,7 +156,11 @@ sequenceDiagram
         User->>SwipePad: Stay on "Swipe" Mode
         SwipePad->>User: Continue Card-by-Card Swiping
     end
+```
 
+4. Trending & Boost System Flow
+
+```mermaid
 sequenceDiagram
     participant User
     participant SwipePad
@@ -183,7 +199,11 @@ sequenceDiagram
         TrendingEngine->>PrivateDB: Increase Visibility Ranking
         BoostSystem->>User: Show Boost Confirmation
     end
+```
 
+5. Shopping Cart & Donation History Flow
+
+```mermaid
 sequenceDiagram
     participant User
     participant SwipePad
@@ -215,7 +235,12 @@ sequenceDiagram
     DonationHistory->>PrivateDB: Fetch Historical Data
     PrivateDB-->>DonationHistory: Return Donation Records
     DonationHistory->>User: Display Chronological List
+```
 
+6. User Profile & Activity Tracking System
+
+
+```mermaid
 sequenceDiagram
     participant User
     participant SwipePad
@@ -266,7 +291,12 @@ sequenceDiagram
     User->>ProfileSystem: Update Social Profiles
     ProfileSystem->>ProfileDB: Save Changes
     User->>ProfileSystem: Click "Save Profile"
+```
 
+7. Platform-Specific Stablecoin Configuration
+
+
+```mermaid
 graph TB
     subgraph "Platform Detection & Stablecoin Options"
         A[User Entry Point] --> B{Detect Platform}
@@ -291,7 +321,12 @@ graph TB
         K --> M
         L --> M
     end
+```
 
+8. Project Interaction & Social Engagement Flow
+
+
+```mermaid
 sequenceDiagram
     participant User
     participant ProjectCard
@@ -334,7 +369,13 @@ sequenceDiagram
         SocialSystem->>User: Show Full Description & Links
         Note over User,SocialSystem: Display: KarmaGap Profile<br/>Project Images, Videos, Team Info
     end
+```
 
+
+9. Complete System Architecture (Updated)
+
+
+```mermaid
 graph TB
     subgraph "User Entry Points"
         A[Farcaster App] --> B[Farcaster Profile Auth]
@@ -407,7 +448,12 @@ graph TB
     O --> AS
     P --> AS
     Y --> AS
+```
 
+10. Reward System Flow
+
+
+```mermaid
 sequenceDiagram
     participant User
     participant SwipePad
@@ -439,7 +485,12 @@ sequenceDiagram
     SwipePad->>RewardsContract: Trigger Submission Reward
     RewardsContract->>TokenContract: Mint Reward Tokens
     TokenContract->>User: Transfer Reward Tokens
+```
 
+11. Project Submission Flow
+
+
+```mermaid
 sequenceDiagram
     participant ProjectSubmitter
     participant Platform as Farcaster/MiniPay/Browser
@@ -491,5 +542,6 @@ sequenceDiagram
     ProjectRegistry->>KarmaGAP: Register Project
     ProjectRegistry->>Divvi: Register Project
     PrivateDB-->>SwipePad: Project Available for Display
+```
     SwipePad->>ProjectSubmitter: Show "Submit Project" Success Confirmation
 
