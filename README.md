@@ -382,7 +382,7 @@ We're just getting started on this exciting journey, and here's a glimpse of wha
 - **MiniPay Website:** TBA
 - [Demo Video](https://drive.google.com/file/d/1DywG644N0KwyuO1FJOuoTru5qkaEbl_L/view?usp=drivesdk)
 - [Pitch Deck](https://docs.google.com/presentation/d/1vVyXT26NsGsk7kWdEKJk-qcfLY1cnyO_Gbo9tR83miI/edit?usp=sharing)
-- [KarmaGAP Profile](https://gap.karmahq.xyz/project/refi-starter---swipe-2-donate-app)
+- [KarmaGAP Profile](https://www.karmahq.xyz/project/swipe-pad)  
 
 ## 📜 Legal & Security
 
