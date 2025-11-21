@@ -1,3 +1,6 @@
 [submodule "contracts"]
 	path = contracts
 	url = https://github.com/ReFi-Starter/swipe-pad-contracts
+[submodule "apps/farcaster/v0-ui"]
+	path = apps/farcaster/v0-ui
+	url = https://github.com/ozkite/swipepad_posh-8-w9.git
