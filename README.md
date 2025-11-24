@@ -165,7 +165,7 @@ The DonationPool contract is a purpose-built solution for handling donations wit
 
 ## 🚀 Getting Started
 
-> 💻 Explore the live version at: [https://swipe-pad.vercel.app](https://swipe-pad.vercel.app)
+> 💻 Explore the live version at: [https://swipepad.xyz](https://swipepad.xyz)
 
 ### Prerequisites
 
@@ -373,15 +373,16 @@ We're just getting started on this exciting journey, and here's a glimpse of wha
 
 - **refistarter.eth** - Umbrella Collective
 - **ottox.eth** - Tech Lead
-- **ozkite.eth** - Business Lead
+- **ozkite.eth** - Product Development
 
 ## 🔗 Links
 
-- **Live Demo (Production):** [https://swipe-pad.vercel.app](https://swipe-pad.vercel.app)
-- **MiniPay Website:** [https://minipay.io](https://minipay.io)
+- **Live Demo (Production):** [https://swipe-pad.vercel.app](https://swipepad.xyz)
+  **Farcaster:** TBA
+- **MiniPay Website:** TBA
 - [Demo Video](https://drive.google.com/file/d/1DywG644N0KwyuO1FJOuoTru5qkaEbl_L/view?usp=drivesdk)
 - [Pitch Deck](https://docs.google.com/presentation/d/1vVyXT26NsGsk7kWdEKJk-qcfLY1cnyO_Gbo9tR83miI/edit?usp=sharing)
-- [KarmaGAP Profile](https://gap.karmahq.xyz/project/refi-starter---swipe-2-donate-app)
+- [KarmaGAP Profile](https://www.karmahq.xyz/project/swipe-pad)  
 
 ## 📜 Legal & Security
 
@@ -396,7 +397,7 @@ We're just getting started on this exciting journey, and here's a glimpse of wha
   
   *Built for the [Global Stablecoin Hackathon](https://mentolabs.notion.site/Global-Stablecoin-Hackathon-1c1a2148cc5c808aa42ddee1e3df7883) (May 2025)*
   
-  **ReFi Starter** | [GitHub](https://github.com/ReFi-Starter) | [Website](https://example.com)
+  **ReFi Starter** | [GitHub](https://github.com/ReFi-Starter) | [Website](https://swipepad.xyz)
 </div>
 
 <div align="right" style="margin-top: 1rem;">
