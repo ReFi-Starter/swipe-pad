@@ -1,0 +1,21 @@
+{
+  "buildCommand": "cd ../.. && bun build:farcaster",
+  "installCommand": "cd ../.. && bun install",
+  "framework": "nextjs",
+  "functions": {
+    "app/api/**/*.ts": {
+      "maxDuration": 10
+    }
+  },
+  "env": {
+    "NEXT_PUBLIC_FRAME_URL": "@next_public_frame_url",
+    "SUPABASE_SERVICE_ROLE_KEY": "@supabase_service_role_key",
+    "THIRDWEB_SECRET_KEY": "@thirdweb_secret_key"
+  },
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/api/frame"
+    }
+  ]
+}
