@@ -7,7 +7,17 @@ const connectionString =
         ? process.env.POSTGRES_URL
         : process.env.LOCAL_POSTGRES_URL || process.env.DATABASE_URL
 
-\
-\
-\
-\
+if (process.env.NODE_ENV === 'production') {
+    neonConfig.webSocketConstructor = WebSocket
+    neonConfig.poolQueryViaFetch = true
+} else {
+    neonConfig.wsProxy = host => `${host}:5433/v1`
+    neonConfig.useSecureWebSocket = false
+    neonConfig.pipelineTLS = false
+    neonConfig.pipelineConnect = false
+}
+
+const pool = new Pool({ connectionString })
+
+export default drizzle(pool)
+
