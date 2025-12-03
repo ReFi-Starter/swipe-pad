@@ -26,15 +26,15 @@ export const metadata: Metadata = {
   },
   other: {
     "fc:frame": "vNext",
-    "fc:frame:image": "https://farcaster.swipepad.xyz/og-image.png",
+    "fc:frame:image": "https://farcaster-swipepad.vercel.app/og-image.png",
     "fc:frame:button:1": "Launch App",
     "fc:frame:button:1:action": "link",
-    "fc:frame:button:1:target": "https://farcaster.swipepad.xyz",
+    "fc:frame:button:1:target": "https://farcaster-swipepad.vercel.app",
     // Miniapp specific tags
     "fc:miniapp": "vNext",
     "fc:miniapp:title": "Swipe Pad",
-    "fc:miniapp:icon": "https://farcaster.swipepad.xyz/icon.png",
-    "fc:miniapp:action": "https://farcaster.swipepad.xyz",
+    "fc:miniapp:icon": "https://farcaster-swipepad.vercel.app/icon.png",
+    "fc:miniapp:action": "https://farcaster-swipepad.vercel.app",
   },
 }
 

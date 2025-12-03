@@ -1,9 +1,9 @@
 {
     "name": "Swipe Pad",
-    "iconUrl": "https://farcaster.swipepad.xyz/icon.png",
-    "homeUrl": "https://farcaster.swipepad.xyz",
-    "imageUrl": "https://farcaster.swipepad.xyz/og-image.png",
+    "iconUrl": "https://farcaster-swipepad.vercel.app/icon.png",
+    "homeUrl": "https://farcaster-swipepad.vercel.app",
+    "imageUrl": "https://farcaster-swipepad.vercel.app/og-image.png",
     "description": "Swipe to support regenerative projects on Celo",
     "version": "0.0.1",
-    "webhookUrl": "https://farcaster.swipepad.xyz/api/webhook"
+    "webhookUrl": "https://farcaster-swipepad.vercel.app/api/webhook"
 }
