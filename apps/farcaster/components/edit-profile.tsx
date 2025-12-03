@@ -2,8 +2,9 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { X, Camera, CheckCircle } from "lucide-react"
+import { SelfVerificationButton } from "./SelfVerificationButton"
 
 interface EditProfileProps {
   isOpen: boolean
@@ -47,11 +48,24 @@ export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditPro
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
+  const [completionPercentage, setCompletionPercentage] = useState(0)
+
+  // Better approach: use useEffect
+  useEffect(() => {
+    let score = 0;
+    if (formData.name) score += 25;
+    if (formData.bio) score += 25;
+    if (formData.image && !formData.image.includes("placeholder")) score += 25;
+    if (formData.farcaster || formData.twitter || formData.zora || formData.discord || formData.lens) score += 25;
+
+    setCompletionPercentage(score);
+  }, [formData]);
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      if (file.size > 100 * 1024) {
-        alert("File size must be less than 100KB")
+      if (file.size > 500 * 1024) { // Increased to 500KB
+        alert("File size must be less than 500KB")
         return
       }
       const reader = new FileReader()
@@ -65,6 +79,11 @@ export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditPro
   }
 
   const handleSave = () => {
+    // Check for 100% completion badge
+    if (completionPercentage === 100) {
+      // Logic to award badge would go here (e.g. update Supabase)
+      console.log("Awarding 100% Profile Completion Badge!");
+    }
     onSave(formData)
     onClose()
   }
@@ -74,25 +93,47 @@ export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditPro
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
       <div className="bg-[#1F2732] rounded-xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-xl">
-        <div className="sticky top-0 bg-[#1F2732] p-6 border-b border-gray-700">
+        <div className="sticky top-0 bg-[#1F2732] p-6 border-b border-gray-700 z-10">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold">Edit Profile</h2>
             <button onClick={onClose} className="text-gray-400 hover:text-white">
               <X className="w-6 h-6" />
             </button>
           </div>
+
+          {/* Progress Bar */}
+          <div className="mt-4">
+            <div className="flex justify-between text-sm mb-1">
+              <span className="text-gray-400">Profile Completion</span>
+              <span className={`font-bold ${completionPercentage === 100 ? "text-green-400" : "text-[#FFD600]"}`}>
+                {completionPercentage}%
+              </span>
+            </div>
+            <div className="w-full bg-gray-700 rounded-full h-2.5">
+              <div
+                className={`h-2.5 rounded-full transition-all duration-500 ${completionPercentage === 100 ? "bg-green-500" : "bg-[#FFD600]"}`}
+                style={{ width: `${completionPercentage}%` }}
+              ></div>
+            </div>
+            {completionPercentage === 100 && (
+              <p className="text-xs text-green-400 mt-1 flex items-center">
+                <CheckCircle className="w-3 h-3 mr-1" /> 100% Badge Earned!
+              </p>
+            )}
+          </div>
         </div>
 
         <div className="p-6 space-y-6">
           {/* Profile Image */}
           <div className="flex flex-col items-center">
-            <div className="relative">
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full opacity-75 group-hover:opacity-100 transition duration-200 blur"></div>
               <img
                 src={imagePreview || "/placeholder.svg"}
                 alt="Profile"
-                className="w-24 h-24 rounded-full object-cover border-4 border-gray-600"
+                className="relative w-24 h-24 rounded-full object-cover border-4 border-[#1F2732]"
               />
-              <label className="absolute bottom-0 right-0 bg-[#FFD600] rounded-full p-2 cursor-pointer hover:bg-[#E6C200] transition-colors">
+              <label className="absolute bottom-0 right-0 bg-[#FFD600] rounded-full p-2 cursor-pointer hover:bg-[#E6C200] transition-colors z-10 shadow-lg">
                 <Camera className="w-4 h-4 text-black" />
                 <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
               </label>
@@ -273,9 +314,7 @@ export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditPro
                     <p className="text-sm text-gray-400">Gain 100 points to your profile</p>
                   </div>
                 </div>
-                <button className="px-4 py-2 bg-[#FFD600] hover:bg-[#E6C200] text-black text-sm font-medium rounded-lg transition-colors">
-                  Verify
-                </button>
+                <SelfVerificationButton />
               </div>
             </div>
           </div>

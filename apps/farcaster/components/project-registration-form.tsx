@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { X, ExternalLink } from "lucide-react"
+import { SelfVerificationButton } from "./SelfVerificationButton"
 
 interface ProjectRegistrationFormProps {
   isOpen: boolean
@@ -43,10 +44,35 @@ export function ProjectRegistrationForm({ isOpen, onClose, onSubmit }: ProjectRe
     setFormData((prev) => ({ ...prev, socialLinks: newLinks }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    onSubmit(formData)
-    onClose()
+
+    // Submit to CRM Pipeline (e.g., Google Form or Zapier Webhook)
+    // Placeholder URL - replace with actual endpoint
+    const CRM_ENDPOINT = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse";
+
+    console.log("Submitting project to CRM pipeline:", formData);
+
+    try {
+      // In a real implementation, you would use fetch() here.
+      // Since Google Forms often block CORS, you might need a no-cors mode or a proxy.
+      // await fetch(CRM_ENDPOINT, {
+      //     method: 'POST',
+      //     mode: 'no-cors',
+      //     headers: {
+      //         'Content-Type': 'application/json',
+      //     },
+      //     body: JSON.stringify(formData)
+      // });
+
+      // Simulating success
+      alert("Project submitted successfully to the moderation queue!");
+      onSubmit(formData)
+      onClose()
+    } catch (error) {
+      console.error("Error submitting project:", error);
+      alert("Failed to submit project. Please try again.");
+    }
   }
 
   if (!isOpen) return null
@@ -188,15 +214,19 @@ export function ProjectRegistrationForm({ isOpen, onClose, onSubmit }: ProjectRe
           {/* Identity Check */}
           <div>
             <label className="block text-sm font-medium mb-2">Identity Check</label>
-            <div className="bg-gray-800 border border-gray-600 rounded-lg py-2 px-3">
-              <a
-                href="https://self.xyz"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#FFD600] hover:text-[#E6C200] flex items-center"
-              >
-                Self Protocol <ExternalLink className="w-4 h-4 ml-1" />
-              </a>
+            <div className="bg-gray-800 border border-gray-600 rounded-lg py-4 px-4 flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-300 mb-1">Verify your identity to build trust.</p>
+                <a
+                  href="https://self.xyz"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#FFD600] hover:text-[#E6C200] text-xs flex items-center"
+                >
+                  Learn more about Self <ExternalLink className="w-3 h-3 ml-1" />
+                </a>
+              </div>
+              <SelfVerificationButton />
             </div>
           </div>
 

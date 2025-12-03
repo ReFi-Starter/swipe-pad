@@ -91,6 +91,21 @@ export const SelfVerificationButton = () => {
         console.error("Verification failed:", error);
     };
 
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            const userAgent = typeof window.navigator === "undefined" ? "" : navigator.userAgent;
+            const mobile = Boolean(
+                userAgent.match(
+                    /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i
+                )
+            );
+            setIsMobile(mobile);
+        };
+        checkMobile();
+    }, []);
+
     if (isVerified) {
         return (
             <button disabled className="flex items-center space-x-2 px-4 py-2 bg-green-500/20 text-green-400 rounded-lg cursor-default">
@@ -132,15 +147,27 @@ export const SelfVerificationButton = () => {
                         ) : (
                             <>
                                 <div className="flex justify-center bg-white p-4 rounded-xl">
-                                    <SelfQRcodeWrapper
-                                        selfApp={selfApp}
-                                        onSuccess={handleSuccess}
-                                        onError={handleError}
-                                    />
+                                    {isMobile ? (
+                                        <div className="text-center py-8">
+                                            <p className="text-gray-800 mb-4 font-medium">Tap below to verify in Self App</p>
+                                            <SelfQRcodeWrapper
+                                                selfApp={selfApp}
+                                                onSuccess={handleSuccess}
+                                                onError={handleError}
+                                                type="deeplink"
+                                            />
+                                        </div>
+                                    ) : (
+                                        <SelfQRcodeWrapper
+                                            selfApp={selfApp}
+                                            onSuccess={handleSuccess}
+                                            onError={handleError}
+                                        />
+                                    )}
                                 </div>
 
                                 <p className="text-sm text-gray-400 mt-6 text-center">
-                                    Scan the QR code with your Self app to verify your identity.
+                                    {isMobile ? "Tap the button above to open the Self app." : "Scan the QR code with your Self app to verify your identity."}
                                     <br />
                                     <span className="text-xs text-gray-500">(Requires Age 18+ and Valid ID)</span>
                                 </p>
