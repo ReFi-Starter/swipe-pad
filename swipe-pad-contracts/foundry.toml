@@ -1,0 +1,41 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+solc = "0.8.29"
+evm_version = "paris"
+optimizer = true
+optimizer_runs = 200
+via_ir = true
+gas_reports = ["*"]
+verbosity = 3
+remappings = [
+	"@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+	"ds-test/=lib/solmate/lib/ds-test/src/",
+	"erc4626-tests/=lib/openzeppelin-contracts/lib/erc4626-tests/",
+	"forge-std/=lib/forge-std/src/",
+	"openzeppelin-contracts/=lib/openzeppelin-contracts/",
+	"solmate/=lib/solmate/src/",
+]
+
+[rpc_endpoints]
+base = "${BASE_URL}"
+base_testnet = "${BASE_SEPOLIA_URL}"
+h_testnet = "https://testnet.hashio.io/api"
+h_mainnet = "https://mainnet.hashio.io/api"
+
+[etherscan]
+base = { key = "${BASESCAN_API_KEY}", url = "https://api.basescan.org/api", chain = "8453" }
+base_testnet = { key = "${BASESCAN_API_KEY}", url = "https://api-sepolia.basescan.org/api", chain = "84532" }
+h_testnet = { key = "${HASHSCAN_API_KEY}" }
+h_mainnet = { key = "${HASHSCAN_API_KEY}" }
+
+[fmt]
+line_length = 120
+tab_width = 4
+bracket_spacing = true
+int_types = "long"
+quote_style = "double"
+number_underscore = "thousands"
+
+# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

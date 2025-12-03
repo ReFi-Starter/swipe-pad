@@ -1,0 +1,54 @@
+cat > docs/diagrams/swipepad-contract-flow.mmd << 'EOF'
+graph TD
+    subgraph "SwipePad Frontend"
+        User[User Wallet]
+        App[SwipePad App]
+    end
+
+    subgraph "Celo Blockchain"
+        cUSD[cUSD Token]
+        
+        subgraph "Smart Contracts"
+            DST[DonationSwapTrigger]
+            BP[BoostPayment]
+            DR[DonationRouter]
+            PF[ProjectFund]
+            SV[SelfVerification]
+        end
+        
+        subgraph "Project Wallets"
+            PW1[Project Wallet 1]
+            PW2[Project Wallet 2]
+            MultiSig[Fund Multi-Sig]
+        end
+    end
+
+    User -->|1. Swipe/Interact| App
+    App -->|2. Record Swap| DST
+    App -->|3. Verify ID| SV
+    App -->|4. Boost Payment| BP
+    App -->|5. Direct Donation| DR
+    App -->|6. Donate to Fund| PF
+    
+    DST -->|Every N swaps| cUSD
+    cUSD -->|Auto-donate| PW1
+    
+    BP -->|Transfer cUSD| PW2
+    BP -->|Update Ranking| BP
+    
+    DR -->|Route cUSD| PW1
+    DR -->|Route cUSD| PW2
+    
+    PF -->|Hold cUSD| MultiSig
+    PF -->|Multi-sig Proposal| MultiSig
+    
+    SV -->|Verification Result| DST
+    SV -->|Verification Result| DR
+    SV -->|Verification Result| PF
+
+    style DST fill:#f9f,stroke:#333,stroke-width:2px
+    style BP fill:#bbf,stroke:#333,stroke-width:2px
+    style DR fill:#bfb,stroke:#333,stroke-width:2px
+    style PF fill:#ffb,stroke:#333,stroke-width:2px
+    style SV fill:#fbb,stroke:#333,stroke-width:2px
+EOF
