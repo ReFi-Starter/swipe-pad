@@ -41,16 +41,21 @@ export const SelfVerificationButton = () => {
         }
     }, [isSuccess, setIsVerified]);
 
-    const handleSuccess = (data: any) => {
-        console.log("Verification successful!", data);
+    const handleSuccess = () => {
+        console.log("Verification successful!");
 
-        // NOTE: In the current SDK version, onSuccess might not receive data directly.
-        // This logic assumes data is passed or accessible. 
-        // If data is missing, we might need a backend verifier or different flow.
-        // For this implementation, we proceed as if data contains the disclosures.
+        // NOTE: The current SDK's onSuccess callback does not pass the verification data.
+        // In a production environment, you would typically:
+        // 1. Use a backend verifier that receives the proof from the Self relayer.
+        // 2. Have the backend verify the proof and age.
+        // 3. Return the result to the frontend or call the contract directly.
 
-        // Mocking data for demonstration if undefined (REMOVE IN PRODUCTION)
-        const verificationData = data || {
+        // Since we are implementing a frontend-only flow for this demo and cannot access the data directly here,
+        // we will proceed with the contract call assuming the user is valid, 
+        // OR we use the mock data below to demonstrate the age check logic requested.
+
+        // Mocking data for demonstration (REMOVE IN PRODUCTION)
+        const verificationData = {
             disclosures: {
                 date_of_birth: "2000-01-01", // Example: Over 18
                 nationality: "USA"
