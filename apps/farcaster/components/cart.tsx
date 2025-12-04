@@ -23,7 +23,10 @@ export function Cart({ items, onClose, onCheckout }: CartProps) {
     const result: Record<StableCoin, number> = {
       cUSD: 0,
       cEUR: 0,
-      cOP: 0,
+      USDT: 0,
+      USDC: 0,
+      USDD: 0,
+      GLO: 0,
     }
 
     items.forEach((item) => {
@@ -102,11 +105,10 @@ export function Cart({ items, onClose, onCheckout }: CartProps) {
               <button
                 onClick={handleCheckout}
                 disabled={items.length < 5 || isProcessing}
-                className={`w-full py-3 font-medium rounded-lg transition-colors ${
-                  items.length >= 5 && !isProcessing
+                className={`w-full py-3 font-medium rounded-lg transition-colors ${items.length >= 5 && !isProcessing
                     ? "bg-[#677FEB] hover:bg-[#5A6FD3] text-white"
                     : "bg-gray-700 text-gray-400 cursor-not-allowed"
-                }`}
+                  }`}
               >
                 {isProcessing ? (
                   <span className="flex items-center justify-center">

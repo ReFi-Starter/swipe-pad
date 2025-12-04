@@ -28,6 +28,8 @@ import { useAccount, useReadContract, useWriteContract, useWaitForTransactionRec
 import { parseEther, formatEther, erc20Abi } from "viem"
 import deployedContracts from "@/lib/deployedContracts"
 import { celo } from "wagmi/chains"
+import { useSearchParams, useRouter } from "next/navigation"
+import { Suspense } from "react"
 
 const CUSD_ADDRESS = "0x765DE816845861e75A25fCA122bb6898B8B1282a"
 const CEUR_ADDRESS = "0xD8763CBa276a3738E6DE85b4b3bF5FDed6D6CA73"
@@ -35,6 +37,14 @@ const SWIPE_DONATION_ADDRESS = deployedContracts[42220].SwipeDonation.address
 
 
 export default function Home() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen bg-black text-white">Loading SwipePad...</div>}>
+      <HomeContent />
+    </Suspense>
+  )
+}
+
+function HomeContent() {
   const [viewMode, setViewMode] = useState<"swipe" | "list" | "profile" | "trending" | "leaderboard">("swipe")
 
 
@@ -58,9 +68,63 @@ export default function Home() {
   const [donationCurrency, setDonationCurrency] = useState<StableCoin>("cUSD")
   const [confirmSwipes, setConfirmSwipes] = useState<ConfirmSwipes>(20)
 
+  // URL Params for Verification Callback
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const status = searchParams.get("status")
+  const [isVerifyingCallback, setIsVerifyingCallback] = useState(false)
+
   // Wagmi Hooks
   const { address, isConnected, chain } = useAccount()
   const { writeContractAsync } = useWriteContract()
+
+  useEffect(() => {
+    if (status === "verified" && !isVerifyingCallback) {
+      handleVerificationCallback()
+    }
+  }, [status])
+
+  const handleVerificationCallback = async () => {
+    setIsVerifyingCallback(true)
+    setViewMode("profile")
+    setShowEditProfile(true)
+
+    // Clear the query param to prevent re-triggering on refresh
+    router.replace("/", { scroll: false })
+
+    if (!isConnected || !address) {
+      alert("Please connect your wallet to claim your verification badge.")
+      setIsVerifyingCallback(false)
+      return
+    }
+
+    try {
+      console.log("Verifying user on-chain...")
+      // Assuming BoostManager is on Celo Sepolia (11142220) or Mainnet (42220)
+      // We'll use the chain ID from the connected wallet or default to Celo Mainnet
+      const chainId = chain?.id || 42220
+      const contractAddress = deployedContracts[chainId as keyof typeof deployedContracts]?.BoostManager?.address || deployedContracts[42220].BoostManager.address
+
+      const txHash = await writeContractAsync({
+        address: contractAddress,
+        abi: deployedContracts[42220].BoostManager.abi,
+        functionName: "setVerificationStatus",
+        args: [true],
+      })
+
+      console.log("Verification TX:", txHash)
+      alert("Verification successful! Your badge is being minted on-chain.")
+
+      // Update local state
+      setUserProfile(prev => ({ ...prev, isVerified: true })) // Assuming we add isVerified to userProfile
+
+    } catch (error) {
+      console.error("Verification failed:", error)
+      alert("Failed to verify on-chain. Please try again.")
+    } finally {
+      setIsVerifyingCallback(false)
+    }
+  }
 
   // Determine token address based on selection
   const tokenAddress = donationCurrency === "cUSD" ? CUSD_ADDRESS :
@@ -138,6 +202,7 @@ export default function Home() {
     totalDonated: 0,
     poaps: 12,
     paragraphs: 5,
+    isVerified: false,
   })
   const [userBalance, setUserBalance] = useState({
     cUSD: 0,

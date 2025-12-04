@@ -15,7 +15,9 @@ export function SelfVerificationButton({ onVerified }: SelfVerificationButtonPro
     const [isVerifying, setIsVerifying] = useState(false)
 
     const handleStartVerification = () => {
-        const request = createAgeVerificationRequest("https://farcaster-swipepad.vercel.app/api/self-callback")
+        // Use the current window location origin if available, otherwise fallback to production URL
+        const origin = typeof window !== 'undefined' ? window.location.origin : "https://farcaster-swipepad.vercel.app"
+        const request = createAgeVerificationRequest(`${origin}/?status=verified`)
         const data = generateSelfQRCodeData(request)
         const link = generateSelfDeepLink(request)
 

@@ -27,6 +27,7 @@ interface EditProfileProps {
     totalSwipes: number
     projectsReported: number
     totalDonated: number
+    isVerified?: boolean
   }
 }
 
@@ -34,7 +35,7 @@ import { useProfile } from "@farcaster/auth-kit"
 
 export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditProfileProps) {
   const { profile } = useProfile()
-  const [isVerified, setIsVerified] = useState(false)
+  const [isVerified, setIsVerified] = useState(currentProfile.isVerified || false)
   const [formData, setFormData] = useState({
     name: currentProfile.name || profile?.displayName || "",
     image: currentProfile.image || profile?.pfpUrl || "/images/lena-profile.jpg",
