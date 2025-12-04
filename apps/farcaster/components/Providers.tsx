@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { sdk } from "@farcaster/miniapp-sdk";
 import { useEffect, useState } from "react";
 import { createConfig, http, WagmiProvider } from "wagmi";
-import { celo, celoAlfajores, celoSepolia } from "wagmi/chains";
+import { celo } from "wagmi/chains";
 import { injected } from "wagmi/connectors";
 import { SelfProvider } from "./SelfProvider";
 
@@ -16,11 +16,9 @@ const config = {
 };
 
 const wagmiConfig = createConfig({
-    chains: [celo, celoAlfajores, celoSepolia],
+    chains: [celo],
     transports: {
         [celo.id]: http(),
-        [celoAlfajores.id]: http(),
-        [celoSepolia.id]: http(),
     },
     connectors: [injected()],
 });
