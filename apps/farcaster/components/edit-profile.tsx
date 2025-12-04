@@ -2,7 +2,7 @@
 
 
 import { CheckCircle, X } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { SelfVerificationButton } from "./SelfVerificationButton"
 
@@ -31,17 +31,33 @@ interface EditProfileProps {
 }
 
 import { useProfile } from "@farcaster/auth-kit"
+import sdk from "@farcaster/frame-sdk"
 
 export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditProfileProps) {
   const { profile } = useProfile()
   const [isVerified, setIsVerified] = useState(currentProfile.isVerified || false)
+  const [frameUser, setFrameUser] = useState<any>(null)
 
-  // Use profile data from Farcaster context if available, otherwise fallback to currentProfile prop
+  useEffect(() => {
+    const loadContext = async () => {
+      try {
+        const context = await sdk.context;
+        if (context?.user) {
+          setFrameUser(context.user);
+        }
+      } catch (error) {
+        console.error("Error loading Frame context:", error);
+      }
+    };
+    loadContext();
+  }, []);
+
+  // Use profile data from Frame SDK context or Auth Kit if available, otherwise fallback to currentProfile prop
   const displayProfile = {
-    name: profile?.displayName || currentProfile.name,
-    username: profile?.username || currentProfile.farcaster,
-    bio: profile?.bio || "No bio available",
-    image: profile?.pfpUrl || currentProfile.image || "/images/lena-profile.jpg",
+    name: frameUser?.displayName || profile?.displayName || currentProfile.name,
+    username: frameUser?.username || profile?.username || currentProfile.farcaster,
+    bio: frameUser?.bio || profile?.bio || "No bio available",
+    image: frameUser?.pfpUrl || profile?.pfpUrl || currentProfile.image || "/images/lena-profile.jpg",
   }
 
   if (!isOpen) return null
@@ -152,15 +168,15 @@ export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditPro
             <h3 className="text-lg font-medium mb-4">Your Stats</h3>
             <div className="grid grid-cols-3 gap-3">
               <div className="bg-gray-800 p-3 rounded-lg text-center">
-                <p className="text-xl font-bold text-[#FFD600]">{currentProfile.totalSwipes || 47}</p>
+                <p className="text-xl font-bold text-[#FFD600]">{currentProfile.totalSwipes || 0}</p>
                 <p className="text-xs text-gray-400">Total Swipes</p>
               </div>
               <div className="bg-gray-800 p-3 rounded-lg text-center">
-                <p className="text-xl font-bold text-[#FFD600]">{currentProfile.projectsReported || 3}</p>
+                <p className="text-xl font-bold text-[#FFD600]">{currentProfile.projectsReported || 0}</p>
                 <p className="text-xs text-gray-400">Reports Made</p>
               </div>
               <div className="bg-gray-800 p-3 rounded-lg text-center">
-                <p className="text-xl font-bold text-[#FFD600]">${currentProfile.totalDonated || 125.75}</p>
+                <p className="text-xl font-bold text-[#FFD600]">${currentProfile.totalDonated || 0}</p>
                 <p className="text-xs text-gray-400">Total Donated</p>
               </div>
             </div>
