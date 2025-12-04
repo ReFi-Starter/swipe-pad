@@ -28,7 +28,6 @@ export function SelfVerificationButton({ onVerified }: SelfVerificationButtonPro
             userIdType: "hex",
             disclosures: {
                 minimumAge: 18,
-                // nationality: true, // Optional: verify nationality without blocking
             },
             deeplinkCallback: typeof window !== 'undefined' ? `${window.location.origin}/?status=verified` : "https://farcaster-swipepad.vercel.app/?status=verified",
         }).build()

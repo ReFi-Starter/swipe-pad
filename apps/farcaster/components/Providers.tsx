@@ -29,7 +29,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     return (
         <WagmiProvider config={wagmiConfig}>
             <QueryClientProvider client={queryClient}>
-                <AuthKitProvider config={config}>{children}</AuthKitProvider>
+                <AuthKitProvider config={config}>
+                    {children}
+                </AuthKitProvider>
             </QueryClientProvider>
         </WagmiProvider>
     );
