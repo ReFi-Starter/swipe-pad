@@ -1,8 +1,8 @@
 "use client";
 
 import { AuthKitProvider } from "@farcaster/auth-kit";
-import sdk from "@farcaster/frame-sdk";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import sdk from "@farcaster/miniapp-sdk";
 import { useEffect, useState } from "react";
 import { createConfig, http, WagmiProvider } from "wagmi";
 import { celo, celoAlfajores, celoSepolia } from "wagmi/chains";
@@ -30,11 +30,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         const load = async () => {
-            sdk.actions.ready();
+            if (sdk && sdk.actions) {
+                await sdk.actions.ready();
+            }
         };
-        if (sdk && sdk.actions) {
-            load();
-        }
+        load();
     }, []);
 
     return (
