@@ -32,16 +32,26 @@ export const createAgeVerificationRequest = (callbackUrl?: string): SelfRequest 
 };
 
 export const generateSelfQRCodeData = (request: SelfRequest): string => {
-    return JSON.stringify(request);
+    // The QR code should encode the Deep Link URL so that scanning it with a standard camera
+    // opens the browser and redirects to the app (Universal Link).
+    return generateSelfDeepLink(request);
 }
 
 export const generateSelfDeepLink = (request: SelfRequest): string => {
-    // Self expects URL-safe Base64, but standard Base64 often works. 
-    // For robustness, we'll use standard Base64 as a start.
-    // In a browser environment, btoa works.
+    // Self expects the request to be base64 encoded.
+    // We use a universal link: https://selfid.net/r/{base64_request}
+    const jsonString = JSON.stringify(request);
+    let base64 = "";
+    
     if (typeof window !== 'undefined') {
-        return `https://selfid.net/r/${btoa(JSON.stringify(request))}`;
+        base64 = btoa(jsonString);
     } else {
-        return `https://selfid.net/r/${Buffer.from(JSON.stringify(request)).toString('base64')}`;
+        base64 = Buffer.from(jsonString).toString('base64');
     }
+    
+    // Make URL safe if necessary, though standard base64 usually works with selfid.net/r/
+    // replacing + with - and / with _ and removing =
+    const urlSafeBase64 = base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    
+    return `https://selfid.net/r/${urlSafeBase64}`;
 }

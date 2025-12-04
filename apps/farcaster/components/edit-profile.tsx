@@ -83,25 +83,25 @@ export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditPro
             <div className="bg-gray-800 rounded-lg p-4 space-y-3">
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
-                  <div className="w-8 h-8 bg-red-500 rounded mr-3 flex items-center justify-center">
-                    <span className="text-white font-bold text-xs">P</span>
+                  <div className="w-8 h-8 bg-[#FFD600] rounded mr-3 flex items-center justify-center">
+                    <span className="text-black font-bold text-xs">P</span>
                   </div>
                   <span>POAPs</span>
                 </div>
-                <span className="text-[#FFD600] font-bold">{currentProfile.poaps || 10} POAPs</span>
+                <span className="text-[#FFD600] font-bold">{currentProfile.poaps || 0}</span>
               </div>
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
-                  <div className="w-8 h-8 bg-pink-500 rounded mr-3 flex items-center justify-center">
-                    <span className="text-white font-bold text-xs">L</span>
+                  <div className="w-8 h-8 bg-[#FFD600] rounded mr-3 flex items-center justify-center">
+                    <span className="text-black font-bold text-xs">L</span>
                   </div>
                   <span>Lil Nouns</span>
                 </div>
-                <span className="text-[#FFD600] font-bold">{currentProfile.lilNounsHeld || 8} Lil Nouns</span>
+                <span className="text-[#FFD600] font-bold">{currentProfile.lilNounsHeld || 0}</span>
               </div>
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
-                  <div className="w-8 h-8 bg-yellow-500 rounded mr-3 flex items-center justify-center">
+                  <div className="w-8 h-8 bg-[#FFD600] rounded mr-3 flex items-center justify-center">
                     <span className="text-black font-bold text-xs">N</span>
                   </div>
                   <span>Nouns</span>
@@ -110,15 +110,15 @@ export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditPro
               </div>
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
-                  <div className="w-8 h-8 bg-orange-500 rounded mr-3 flex items-center justify-center">
-                    <span className="text-white font-bold text-xs">¶</span>
+                  <div className="w-8 h-8 bg-[#FFD600] rounded mr-3 flex items-center justify-center">
+                    <span className="text-black font-bold text-xs">¶</span>
                   </div>
                   <span>Paragraphs</span>
                 </div>
                 <span className="text-[#FFD600] font-bold">{currentProfile.paragraphs || 0}</span>
               </div>
-              <p className="text-xs text-gray-400 mt-2">
-                NFT holdings are automatically detected from your connected wallet
+              <p className="text-xs text-gray-500 mt-2 italic">
+                * Real-time NFT tracking coming soon.
               </p>
             </div>
           </div>
