@@ -1,7 +1,7 @@
 "use client"
 
 import { SelfAppBuilder, SelfQRcodeWrapper } from "@selfxyz/qrcode"
-import { X } from "lucide-react"
+import { Smartphone, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useAccount } from "wagmi"
 
@@ -34,6 +34,23 @@ export function SelfVerificationButton({ onVerified }: SelfVerificationButtonPro
 
         setSelfApp(app)
         
+        // Generate Universal Link manually since helper is not exported
+        if (app) {
+            // The request object is inside the app instance. 
+            // We need to base64 encode the JSON string of the request.
+            // The structure of app.request is what we need.
+            // We'll use a safe way to access it.
+            const request = (app as any).request;
+            if (request) {
+                const jsonString = JSON.stringify(request);
+                const base64 = typeof window !== 'undefined' ? btoa(jsonString) : Buffer.from(jsonString).toString('base64');
+                // URL safe base64
+                const urlSafeBase64 = base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+                const link = `https://self.xyz/r/${urlSafeBase64}`;
+                setUniversalLink(link);
+            }
+        }
+
     }, [address])
 
     return (
@@ -63,7 +80,29 @@ export function SelfVerificationButton({ onVerified }: SelfVerificationButtonPro
                                 Prove you are over 18 without revealing your exact age.
                             </p>
 
-                            <div className="bg-white p-4 rounded-xl inline-block mb-6">
+                            {/* Mobile Deep Link Button */}
+                            <div className="mb-6">
+                                <a
+                                    href={universalLink || "#"}
+                                    className="flex items-center justify-center w-full py-3 bg-[#FFD600] hover:bg-[#E6C200] text-black font-bold rounded-xl transition-colors mb-2"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <Smartphone className="w-5 h-5 mr-2" />
+                                    Open Self App
+                                </a>
+                                <p className="text-xs text-gray-500">
+                                    Tap above if you have the Self app installed on this device.
+                                </p>
+                            </div>
+
+                            <div className="relative flex py-2 items-center">
+                                <div className="flex-grow border-t border-gray-700"></div>
+                                <span className="flex-shrink-0 mx-4 text-gray-500 text-xs">OR SCAN QR CODE</span>
+                                <div className="flex-grow border-t border-gray-700"></div>
+                            </div>
+
+                            <div className="bg-white p-4 rounded-xl inline-block mb-6 mt-4">
                                 {selfApp && (
                                     <SelfQRcodeWrapper
                                         selfApp={selfApp}
