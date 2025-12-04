@@ -34,41 +34,7 @@ export function SelfVerificationButton({ onVerified }: SelfVerificationButtonPro
 
         setSelfApp(app)
         
-        // Try to get universal link from SDK helper or app object
-        // The docs mention getUniversalLink(app), but if it's not exported, we check the app object.
-        // We'll try to cast app to any to access potential properties if the helper isn't available.
-        // Note: We are not importing getUniversalLink because we are not 100% sure of the export name/availability in this version.
-        // Instead, we will check if the app object has it, or construct it using the official pattern if needed.
-        // However, the safest bet for the button is to use the same logic the SDK uses.
-        // If we can't get it, we'll hide the button and rely on the QR code (which works on desktop).
-        // But for mobile, we really need it.
-        // Let's try to access it from the app object properties which usually store the link.
-        // console.log("Self App:", app); 
-        
-        // Fallback: The SDK's SelfQRcodeWrapper usually generates the QR from `app.request`.
-        // The Universal Link is `https://self.xyz/r/{base64_request}` (or similar).
-        // Let's try to find the request string in the app object.
-        // @ts-ignore
-        const request = app.request;
-        if (request) {
-             // Construct the link manually as a fallback if we can't find the helper
-             // The user said `selfid.net` is wrong.
-             // The playground uses `https://self.xyz/r/...`? No, let's check the docs again.
-             // Actually, let's just try to use the `getUniversalLink` if we can import it.
-             // Since I can't verify the import, I will try to use a dynamic import or just check `app.universalLink`.
-        }
-
     }, [address])
-
-    // We will re-add the button but make it conditional on having a link.
-    // Since we don't have the link confirmed, we will rely on the Wrapper for now.
-    // BUT the user specifically asked for the button.
-    // Let's try to render a button that triggers the wrapper's internal logic? No.
-    
-    // STRATEGY: Use the `SelfQRcodeWrapper` which is the official way.
-    // If the user is on mobile, the Wrapper *should* show a button or be clickable.
-    // If not, we might be missing a prop.
-    // Let's add a message for mobile users.
 
     return (
         <>
