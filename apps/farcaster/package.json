@@ -12,7 +12,6 @@
     "@base-org/account": "^2.4.2",
     "@coinbase/wallet-sdk": "^4.3.7",
     "@farcaster/auth-kit": "^0.8.1",
-    "@farcaster/frame-sdk": "^0.0.64",
     "@farcaster/miniapp-sdk": "^0.2.1",
     "@gemini-wallet/core": "^0.3.2",
     "@hookform/resolvers": "^3.9.1",

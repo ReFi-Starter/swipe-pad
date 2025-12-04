@@ -31,7 +31,7 @@ interface EditProfileProps {
 }
 
 import { useProfile } from "@farcaster/auth-kit"
-import sdk from "@farcaster/frame-sdk"
+import { sdk } from "@farcaster/miniapp-sdk"
 
 export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditProfileProps) {
   const { profile } = useProfile()

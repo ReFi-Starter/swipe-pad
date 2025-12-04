@@ -2,7 +2,7 @@
 
 import { AuthKitProvider } from "@farcaster/auth-kit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import sdk from "@farcaster/miniapp-sdk";
+import { sdk } from "@farcaster/miniapp-sdk";
 import { useEffect, useState } from "react";
 import { createConfig, http, WagmiProvider } from "wagmi";
 import { celo, celoAlfajores, celoSepolia } from "wagmi/chains";
