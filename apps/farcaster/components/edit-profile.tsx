@@ -104,7 +104,7 @@ export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditPro
                   </div>
                   <span>POAPs</span>
                 </div>
-                <span className="text-[#FFD600] font-bold">{currentProfile.poaps || 0}</span>
+                <span className="text-[#FFD600] font-bold">0</span>
               </div>
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
@@ -113,7 +113,7 @@ export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditPro
                   </div>
                   <span>Lil Nouns</span>
                 </div>
-                <span className="text-[#FFD600] font-bold">{currentProfile.lilNounsHeld || 0}</span>
+                <span className="text-[#FFD600] font-bold">0</span>
               </div>
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
@@ -122,7 +122,7 @@ export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditPro
                   </div>
                   <span>Nouns</span>
                 </div>
-                <span className="text-[#FFD600] font-bold">{currentProfile.nounsHeld || 0}</span>
+                <span className="text-[#FFD600] font-bold">0</span>
               </div>
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
@@ -131,7 +131,7 @@ export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditPro
                   </div>
                   <span>Paragraphs</span>
                 </div>
-                <span className="text-[#FFD600] font-bold">{currentProfile.paragraphs || 0}</span>
+                <span className="text-[#FFD600] font-bold">0</span>
               </div>
               <p className="text-xs text-gray-500 mt-2 italic">
                 * NFT fetch requires Indexer API integration.
@@ -168,15 +168,15 @@ export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditPro
             <h3 className="text-lg font-medium mb-4">Your Stats</h3>
             <div className="grid grid-cols-3 gap-3">
               <div className="bg-gray-800 p-3 rounded-lg text-center">
-                <p className="text-xl font-bold text-[#FFD600]">{currentProfile.totalSwipes || 0}</p>
+                <p className="text-xl font-bold text-[#FFD600]">0</p>
                 <p className="text-xs text-gray-400">Total Swipes</p>
               </div>
               <div className="bg-gray-800 p-3 rounded-lg text-center">
-                <p className="text-xl font-bold text-[#FFD600]">{currentProfile.projectsReported || 0}</p>
+                <p className="text-xl font-bold text-[#FFD600]">0</p>
                 <p className="text-xs text-gray-400">Reports Made</p>
               </div>
               <div className="bg-gray-800 p-3 rounded-lg text-center">
-                <p className="text-xl font-bold text-[#FFD600]">${currentProfile.totalDonated || 0}</p>
+                <p className="text-xl font-bold text-[#FFD600]">$0</p>
                 <p className="text-xs text-gray-400">Total Donated</p>
               </div>
             </div>
