@@ -172,7 +172,10 @@ function HomeContent() {
     }
   })
 
-  const hasAnyStablecoin = stablecoinBalances?.some(result => result.status === 'success' && result.result > BigInt(0))
+  const hasAnyStablecoin = stablecoinBalances 
+    ? stablecoinBalances.some(result => result.status === 'success' && (result.result as bigint) > BigInt(0))
+    : false // Default to false if not loaded, but we might want to handle loading state separately
+
   const [showBalanceAlert, setShowBalanceAlert] = useState(false)
 
   const [showBadgeNotification, setShowBadgeNotification] = useState(false)
@@ -204,21 +207,37 @@ function HomeContent() {
   })
   const [userBalance, setUserBalance] = useState({
     cUSD: 0,
-    cEUR: 50.2,
-    cGBP: 75.5,
-    cAUD: 95.3,
-    cCHF: 110.8,
-    cCAD: 85.4,
-    cKES: 1250.0,
-    cREAL: 520.6,
-    cZAR: 1850.2,
-    cCOL: 425000.0,
-    cJPY: 15500.0,
-    USDC: 100.0,
-    USDT: 100.0,
-    GLO: 50.0,
-    USDD: 75.0,
+    cEUR: 0,
+    cGBP: 0,
+    cAUD: 0,
+    cCHF: 0,
+    cCAD: 0,
+    cKES: 0,
+    cREAL: 0,
+    cZAR: 0,
+    cCOL: 0,
+    cJPY: 0,
+    USDC: 0,
+    USDT: 0,
+    GLO: 0,
+    USDD: 0,
   })
+
+  // Update userBalance when on-chain data changes
+  useEffect(() => {
+    if (stablecoinBalances) {
+      const newBalances = { ...userBalance }
+      
+      if (stablecoinBalances[0]?.status === 'success') {
+        newBalances.cUSD = parseFloat(formatEther(stablecoinBalances[0].result as bigint))
+      }
+      if (stablecoinBalances[1]?.status === 'success') {
+        newBalances.cEUR = parseFloat(formatEther(stablecoinBalances[1].result as bigint))
+      }
+      
+      setUserBalance(newBalances)
+    }
+  }, [stablecoinBalances])
   const [showRegistrationForm, setShowRegistrationForm] = useState(false)
   const [shownBadges, setShownBadges] = useState<Set<string>>(new Set())
 
