@@ -3,9 +3,9 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   const config = {
     accountAssociation: {
-        header: "eyJmaWQiOjM2MjEsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHg4NzhjZTY0NWM4ZWQ1MzRjNzQ2ZTVmMjMzMmI4YTkyNTgxNzU1YWM1In0",
-        payload: "eyJkb21haW4iOiJmYXJjYXN0ZXIuc3dpcGVwYWQueHl6In0",
-        signature: "MHgyNmU2OWI2NjJmYWRhMzVjNTg4Nzg2ZDg4YjVjZTE4M2I4OTNlOWQzYTVjZDI2NzdkODA2M2E5YTRmOTJkMDI2NDc3MDJkNzQyYTc2Y2FhZTBjNTQ2ZJkYjZlYjZlYjZlYjZlYjZlYjZlYjZlYjZlYjZlYjZlYjZlYjZlYjZl"
+        "header": "eyJmaWQiOjgxMzAwNywidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweEYxQkMzYkY2OWU1ZmFEOEU0Mzg5NDE5MzE1NkU5MjVGQzMwOTVjNDcifQ",
+        "payload": "eyJkb21haW4iOiJmYXJjYXN0ZXItc3dpcGVwYWQudmVyY2VsLmFwcCJ9",
+        "signature": "8Cu6bb8aSYoFTF92krInylAfalg9+YvcQH8MVrbSFAZiSukz0hvx/gVa8JuaUUReYMXuBVTZOWAN6zCkG5tmfxw="
     },
     frame: {
         version: "1",
