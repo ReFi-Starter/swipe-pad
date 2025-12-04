@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react"
-import { X, Zap, DollarSign, Loader2 } from "lucide-react"
-import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract } from "wagmi"
-import { parseEther, erc20Abi } from "viem"
+import { DollarSign, Loader2, X, Zap } from "lucide-react"
+import { useEffect, useState } from "react"
+import { erc20Abi, parseEther } from "viem"
+import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi"
 
 interface BoostModalProps {
   isOpen: boolean
@@ -27,8 +27,8 @@ const boostManagerAbi = [
 ] as const
 
 // Contract Addresses (Replace with deployed addresses)
-const BOOST_MANAGER_ADDRESS = "0x79213fc0eF8b7ecb29cfF9B13BA23ecF5c0B898a" // Celo Sepolia BoostManager
-const CUSD_ADDRESS = "0x8740685A9A7d33758b9C6A502e1c948e789Bf4E0" // Celo Sepolia cUSD (User Provided)
+const BOOST_MANAGER_ADDRESS = "0x79213fc0eF8b7ecb29cfF9B13BA23ecF5c0B898a" // Celo Mainnet BoostManager
+const CUSD_ADDRESS = "0x765DE816845861e75A25fCA122bb6898B8B1282a" // Celo Mainnet cUSD
 
 export function BoostModal({ isOpen, onClose, projectName, projectId, onBoost }: BoostModalProps) {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null)
