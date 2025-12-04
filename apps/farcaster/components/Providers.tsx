@@ -2,11 +2,11 @@
 
 import { AuthKitProvider } from "@farcaster/auth-kit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { sdk } from "@farcaster/miniapp-sdk";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createConfig, http, WagmiProvider } from "wagmi";
 import { celo } from "wagmi/chains";
 import { injected } from "wagmi/connectors";
+import { FarcasterLifecycle } from "./FarcasterLifecycle";
 import { SelfProvider } from "./SelfProvider";
 
 const config = {
@@ -26,19 +26,11 @@ const wagmiConfig = createConfig({
 export default function Providers({ children }: { children: React.ReactNode }) {
     const [queryClient] = useState(() => new QueryClient());
 
-    useEffect(() => {
-        const load = async () => {
-            if (sdk && sdk.actions) {
-                await sdk.actions.ready();
-            }
-        };
-        load();
-    }, []);
-
     return (
         <WagmiProvider config={wagmiConfig}>
             <QueryClientProvider client={queryClient}>
                 <AuthKitProvider config={config}>
+                    <FarcasterLifecycle />
                     <SelfProvider>
                         {children}
                     </SelfProvider>

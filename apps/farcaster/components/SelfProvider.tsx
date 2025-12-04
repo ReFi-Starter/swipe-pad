@@ -154,6 +154,7 @@ export function SelfProvider({
   // Initialize Self app when address changes
   useEffect(() => {
     if (!address) {
+      console.log('⚠️ SelfProvider: No address connected, skipping SelfApp initialization')
       setSelfApp(null)
       setUniversalLink(null)
       return
@@ -193,7 +194,9 @@ export function SelfProvider({
       }).build()
 
       setSelfApp(app)
-      setUniversalLink(getUniversalLink(app))
+      const link = getUniversalLink(app)
+      console.log('🔗 Generated Universal Link:', link)
+      setUniversalLink(link)
     } catch (err) {
       console.error('Failed to initialize Self app:', err)
       setError('Failed to initialize Self Protocol')
