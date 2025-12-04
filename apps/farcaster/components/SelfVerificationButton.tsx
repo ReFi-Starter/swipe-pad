@@ -1,8 +1,8 @@
 "use client"
 
+import { createAgeVerificationRequest, generateSelfDeepLink, generateSelfQRCodeData } from "@/lib/self"
+import { Smartphone, X } from "lucide-react"
 import { useState } from "react"
-import { createAgeVerificationRequest, generateSelfQRCodeData, generateSelfDeepLink } from "@/lib/self"
-import { X, Smartphone } from "lucide-react"
 
 interface SelfVerificationButtonProps {
     onVerified: () => void
@@ -12,7 +12,6 @@ export function SelfVerificationButton({ onVerified }: SelfVerificationButtonPro
     const [showModal, setShowModal] = useState(false)
     const [qrData, setQrData] = useState<string | null>(null)
     const [deepLink, setDeepLink] = useState<string | null>(null)
-    const [isVerifying, setIsVerifying] = useState(false)
 
     const handleStartVerification = () => {
         // Use the current window location origin if available, otherwise fallback to production URL
@@ -24,16 +23,6 @@ export function SelfVerificationButton({ onVerified }: SelfVerificationButtonPro
         setQrData(data)
         setDeepLink(link)
         setShowModal(true)
-    }
-
-    const handleSimulateSuccess = () => {
-        setIsVerifying(true)
-        setTimeout(() => {
-            setIsVerifying(false)
-            setShowModal(false)
-            onVerified()
-            alert("Age verification successful! You are verified as over 18.")
-        }, 2000)
     }
 
     return (
@@ -95,13 +84,9 @@ export function SelfVerificationButton({ onVerified }: SelfVerificationButtonPro
                             </div>
 
                             <div className="space-y-3 pt-2 border-t border-gray-700">
-                                <button
-                                    onClick={handleSimulateSuccess}
-                                    disabled={isVerifying}
-                                    className="w-full py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
-                                >
-                                    {isVerifying ? "Verifying..." : "Simulate Verified Scan (Demo)"}
-                                </button>
+                                <p className="text-xs text-center text-gray-500">
+                                    Scan with the Self App to verify.
+                                </p>
                             </div>
                         </div>
                     </div>

@@ -24,6 +24,10 @@ export const createAgeVerificationRequest = (callbackUrl?: string): SelfRequest 
                 operator: "==",
                 value: true,
                 sources: ["passport", "driving_license", "identity_card"]
+            },
+            {
+                fact: "nationality",
+                sources: ["passport", "driving_license", "identity_card"]
             }
         ],
         callback: callbackUrl,

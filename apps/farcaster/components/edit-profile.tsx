@@ -1,9 +1,8 @@
 "use client"
 
-import type React from "react"
 
+import { CheckCircle, X } from "lucide-react"
 import { useState } from "react"
-import { X, Camera, CheckCircle } from "lucide-react"
 
 import { SelfVerificationButton } from "./SelfVerificationButton"
 
@@ -36,45 +35,6 @@ import { useProfile } from "@farcaster/auth-kit"
 export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditProfileProps) {
   const { profile } = useProfile()
   const [isVerified, setIsVerified] = useState(currentProfile.isVerified || false)
-  const [formData, setFormData] = useState({
-    name: currentProfile.name || profile?.displayName || "",
-    image: currentProfile.image || profile?.pfpUrl || "/images/lena-profile.jpg",
-    bio: profile?.bio || "",
-    farcaster: currentProfile.farcaster || profile?.username || "",
-    twitter: currentProfile.twitter || "",
-    zora: currentProfile.zora || "",
-    discord: currentProfile.discord || "",
-    lens: currentProfile.lens || "",
-    ens: currentProfile.ens || "",
-  })
-
-  const [imagePreview, setImagePreview] = useState(formData.image)
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      if (file.size > 100 * 1024) {
-        alert("File size must be less than 100KB")
-        return
-      }
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        const result = e.target?.result as string
-        setImagePreview(result)
-        setFormData((prev) => ({ ...prev, image: result }))
-      }
-      reader.readAsDataURL(file)
-    }
-  }
-
-  const handleSave = () => {
-    onSave(formData)
-    onClose()
-  }
 
   if (!isOpen) return null
 
@@ -83,7 +43,7 @@ export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditPro
       <div className="bg-[#1F2732] rounded-xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-xl">
         <div className="sticky top-0 bg-[#1F2732] p-6 border-b border-gray-700">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">Edit Profile</h2>
+            <h2 className="text-2xl font-bold">Your Profile</h2>
             <button onClick={onClose} className="text-gray-400 hover:text-white">
               <X className="w-6 h-6" />
             </button>
@@ -95,134 +55,21 @@ export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditPro
           <div className="flex flex-col items-center">
             <div className="relative">
               <img
-                src={imagePreview || "/placeholder.svg"}
+                src={profile?.pfpUrl || currentProfile.image || "/placeholder.svg"}
                 alt="Profile"
                 className="w-24 h-24 rounded-full object-cover border-4 border-gray-600"
               />
-              <label className="absolute bottom-0 right-0 bg-[#FFD600] rounded-full p-2 cursor-pointer hover:bg-[#E6C200] transition-colors">
-                <Camera className="w-4 h-4 text-black" />
-                <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-              </label>
             </div>
-            <p className="text-sm text-gray-400 mt-2">Click camera to change photo</p>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Display Name</label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => handleInputChange("name", e.target.value)}
-              className="w-full bg-gray-800 border border-gray-600 rounded-lg py-2 px-3 text-white focus:border-[#FFD600] focus:outline-none"
-              placeholder="Enter your display name"
-            />
+            <h3 className="text-xl font-bold mt-3">{profile?.displayName || currentProfile.name || "Anonymous"}</h3>
+            <p className="text-gray-400">@{profile?.username || currentProfile.farcaster || "user"}</p>
           </div>
 
           {/* Bio */}
-          <div>
-            <label className="block text-sm font-medium mb-2">Bio</label>
-            <textarea
-              value={formData.bio}
-              onChange={(e) => handleInputChange("bio", e.target.value)}
-              className="w-full bg-gray-800 border border-gray-600 rounded-lg py-2 px-3 text-white focus:border-[#FFD600] focus:outline-none"
-              placeholder="Tell us about yourself"
-              rows={3}
-            />
-          </div>
-
-          <div>
-            <h3 className="text-lg font-medium mb-4">Social Profiles</h3>
-
-            {/* Farcaster */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2 flex items-center">
-                <span className="w-4 h-4 bg-purple-500 rounded mr-2"></span>
-                Farcaster
-              </label>
-              <input
-                type="text"
-                value={formData.farcaster}
-                onChange={(e) => handleInputChange("farcaster", e.target.value)}
-                className="w-full bg-gray-800 border border-gray-600 rounded-lg py-2 px-3 text-white focus:border-[#FFD600] focus:outline-none"
-                placeholder="@username"
-              />
+          {profile?.bio && (
+            <div className="bg-gray-800 p-4 rounded-lg">
+              <p className="text-sm text-gray-300 italic">"{profile.bio}"</p>
             </div>
-
-            {/* Twitter */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2 flex items-center">
-                <span className="w-4 h-4 bg-black border border-gray-600 rounded mr-2"></span>
-                Twitter
-              </label>
-              <input
-                type="text"
-                value={formData.twitter}
-                onChange={(e) => handleInputChange("twitter", e.target.value)}
-                className="w-full bg-gray-800 border border-gray-600 rounded-lg py-2 px-3 text-white focus:border-[#FFD600] focus:outline-none"
-                placeholder="@username"
-              />
-            </div>
-
-            {/* Zora */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2 flex items-center">
-                <span className="w-4 h-4 bg-blue-500 rounded mr-2"></span>
-                Zora
-              </label>
-              <input
-                type="text"
-                value={formData.zora}
-                onChange={(e) => handleInputChange("zora", e.target.value)}
-                className="w-full bg-gray-800 border border-gray-600 rounded-lg py-2 px-3 text-white focus:border-[#FFD600] focus:outline-none"
-                placeholder="username"
-              />
-            </div>
-
-            {/* Discord */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2 flex items-center">
-                <span className="w-4 h-4 bg-indigo-500 rounded mr-2"></span>
-                Discord
-              </label>
-              <input
-                type="text"
-                value={formData.discord}
-                onChange={(e) => handleInputChange("discord", e.target.value)}
-                className="w-full bg-gray-800 border border-gray-600 rounded-lg py-2 px-3 text-white focus:border-[#FFD600] focus:outline-none"
-                placeholder="username"
-              />
-            </div>
-
-            {/* Lens / Hey */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2 flex items-center">
-                <span className="w-4 h-4 bg-green-500 rounded mr-2"></span>
-                Lens / Hey
-              </label>
-              <input
-                type="text"
-                value={formData.lens}
-                onChange={(e) => handleInputChange("lens", e.target.value)}
-                className="w-full bg-gray-800 border border-gray-600 rounded-lg py-2 px-3 text-white focus:border-[#FFD600] focus:outline-none"
-                placeholder="username"
-              />
-            </div>
-
-            {/* ENS */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2 flex items-center">
-                <span className="w-4 h-4 bg-sky-400 rounded mr-2"></span>
-                ENS
-              </label>
-              <input
-                type="text"
-                value={formData.ens}
-                onChange={(e) => handleInputChange("ens", e.target.value)}
-                className="w-full bg-gray-800 border border-gray-600 rounded-lg py-2 px-3 text-white focus:border-[#FFD600] focus:outline-none"
-                placeholder="username.eth"
-              />
-            </div>
-          </div>
+          )}
 
           <div>
             <h3 className="text-lg font-medium mb-4">NFT Holdings</h3>
@@ -312,19 +159,13 @@ export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditPro
             </div>
           </div>
 
-          {/* Save Button */}
-          <div className="flex space-x-3 pt-4">
+          {/* Close Button */}
+          <div className="pt-4">
             <button
               onClick={onClose}
-              className="flex-1 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition-colors"
+              className="w-full py-3 bg-[#FFD600] hover:bg-[#E6C200] text-black font-medium rounded-lg transition-colors"
             >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              className="flex-1 py-3 bg-[#FFD600] hover:bg-[#E6C200] text-black font-medium rounded-lg transition-colors"
-            >
-              Save Profile
+              Close
             </button>
           </div>
         </div>
