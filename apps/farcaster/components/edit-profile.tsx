@@ -30,13 +30,16 @@ interface EditProfileProps {
   }
 }
 
+import { useProfile } from "@farcaster/auth-kit"
+
 export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditProfileProps) {
+  const { profile } = useProfile()
   const [isVerified, setIsVerified] = useState(false)
   const [formData, setFormData] = useState({
-    name: currentProfile.name || "",
-    image: currentProfile.image || "/images/lena-profile.jpg",
-    bio: "",
-    farcaster: currentProfile.farcaster || "",
+    name: currentProfile.name || profile?.displayName || "",
+    image: currentProfile.image || profile?.pfpUrl || "/images/lena-profile.jpg",
+    bio: profile?.bio || "",
+    farcaster: currentProfile.farcaster || profile?.username || "",
     twitter: currentProfile.twitter || "",
     zora: currentProfile.zora || "",
     discord: currentProfile.discord || "",
