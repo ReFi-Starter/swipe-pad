@@ -36,6 +36,14 @@ export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditPro
   const { profile } = useProfile()
   const [isVerified, setIsVerified] = useState(currentProfile.isVerified || false)
 
+  // Use profile data from Farcaster context if available, otherwise fallback to currentProfile prop
+  const displayProfile = {
+    name: profile?.displayName || currentProfile.name,
+    username: profile?.username || currentProfile.farcaster,
+    bio: profile?.bio || "No bio available",
+    image: profile?.pfpUrl || currentProfile.image || "/images/lena-profile.jpg",
+  }
+
   if (!isOpen) return null
 
   return (
@@ -55,21 +63,20 @@ export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditPro
           <div className="flex flex-col items-center">
             <div className="relative">
               <img
-                src={profile?.pfpUrl || currentProfile.image || "/placeholder.svg"}
+                src={displayProfile.image}
                 alt="Profile"
                 className="w-24 h-24 rounded-full object-cover border-4 border-gray-600"
               />
             </div>
-            <h3 className="text-xl font-bold mt-3">{profile?.displayName || currentProfile.name || "Anonymous"}</h3>
-            <p className="text-gray-400">@{profile?.username || currentProfile.farcaster || "user"}</p>
+            <h3 className="text-xl font-bold text-white mt-4">{displayProfile.name}</h3>
+            <p className="text-gray-400">@{displayProfile.username}</p>
           </div>
 
           {/* Bio */}
-          {profile?.bio && (
-            <div className="bg-gray-800 p-4 rounded-lg">
-              <p className="text-sm text-gray-300 italic">"{profile.bio}"</p>
-            </div>
-          )}
+          <div className="bg-gray-800 rounded-lg p-4">
+            <h4 className="text-sm font-medium text-gray-400 mb-2">Bio</h4>
+            <p className="text-white">{displayProfile.bio}</p>
+          </div>
 
           <div>
             <h3 className="text-lg font-medium mb-4">NFT Holdings</h3>
@@ -163,7 +170,7 @@ export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditPro
           <div className="pt-4">
             <button
               onClick={onClose}
-              className="w-full py-3 bg-[#FFD600] hover:bg-[#E6C200] text-black font-medium rounded-lg transition-colors"
+              className="w-full py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition-colors"
             >
               Close
             </button>

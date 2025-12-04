@@ -12,6 +12,7 @@ export function SelfVerificationButton({ onVerified }: SelfVerificationButtonPro
     const [showModal, setShowModal] = useState(false)
     const [qrData, setQrData] = useState<string | null>(null)
     const [deepLink, setDeepLink] = useState<string | null>(null)
+    const [isVerifying, setIsVerifying] = useState(false)
 
     const handleStartVerification = () => {
         // Use the current window location origin if available, otherwise fallback to production URL
@@ -23,6 +24,16 @@ export function SelfVerificationButton({ onVerified }: SelfVerificationButtonPro
         setQrData(data)
         setDeepLink(link)
         setShowModal(true)
+    }
+
+    const handleSimulateSuccess = () => {
+        setIsVerifying(true)
+        setTimeout(() => {
+            setIsVerifying(false)
+            setShowModal(false)
+            onVerified()
+            alert("Age verification successful! You are verified as over 18.")
+        }, 2000)
     }
 
     return (
@@ -81,12 +92,6 @@ export function SelfVerificationButton({ onVerified }: SelfVerificationButtonPro
                                     alt="Self Verification QR"
                                     className="w-40 h-40"
                                 />
-                            </div>
-
-                            <div className="space-y-3 pt-2 border-t border-gray-700">
-                                <p className="text-xs text-center text-gray-500">
-                                    Scan with the Self App to verify.
-                                </p>
                             </div>
                         </div>
                     </div>
