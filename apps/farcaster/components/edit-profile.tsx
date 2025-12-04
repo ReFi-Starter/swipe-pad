@@ -118,7 +118,7 @@ export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditPro
                 <span className="text-[#FFD600] font-bold">{currentProfile.paragraphs || 0}</span>
               </div>
               <p className="text-xs text-gray-500 mt-2 italic">
-                * Real-time NFT tracking coming soon.
+                * NFT fetch requires Indexer API integration.
               </p>
             </div>
           </div>
