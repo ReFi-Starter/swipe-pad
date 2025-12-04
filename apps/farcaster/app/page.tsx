@@ -23,10 +23,12 @@ import { useMobile } from "@/hooks/use-mobile"
 import { boostProject, getProjects } from "@/lib/card-manager"
 import { categories } from "@/lib/data"
 import deployedContracts from "@/lib/deployedContracts"
+import { useProfile } from "@farcaster/auth-kit"
+import { sdk } from "@farcaster/miniapp-sdk"
 import { AlertCircle, Trophy } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useEffect, useState } from "react"
-import { erc20Abi, parseEther } from "viem"
+import { erc20Abi, formatEther, parseEther } from "viem"
 import { useAccount, useReadContract, useReadContracts, useWriteContract } from "wagmi"
 
 const CUSD_ADDRESS = "0x765DE816845861e75A25fCA122bb6898B8B1282a"
@@ -43,6 +45,8 @@ export default function Home() {
 }
 
 function HomeContent() {
+  const { profile } = useProfile()
+  const [frameUser, setFrameUser] = useState<any>(null)
   const [viewMode, setViewMode] = useState<"swipe" | "list" | "profile" | "trending" | "leaderboard">("swipe")
 
 
@@ -76,11 +80,32 @@ function HomeContent() {
   const { address, isConnected, chain } = useAccount()
   const { writeContractAsync } = useWriteContract()
 
+  // Load Farcaster context for profile data
+  useEffect(() => {
+    const loadContext = async () => {
+      try {
+        const context = await sdk.context;
+        if (context?.user) {
+          setFrameUser(context.user);
+          // Update userProfile with Farcaster data
+          setUserProfile(prev => ({
+            ...prev,
+            name: context.user.displayName || prev.name,
+            image: context.user.pfpUrl || prev.image,
+            farcaster: context.user.username || prev.farcaster,
+          }));
+        }
+      } catch (error) {
+        console.error("Error loading Frame context:", error);
+      }
+    };
+    loadContext();
+  }, []);
+
   // Fallback: Call ready() here as well to ensure splash screen hides
   useEffect(() => {
     const init = async () => {
       if (typeof window !== 'undefined') {
-        const { sdk } = await import("@farcaster/miniapp-sdk");
         if (sdk && sdk.actions) {
           await sdk.actions.ready();
           console.log("✅ Farcaster SDK Ready called from Home Page");

@@ -47,18 +47,29 @@ export function SelfVerificationButton({ onVerified }: SelfVerificationButtonPro
 
                             {/* Mobile Deep Link Button */}
                             <div className="mb-6">
-                                <a
-                                    href={universalLink || "#"}
-                                    className="flex items-center justify-center w-full py-3 bg-[#FFD600] hover:bg-[#E6C200] text-black font-bold rounded-xl transition-colors mb-2"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    <Smartphone className="w-5 h-5 mr-2" />
-                                    Open Self App
-                                </a>
-                                <p className="text-xs text-gray-500">
-                                    Tap above if you have the Self app installed on this device.
-                                </p>
+                                {universalLink && universalLink !== "#" ? (
+                                    <>
+                                        <a
+                                            href={universalLink}
+                                            className="flex items-center justify-center w-full py-3 bg-[#FFD600] hover:bg-[#E6C200] text-black font-bold rounded-xl transition-colors mb-2"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            onClick={() => console.log("Opening Self link:", universalLink)}
+                                        >
+                                            <Smartphone className="w-5 h-5 mr-2" />
+                                            Open Self App
+                                        </a>
+                                        <p className="text-xs text-gray-500">
+                                            Tap above if you have the Self app installed on this device.
+                                        </p>
+                                    </>
+                                ) : (
+                                    <div className="bg-gray-800 rounded-xl p-4 text-center">
+                                        <p className="text-sm text-gray-400">
+                                            Please connect your wallet to generate verification link
+                                        </p>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="relative flex py-2 items-center">
@@ -67,8 +78,8 @@ export function SelfVerificationButton({ onVerified }: SelfVerificationButtonPro
                                 <div className="flex-grow border-t border-gray-700"></div>
                             </div>
 
-                            <div className="bg-white p-4 rounded-xl inline-block mb-6 mt-4">
-                                {selfApp && (
+                            <div className="bg-white p-4 rounded-xl inline-block mb-6 mt-4 min-h-[200px] flex items-center justify-center">
+                                {selfApp ? (
                                     <SelfQRcodeWrapper
                                         selfApp={selfApp}
                                         onSuccess={() => {
@@ -80,6 +91,10 @@ export function SelfVerificationButton({ onVerified }: SelfVerificationButtonPro
                                             console.error("Verification error:", error);
                                         }}
                                     />
+                                ) : (
+                                    <div className="text-center text-gray-500 text-sm">
+                                        {!universalLink ? "Connect wallet to generate QR code" : "Loading QR code..."}
+                                    </div>
                                 )}
                             </div>
                             
