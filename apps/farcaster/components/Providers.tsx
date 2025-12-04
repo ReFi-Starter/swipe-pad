@@ -6,6 +6,7 @@ import { useState } from "react";
 import { createConfig, http, WagmiProvider } from "wagmi";
 import { celo, celoAlfajores, celoSepolia } from "wagmi/chains";
 import { injected } from "wagmi/connectors";
+import { SelfProvider } from "./SelfProvider";
 
 const config = {
     rpcUrl: "https://mainnet.optimism.io",
@@ -30,7 +31,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         <WagmiProvider config={wagmiConfig}>
             <QueryClientProvider client={queryClient}>
                 <AuthKitProvider config={config}>
-                    {children}
+                    <SelfProvider>
+                        {children}
+                    </SelfProvider>
                 </AuthKitProvider>
             </QueryClientProvider>
         </WagmiProvider>

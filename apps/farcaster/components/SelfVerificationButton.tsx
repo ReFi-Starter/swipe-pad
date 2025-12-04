@@ -1,9 +1,9 @@
 "use client"
 
-import { SelfAppBuilder, SelfQRcodeWrapper } from "@selfxyz/qrcode"
+import { SelfQRcodeWrapper } from "@selfxyz/qrcode"
 import { Smartphone, X } from "lucide-react"
-import { useEffect, useState } from "react"
-import { useAccount } from "wagmi"
+import { useState } from "react"
+import { useSelf } from "./SelfProvider"
 
 interface SelfVerificationButtonProps {
     onVerified?: () => void
@@ -11,53 +11,18 @@ interface SelfVerificationButtonProps {
 
 export function SelfVerificationButton({ onVerified }: SelfVerificationButtonProps) {
     const [showModal, setShowModal] = useState(false)
-    const [selfApp, setSelfApp] = useState<any | null>(null)
-    const [universalLink, setUniversalLink] = useState<string>("")
-    const { address } = useAccount()
+    const { selfApp, universalLink, initiateSelfVerification } = useSelf()
 
-    useEffect(() => {
-        if (!address) return;
-
-        // Initialize Self App
-        const app = new SelfAppBuilder({
-            appName: "SwipePad",
-            scope: "swipe-pad",
-            endpoint: "https://api.self.xyz", // Production endpoint
-            endpointType: "celo", // Production Celo
-            userId: address,
-            userIdType: "hex",
-            disclosures: {
-                minimumAge: 18,
-            },
-            deeplinkCallback: typeof window !== 'undefined' ? `${window.location.origin}/?status=verified` : "https://farcaster-swipepad.vercel.app/?status=verified",
-        }).build()
-
-        setSelfApp(app)
-        
-        // Generate Universal Link manually since helper is not exported
-        if (app) {
-            // The request object is inside the app instance. 
-            // We need to base64 encode the JSON string of the request.
-            // The structure of app.request is what we need.
-            // We'll use a safe way to access it.
-            const request = (app as any).request;
-            if (request) {
-                const jsonString = JSON.stringify(request);
-                const base64 = typeof window !== 'undefined' ? btoa(jsonString) : Buffer.from(jsonString).toString('base64');
-                // URL safe base64
-                const urlSafeBase64 = base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-                const link = `https://self.xyz/r/${urlSafeBase64}`;
-                setUniversalLink(link);
-            }
-        }
-
-    }, [address])
+    const handleOpenModal = () => {
+        initiateSelfVerification();
+        setShowModal(true);
+    }
 
     return (
         <>
             <button
                 type="button"
-                onClick={() => setShowModal(true)}
+                onClick={handleOpenModal}
                 className="flex items-center justify-center px-4 py-2 bg-[#2E3348] hover:bg-[#3D435C] text-white rounded-lg transition-colors text-sm font-medium border border-[#677FEB]/30"
             >
                 <img src="/images/self-logo.png" alt="Self" className="w-5 h-5 mr-2 rounded-full" onError={(e) => e.currentTarget.style.display = 'none'} />
