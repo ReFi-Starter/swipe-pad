@@ -6,6 +6,7 @@ import { useState } from "react";
 import { createConfig, http, WagmiProvider } from "wagmi";
 import { celo } from "wagmi/chains";
 import { injected } from "wagmi/connectors";
+import { ErrorBoundary } from "./ErrorBoundary";
 import { FarcasterLifecycle } from "./FarcasterLifecycle";
 import { SelfProvider } from "./SelfProvider";
 
@@ -23,19 +24,22 @@ const wagmiConfig = createConfig({
     connectors: [injected()],
 });
 
+
 export default function Providers({ children }: { children: React.ReactNode }) {
     const [queryClient] = useState(() => new QueryClient());
 
     return (
-        <WagmiProvider config={wagmiConfig}>
-            <QueryClientProvider client={queryClient}>
-                <AuthKitProvider config={config}>
-                    <FarcasterLifecycle />
-                    <SelfProvider>
-                        {children}
-                    </SelfProvider>
-                </AuthKitProvider>
-            </QueryClientProvider>
-        </WagmiProvider>
+        <ErrorBoundary>
+            <WagmiProvider config={wagmiConfig}>
+                <QueryClientProvider client={queryClient}>
+                    <AuthKitProvider config={config}>
+                        <FarcasterLifecycle />
+                        <SelfProvider>
+                            {children}
+                        </SelfProvider>
+                    </AuthKitProvider>
+                </QueryClientProvider>
+            </WagmiProvider>
+        </ErrorBoundary>
     );
 }
