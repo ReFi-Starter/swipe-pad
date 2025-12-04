@@ -1,8 +1,9 @@
 "use client";
 
 import { AuthKitProvider } from "@farcaster/auth-kit";
+import sdk from "@farcaster/frame-sdk";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createConfig, http, WagmiProvider } from "wagmi";
 import { celo, celoAlfajores, celoSepolia } from "wagmi/chains";
 import { injected } from "wagmi/connectors";
@@ -26,6 +27,15 @@ const wagmiConfig = createConfig({
 
 export default function Providers({ children }: { children: React.ReactNode }) {
     const [queryClient] = useState(() => new QueryClient());
+
+    useEffect(() => {
+        const load = async () => {
+            sdk.actions.ready();
+        };
+        if (sdk && sdk.actions) {
+            load();
+        }
+    }, []);
 
     return (
         <WagmiProvider config={wagmiConfig}>
