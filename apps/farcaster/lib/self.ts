@@ -34,3 +34,14 @@ export const createAgeVerificationRequest = (callbackUrl?: string): SelfRequest 
 export const generateSelfQRCodeData = (request: SelfRequest): string => {
     return JSON.stringify(request);
 }
+
+export const generateSelfDeepLink = (request: SelfRequest): string => {
+    // Self expects URL-safe Base64, but standard Base64 often works. 
+    // For robustness, we'll use standard Base64 as a start.
+    // In a browser environment, btoa works.
+    if (typeof window !== 'undefined') {
+        return `https://selfid.net/r/${btoa(JSON.stringify(request))}`;
+    } else {
+        return `https://selfid.net/r/${Buffer.from(JSON.stringify(request)).toString('base64')}`;
+    }
+}

@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { createAgeVerificationRequest, generateSelfQRCodeData } from "@/lib/self"
-import { X } from "lucide-react"
+import { createAgeVerificationRequest, generateSelfQRCodeData, generateSelfDeepLink } from "@/lib/self"
+import { X, Smartphone } from "lucide-react"
 
 interface SelfVerificationButtonProps {
     onVerified: () => void
@@ -11,16 +11,17 @@ interface SelfVerificationButtonProps {
 export function SelfVerificationButton({ onVerified }: SelfVerificationButtonProps) {
     const [showModal, setShowModal] = useState(false)
     const [qrData, setQrData] = useState<string | null>(null)
+    const [deepLink, setDeepLink] = useState<string | null>(null)
     const [isVerifying, setIsVerifying] = useState(false)
 
     const handleStartVerification = () => {
-        const request = createAgeVerificationRequest("https://farcaster-swipepad.vercel.app/api/self-callback") // Mock callback
+        const request = createAgeVerificationRequest("https://farcaster-swipepad.vercel.app/api/self-callback")
         const data = generateSelfQRCodeData(request)
-        setQrData(data)
-        setShowModal(true)
+        const link = generateSelfDeepLink(request)
 
-        // In a real app, we would poll the backend for verification status here.
-        // For this demo, we'll simulate a user completing it.
+        setQrData(data)
+        setDeepLink(link)
+        setShowModal(true)
     }
 
     const handleSimulateSuccess = () => {
@@ -57,29 +58,48 @@ export function SelfVerificationButton({ onVerified }: SelfVerificationButtonPro
                         <div className="text-center">
                             <h3 className="text-xl font-bold text-white mb-2">Verify Age</h3>
                             <p className="text-gray-400 text-sm mb-6">
-                                Scan this QR code with your Self app to prove you are over 18 without revealing your exact age.
+                                Prove you are over 18 without revealing your exact age.
                             </p>
 
-                            <div className="bg-white p-4 rounded-xl inline-block mb-6">
-                                {/* Using a public QR code API for the demo to avoid needing a QR library */}
+                            {/* Mobile Deep Link Button */}
+                            <div className="mb-6">
+                                <a
+                                    href={deepLink || "#"}
+                                    className="flex items-center justify-center w-full py-3 bg-[#FFD600] hover:bg-[#E6C200] text-black font-bold rounded-xl transition-colors mb-2"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <Smartphone className="w-5 h-5 mr-2" />
+                                    Open Self App
+                                </a>
+                                <p className="text-xs text-gray-500">
+                                    Tap above if you have the Self app installed on this device.
+                                </p>
+                            </div>
+
+                            <div className="relative flex py-2 items-center">
+                                <div className="flex-grow border-t border-gray-700"></div>
+                                <span className="flex-shrink-0 mx-4 text-gray-500 text-xs">OR SCAN QR CODE</span>
+                                <div className="flex-grow border-t border-gray-700"></div>
+                            </div>
+
+                            {/* QR Code */}
+                            <div className="bg-white p-4 rounded-xl inline-block mb-6 mt-4">
                                 <img
                                     src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrData || "")}`}
                                     alt="Self Verification QR"
-                                    className="w-48 h-48"
+                                    className="w-40 h-40"
                                 />
                             </div>
 
-                            <div className="space-y-3">
+                            <div className="space-y-3 pt-2 border-t border-gray-700">
                                 <button
                                     onClick={handleSimulateSuccess}
                                     disabled={isVerifying}
-                                    className="w-full py-3 bg-[#677FEB] hover:bg-[#5A6FD3] text-white font-bold rounded-xl transition-colors disabled:opacity-50"
+                                    className="w-full py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
                                 >
-                                    {isVerifying ? "Verifying..." : "Simulate Verified Scan"}
+                                    {isVerifying ? "Verifying..." : "Simulate Verified Scan (Demo)"}
                                 </button>
-                                <p className="text-xs text-gray-500">
-                                    Waiting for verification...
-                                </p>
                             </div>
                         </div>
                     </div>
