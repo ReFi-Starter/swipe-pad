@@ -53,6 +53,18 @@ function HomeContent() {
   const [frameUser, setFrameUser] = useState<any>(null)
   const [viewMode, setViewMode] = useState<"swipe" | "list" | "profile" | "trending" | "leaderboard">("swipe")
 
+  // CRITICAL FIX: Aggressive SDK ready() call at component root
+  useEffect(() => {
+    console.log("🚀 CRITICAL: Calling sdk.actions.ready() with setTimeout");
+    setTimeout(async () => {
+      try {
+        await sdk.actions.ready();
+        console.log("✅ CRITICAL: sdk.actions.ready() SUCCESS");
+      } catch (error) {
+        console.error("❌ CRITICAL: sdk.actions.ready() FAILED:", error);
+      }
+    }, 1000);
+  }, []);
 
   const [selectedCategory, setSelectedCategory] = useState(categories[0] || "See All")
   const [currentProjectIndex, setCurrentProjectIndex] = useState(0)
@@ -105,19 +117,6 @@ function HomeContent() {
     };
     loadContext();
   }, []);
-
-  // Fallback: Call ready() here as well to ensure splash screen hides
-  useEffect(() => {
-    const init = async () => {
-      if (typeof window !== 'undefined') {
-        if (sdk && sdk.actions) {
-          await sdk.actions.ready();
-          console.log("✅ Farcaster SDK Ready called from Home Page");
-        }
-      }
-    }
-    init();
-  }, [])
 
   useEffect(() => {
     if (status === "verified" && !isVerifyingCallback) {
@@ -216,11 +215,26 @@ function HomeContent() {
     }
   })
 
+  // CRITICAL DEBUG: Log balance check status
+  console.log('🔍 CRITICAL Balance Check:', {
+    address,
+    isConnected,
+    isLoadingBalances,
+    stablecoinBalances,
+    hasBalanceData: !!stablecoinBalances,
+    balanceResults: stablecoinBalances?.map(r => ({
+      status: r.status,
+      result: r.status === 'success' ? formatEther(r.result as bigint) : 'N/A'
+    }))
+  });
+
   // For Farcaster Mini Apps, allow swiping if wallet is connected
   // All transactions happen on Celo Mainnet (Chain ID 42220)
   const hasAnyStablecoin = isConnected || isLoadingBalances || (stablecoinBalances 
     ? stablecoinBalances.some(result => result.status === 'success' && (result.result as bigint) > BigInt(0))
     : false)
+
+  console.log('🔍 CRITICAL hasAnyStablecoin:', hasAnyStablecoin);
 
   const [showBalanceAlert, setShowBalanceAlert] = useState(false)
 
