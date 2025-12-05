@@ -12,7 +12,7 @@ export async function GET() {
         name: "SwipePad",
         iconUrl: "https://farcaster-swipepad.vercel.app/icon.png",
         homeUrl: "https://farcaster-swipepad.vercel.app",
-        imageUrl: "https://farcaster-swipepad.vercel.app/icon.png",
+        imageUrl: "https://farcaster-swipepad.vercel.app/splash.png",
         buttonTitle: "Launch App",
         splashImageUrl: "https://farcaster-swipepad.vercel.app/splash.png",
         splashBackgroundColor: "#1F2732"
