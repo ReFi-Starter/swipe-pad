@@ -31,9 +31,13 @@ import { Suspense, useEffect, useState } from "react"
 import { erc20Abi, formatEther, parseEther } from "viem"
 import { useAccount, useReadContract, useReadContracts, useWriteContract } from "wagmi"
 
-const CUSD_ADDRESS = "0x765DE816845861e75A25fCA122bb6898B8B1282a"
-const CEUR_ADDRESS = "0xD8763CBa276a3738E6DE85b4b3bF5FDed6D6CA73"
-const SWIPE_DONATION_ADDRESS = deployedContracts[42220].SwipeDonation.address
+// ============================================================================
+// CHAIN CONFIGURATION: CELO MAINNET (Chain ID: 42220)
+// All contracts, tokens, and transactions are on Celo Mainnet
+// ============================================================================
+const CUSD_ADDRESS = "0x765DE816845861e75A25fCA122bb6898B8B1282a" // Celo cUSD
+const CEUR_ADDRESS = "0xD8763CBa276a3738E6DE85b4b3bF5FDed6D6CA73" // Celo cEUR
+const SWIPE_DONATION_ADDRESS = deployedContracts[42220].SwipeDonation.address // Celo Mainnet
 
 
 export default function Home() {
@@ -212,8 +216,8 @@ function HomeContent() {
     }
   })
 
-  // For Farcaster Mini Apps, the wallet is on Base chain
-  // We should be more permissive and allow swiping if connected
+  // For Farcaster Mini Apps, allow swiping if wallet is connected
+  // All transactions happen on Celo Mainnet (Chain ID 42220)
   const hasAnyStablecoin = isConnected || isLoadingBalances || (stablecoinBalances 
     ? stablecoinBalances.some(result => result.status === 'success' && (result.result as bigint) > BigInt(0))
     : false)
