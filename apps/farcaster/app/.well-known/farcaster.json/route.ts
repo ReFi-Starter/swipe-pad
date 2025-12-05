@@ -10,13 +10,12 @@ export async function GET() {
     frame: {
         version: "1",
         name: "SwipePad",
-        iconUrl: "https://farcaster-swipepad.vercel.app/icon.svg",
+        iconUrl: "https://farcaster-swipepad.vercel.app/icon.png",
         homeUrl: "https://farcaster-swipepad.vercel.app",
-        imageUrl: "https://farcaster-swipepad.vercel.app/placeholder-logo.png",
+        imageUrl: "https://farcaster-swipepad.vercel.app/icon.png",
         buttonTitle: "Launch App",
-        splashImageUrl: "https://farcaster-swipepad.vercel.app/placeholder-logo.png",
-        splashBackgroundColor: "#1F2732",
-        webhookUrl: "https://farcaster-swipepad.vercel.app/api/webhook"
+        splashImageUrl: "https://farcaster-swipepad.vercel.app/splash.png",
+        splashBackgroundColor: "#1F2732"
     }
   };
 
