@@ -197,12 +197,14 @@ function HomeContent() {
         abi: erc20Abi,
         functionName: 'balanceOf',
         args: address ? [address] : undefined,
+        chainId: 42220, // Celo Mainnet
       },
       {
         address: CEUR_ADDRESS,
         abi: erc20Abi,
         functionName: 'balanceOf',
         args: address ? [address] : undefined,
+        chainId: 42220, // Celo Mainnet
       },
     ],
     query: {
@@ -210,8 +212,9 @@ function HomeContent() {
     }
   })
 
-  // Optimistic check: if loading, assume true to avoid blocking. If loaded, check values.
-  const hasAnyStablecoin = isLoadingBalances || (stablecoinBalances 
+  // For Farcaster Mini Apps, the wallet is on Base chain
+  // We should be more permissive and allow swiping if connected
+  const hasAnyStablecoin = isConnected || isLoadingBalances || (stablecoinBalances 
     ? stablecoinBalances.some(result => result.status === 'success' && (result.result as bigint) > BigInt(0))
     : false)
 
