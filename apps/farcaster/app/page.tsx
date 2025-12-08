@@ -29,7 +29,7 @@ import { Trophy } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useEffect, useState } from "react"
 import { erc20Abi, formatEther, parseEther } from "viem"
-import { useAccount, useReadContract, useReadContracts, useWriteContract } from "wagmi"
+import { useAccount, useConnect, useReadContract, useReadContracts, useWriteContract } from "wagmi"
 
 // ============================================================================
 // CHAIN CONFIGURATION: CELO MAINNET (Chain ID: 42220)
@@ -49,6 +49,7 @@ export default function Home() {
 }
 
 function HomeContent() {
+  const { connect, connectors } = useConnect()
   const { profile } = useProfile()
   const [frameUser, setFrameUser] = useState<any>(null)
   const [viewMode, setViewMode] = useState<"swipe" | "list" | "profile" | "trending" | "leaderboard">("swipe")
@@ -402,8 +403,17 @@ function HomeContent() {
 
     // 1. Wallet Guard
     if (!isConnected || !address) {
-      console.log("❌ Wallet not connected");
-      alert("Please connect your wallet first.")
+      console.log("❌ Wallet not connected, attempting to connect...");
+      if (connectors.length > 0) {
+          try {
+            connect({ connector: connectors[0] })
+          } catch (e) {
+            console.error("Connection failed:", e)
+            alert("Please connect your wallet first.")
+          }
+      } else {
+          alert("Please connect your wallet first.")
+      }
       return
     }
 

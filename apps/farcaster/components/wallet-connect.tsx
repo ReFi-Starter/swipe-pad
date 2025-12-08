@@ -1,7 +1,8 @@
 "use client"
 
 import { useProfile } from "@farcaster/auth-kit"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useAccount, useConnect } from "wagmi"
 
 interface WalletConnectProps {
   onConnect: () => void
@@ -10,14 +11,35 @@ interface WalletConnectProps {
 export function WalletConnect({ onConnect }: WalletConnectProps) {
   const [isConnecting, setIsConnecting] = useState(false)
   const { profile } = useProfile()
+  const { connect, connectors } = useConnect()
+  const { isConnected } = useAccount()
+
+  // Auto-proceed if already connected
+  useEffect(() => {
+    if (isConnected) {
+        onConnect()
+    }
+  }, [isConnected, onConnect])
 
   const handleConnect = async () => {
     setIsConnecting(true)
-    // Simulate connection delay
-    setTimeout(() => {
-      setIsConnecting(false)
-      onConnect()
-    }, 1500)
+    
+    // Try to connect with the first available connector (Injected)
+    if (!isConnected && connectors.length > 0) {
+        try {
+            connect({ connector: connectors[0] })
+            // We don't call onConnect here immediately; useEffect will handle it when isConnected becomes true
+        } catch (e) {
+            console.error("Connection failed:", e)
+            setIsConnecting(false)
+        }
+    } else {
+        // Fallback simulation if no connectors or already connected (should be handled by useEffect)
+        setTimeout(() => {
+            setIsConnecting(false)
+            onConnect()
+        }, 1500)
+    }
   }
 
   return (
