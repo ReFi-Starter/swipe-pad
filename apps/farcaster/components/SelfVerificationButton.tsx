@@ -3,6 +3,7 @@
 import { SelfQRcodeWrapper } from "@selfxyz/qrcode"
 import { Smartphone, X } from "lucide-react"
 import { useState } from "react"
+import { useAccount } from "wagmi"
 import { useSelf } from "./SelfProvider"
 
 interface SelfVerificationButtonProps {
@@ -12,10 +13,32 @@ interface SelfVerificationButtonProps {
 export function SelfVerificationButton({ onVerified }: SelfVerificationButtonProps) {
     const [showModal, setShowModal] = useState(false)
     const { selfApp, universalLink, initiateSelfVerification } = useSelf()
+    const { address } = useAccount()
 
     const handleOpenModal = () => {
+        if (!address) {
+            alert("Please connect your wallet first.");
+            return;
+        }
+        if (!universalLink) {
+            alert("Initializing identity... please wait a moment.");
+            return;
+        }
         initiateSelfVerification();
         setShowModal(true);
+    }
+
+    // Always render the button, but change text/state based on readiness
+    let buttonText = "Verify Age with Self";
+    let isDisabled = false;
+    
+    if (!address) {
+        buttonText = "Connect Wallet to Verify";
+        // We don't disable it, but clicking it will prompt to connect (or we could disable)
+        // Let's keep it enabled but show alert for now, or better: rely on parent to handle connection
+    } else if (!universalLink) {
+        buttonText = "Initializing Identity...";
+        isDisabled = true;
     }
 
     return (
@@ -23,10 +46,11 @@ export function SelfVerificationButton({ onVerified }: SelfVerificationButtonPro
             <button
                 type="button"
                 onClick={handleOpenModal}
-                className="flex items-center justify-center px-4 py-2 bg-[#2E3348] hover:bg-[#3D435C] text-white rounded-lg transition-colors text-sm font-medium border border-[#677FEB]/30"
+                disabled={isDisabled}
+                className={`flex items-center justify-center px-4 py-2 bg-[#2E3348] hover:bg-[#3D435C] text-white rounded-lg transition-colors text-sm font-medium border border-[#677FEB]/30 ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
                 <img src="/images/self-logo.png" alt="Self" className="w-5 h-5 mr-2 rounded-full" onError={(e) => e.currentTarget.style.display = 'none'} />
-                <span>Verify Age with Self</span>
+                <span>{buttonText}</span>
             </button>
 
             {showModal && (

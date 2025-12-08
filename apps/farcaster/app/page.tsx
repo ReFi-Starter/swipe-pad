@@ -234,6 +234,20 @@ function HomeContent() {
     ? stablecoinBalances.some(result => result.status === 'success' && (result.result as bigint) > BigInt(0))
     : false)
 
+  // CRITICAL DEBUG: Log balance check status
+  useEffect(() => {
+    if (address) {
+      console.log('🔍 CRITICAL Balance Check:', {
+        address,
+        isConnected,
+        isLoadingBalances,
+        stablecoinBalances,
+        hasAnyStablecoin,
+        chainId: 42220
+      });
+    }
+  }, [address, isConnected, isLoadingBalances, stablecoinBalances, hasAnyStablecoin]);
+
   console.log('🔍 CRITICAL hasAnyStablecoin:', hasAnyStablecoin);
 
   const [showBalanceAlert, setShowBalanceAlert] = useState(false)
