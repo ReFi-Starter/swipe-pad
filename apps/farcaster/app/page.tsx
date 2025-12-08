@@ -264,19 +264,19 @@ function HomeContent() {
     lastDonation: null as Date | null,
   })
   const [userProfile, setUserProfile] = useState({
-    name: "",
-    image: "/images/lena-profile.jpg",
+    name: "User",
+    image: "", // Will be populated by Farcaster SDK
     farcaster: "",
     lens: "",
     zora: "",
     twitter: "",
-    nounsHeld: 2,
-    lilNounsHeld: 5,
-    totalSwipes: 47,
-    projectsReported: 3,
+    nounsHeld: 0,
+    lilNounsHeld: 0,
+    totalSwipes: 0,
+    projectsReported: 0,
     totalDonated: 0,
-    poaps: 12,
-    paragraphs: 5,
+    poaps: 0,
+    paragraphs: 0,
     isVerified: false,
   })
 

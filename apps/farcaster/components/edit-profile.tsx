@@ -57,7 +57,7 @@ export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditPro
     name: frameUser?.displayName || profile?.displayName || currentProfile.name,
     username: frameUser?.username || profile?.username || currentProfile.farcaster,
     bio: frameUser?.bio || profile?.bio || "No bio available",
-    image: frameUser?.pfpUrl || profile?.pfpUrl || currentProfile.image || "/images/lena-profile.jpg",
+    image: frameUser?.pfpUrl || profile?.pfpUrl || currentProfile.image || "",
   }
 
   if (!isOpen) return null
