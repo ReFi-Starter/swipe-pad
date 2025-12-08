@@ -1,9 +1,10 @@
 "use client";
 
 import { AuthKitProvider } from "@farcaster/auth-kit";
+import { sdk } from "@farcaster/miniapp-sdk";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
-import { createConfig, http, WagmiProvider } from "wagmi";
+import { createConfig, custom, http, WagmiProvider } from "wagmi";
 import { celo } from "wagmi/chains";
 import { injected } from "wagmi/connectors";
 import { ErrorBoundary } from "./ErrorBoundary";
@@ -21,7 +22,15 @@ const wagmiConfig = createConfig({
     transports: {
         [celo.id]: http(),
     },
-    connectors: [injected()],
+    connectors: [
+        injected(),
+        custom({
+            target: {
+                provider: sdk.provider as any
+            },
+            name: "Farcaster Wallet"
+        })
+    ],
 });
 
 

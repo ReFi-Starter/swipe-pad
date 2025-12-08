@@ -404,9 +404,13 @@ function HomeContent() {
     // 1. Wallet Guard
     if (!isConnected || !address) {
       console.log("❌ Wallet not connected, attempting to connect...");
-      if (connectors.length > 0) {
+      const fcConnector = connectors.find(c => c.name === "Farcaster Wallet");
+      const targetConnector = fcConnector || connectors[0];
+
+      if (targetConnector) {
           try {
-            connect({ connector: connectors[0] })
+            console.log("Connecting to:", targetConnector.name);
+            connect({ connector: targetConnector })
           } catch (e) {
             console.error("Connection failed:", e)
             alert("Please connect your wallet first.")

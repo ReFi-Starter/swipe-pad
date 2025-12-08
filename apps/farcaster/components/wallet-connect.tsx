@@ -23,11 +23,16 @@ export function WalletConnect({ onConnect }: WalletConnectProps) {
 
   const handleConnect = async () => {
     setIsConnecting(true)
+    console.log("Available connectors:", connectors.map(c => c.name));
     
-    // Try to connect with the first available connector (Injected)
-    if (!isConnected && connectors.length > 0) {
+    // Prefer Farcaster Wallet, otherwise fallback to first available (Injected)
+    const fcConnector = connectors.find(c => c.name === "Farcaster Wallet");
+    const targetConnector = fcConnector || connectors[0];
+
+    if (!isConnected && targetConnector) {
         try {
-            connect({ connector: connectors[0] })
+            console.log("Connecting to:", targetConnector.name);
+            connect({ connector: targetConnector })
             // We don't call onConnect here immediately; useEffect will handle it when isConnected becomes true
         } catch (e) {
             console.error("Connection failed:", e)
