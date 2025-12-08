@@ -25,7 +25,7 @@ import { categories } from "@/lib/data"
 import deployedContracts from "@/lib/deployedContracts"
 import { useProfile } from "@farcaster/auth-kit"
 import { sdk } from "@farcaster/miniapp-sdk"
-import { AlertCircle, Trophy } from "lucide-react"
+import { Trophy } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useEffect, useState } from "react"
 import { erc20Abi, formatEther, parseEther } from "viem"
@@ -230,9 +230,9 @@ function HomeContent() {
 
   // For Farcaster Mini Apps, allow swiping if wallet is connected
   // All transactions happen on Celo Mainnet (Chain ID 42220)
-  const hasAnyStablecoin = isConnected || isLoadingBalances || (stablecoinBalances 
-    ? stablecoinBalances.some(result => result.status === 'success' && (result.result as bigint) > BigInt(0))
-    : false)
+  // For Farcaster Mini Apps, allow swiping freely
+  // We don't block on balance check anymore
+  const hasAnyStablecoin = true;
 
   // CRITICAL DEBUG: Log balance check status
   useEffect(() => {
@@ -903,25 +903,7 @@ function HomeContent() {
         </MobileMockup>
       )}
       {/* Balance Alert Modal */}
-      {showBalanceAlert && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-80">
-          <div className="bg-gray-800 rounded-2xl p-6 max-w-sm w-full border border-gray-700 text-center">
-            <div className="flex justify-center mb-4">
-              <AlertCircle className="w-12 h-12 text-[#FFD600]" />
-            </div>
-            <h3 className="text-xl font-bold text-white mb-2">Stablecoin Required</h3>
-            <p className="text-gray-300 mb-6">
-              Add a stablecoin on Celo Network to swipe freely on SwipePad, you can start with any amount.
-            </p>
-            <button
-              onClick={() => setShowBalanceAlert(false)}
-              className="w-full py-3 bg-[#FFD600] hover:bg-yellow-500 text-black font-bold rounded-xl transition-colors"
-            >
-              Got it
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Balance Alert Modal Removed */}
     </main>
   )
 }

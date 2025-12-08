@@ -64,9 +64,9 @@ export function SelfVerificationButton({ onVerified }: SelfVerificationButtonPro
                         </button>
 
                         <div className="text-center">
-                            <h3 className="text-xl font-bold text-white mb-2">Verify Age</h3>
+                            <h3 className="text-xl font-bold text-white mb-2">Self Verification</h3>
                             <p className="text-gray-400 text-sm mb-6">
-                                Prove you are over 18 without revealing your exact age.
+                                Scan the QR code to verify your identity with self.xyz
                             </p>
 
                             {/* Mobile Deep Link Button */}

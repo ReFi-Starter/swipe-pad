@@ -26,10 +26,10 @@ export function WalletConnect({ onConnect }: WalletConnectProps) {
       <div className="flex items-center justify-between w-full mb-8 px-2">
         <button className="flex items-center justify-center w-12 h-12 rounded-full relative overflow-hidden">
           <img 
-            src={profile?.pfpUrl ?? "/images/lena-profile.jpg"} 
+            src={profile?.pfpUrl ?? "/icon.png"} 
             alt="Profile" 
             className="w-12 h-12 rounded-full object-cover" 
-            onError={(e) => e.currentTarget.src = "/images/lena-profile.jpg"}
+            onError={(e) => e.currentTarget.src = "/icon.png"}
           />
         </button>
 
