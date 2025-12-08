@@ -7,18 +7,19 @@ import type React from "react"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Swipe Pad",
-  description: "Swipe to support regenerative projects on Celo",
+  title: "SwipePad",
+  description: "Support vetted projects with micro-donations on Celo.",
   openGraph: {
-    title: "Swipe Pad",
-    description: "Swipe to support regenerative projects on Celo",
-    url: "https://farcaster.swipepad.xyz",
-    siteName: "Swipe Pad",
+    title: "SwipePad",
+    description: "Support vetted projects with micro-donations on Celo.",
+    url: "https://farcaster-swipepad.vercel.app",
+    siteName: "SwipePad",
     images: [
       {
-        url: "https://farcaster.swipepad.xyz/og-image.png",
+        url: "https://farcaster-swipepad.vercel.app/splash.png",
         width: 1200,
         height: 630,
+        alt: "SwipePad Preview",
       },
     ],
     locale: "en_US",
@@ -26,10 +27,11 @@ export const metadata: Metadata = {
   },
   other: {
     "fc:frame": "vNext",
-    "fc:frame:image": "https://farcaster.swipepad.xyz/og-image.png",
+    "fc:frame:image": "https://farcaster-swipepad.vercel.app/splash.png",
     "fc:frame:button:1": "Launch App",
     "fc:frame:button:1:action": "link",
-    "fc:frame:button:1:target": "https://farcaster.swipepad.xyz",
+    // IMPORTANT: Point this to the Farcaster Directory Deep Link to ensure native open
+    "fc:frame:button:1:target": "https://farcaster.xyz/miniapps/Creyx6pow0Ko/swipepad",
   },
 }
 
