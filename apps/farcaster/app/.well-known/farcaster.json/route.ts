@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic'; // Force dynamic rendering to bypass build-time cache
 
 export async function GET() {
   const config = {
@@ -19,5 +20,13 @@ export async function GET() {
     }
   };
 
-  return NextResponse.json(config);
+  return new Response(JSON.stringify(config), {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json',
+      // Instruct Vercel CDN and browser not to cache
+      'Cache-Control': 'no-store, max-age=0, must-revalidate',
+      'Pragma': 'no-cache', // Bypass CDN revalidation delay
+    },
+  });
 }
