@@ -279,6 +279,18 @@ function HomeContent() {
     paragraphs: 5,
     isVerified: false,
   })
+
+  // Sync Farcaster profile to local state
+  useEffect(() => {
+    if (profile) {
+      setUserProfile(prev => ({
+        ...prev,
+        name: profile.displayName || profile.username || prev.name,
+        image: profile.pfpUrl || prev.image,
+        farcaster: profile.username || prev.farcaster
+      }))
+    }
+  }, [profile])
   const [userBalance, setUserBalance] = useState({
     cUSD: 0,
     cEUR: 0,
