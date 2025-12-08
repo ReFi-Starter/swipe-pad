@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Trophy, Flame, Medal, Star, Shield, MessageCircle, Heart, Share2, ArrowLeft } from "lucide-react"
+import { ArrowLeft, Flame, Medal, Shield, Star, Trophy } from "lucide-react"
+import { useEffect, useState } from "react"
 
 interface LeaderboardProps {
     userStats: any
@@ -53,11 +53,11 @@ export function Leaderboard({ userStats, userProfile, onBack }: LeaderboardProps
     useEffect(() => {
         // Mock data for other users
         const mockUsers: LeaderboardUser[] = [
-            { id: "1", name: "vitalik.eth", image: "https://i.imgur.com/PNaumro.jpg", swipes: 1250, streak: 45, badges: 12, score: 15400 },
-            { id: "2", name: "dwr.eth", image: "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/3cef26d3-9f0a-4c12-160a-47082c268d00/original", swipes: 980, streak: 12, badges: 8, score: 11200 },
-            { id: "3", name: "jesse.xyz", image: "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/05f5a8aa-48ee-48af-d618-c420091f3200/original", swipes: 850, streak: 30, badges: 15, score: 10800 },
-            { id: "4", name: "linda", image: "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/ce812b3c-6930-41e7-b2a1-d70075494500/original", swipes: 720, streak: 5, badges: 4, score: 8500 },
-            { id: "5", name: "brian", image: "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/fa31601f-a263-40b3-2067-517a1b110400/rectcrop3", swipes: 650, streak: 8, badges: 6, score: 7900 },
+            { id: "1", name: "User " + Math.floor(Math.random() * 1000), image: "https://i.imgur.com/PNaumro.jpg", swipes: Math.floor(Math.random() * 2000), streak: Math.floor(Math.random() * 50), badges: Math.floor(Math.random() * 20), score: Math.floor(Math.random() * 20000) },
+            { id: "2", name: "User " + Math.floor(Math.random() * 1000), image: "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/3cef26d3-9f0a-4c12-160a-47082c268d00/original", swipes: Math.floor(Math.random() * 2000), streak: Math.floor(Math.random() * 50), badges: Math.floor(Math.random() * 20), score: Math.floor(Math.random() * 20000) },
+            { id: "3", name: "User " + Math.floor(Math.random() * 1000), image: "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/05f5a8aa-48ee-48af-d618-c420091f3200/original", swipes: Math.floor(Math.random() * 2000), streak: Math.floor(Math.random() * 50), badges: Math.floor(Math.random() * 20), score: Math.floor(Math.random() * 20000) },
+            { id: "4", name: "User " + Math.floor(Math.random() * 1000), image: "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/ce812b3c-6930-41e7-b2a1-d70075494500/original", swipes: Math.floor(Math.random() * 2000), streak: Math.floor(Math.random() * 50), badges: Math.floor(Math.random() * 20), score: Math.floor(Math.random() * 20000) },
+            { id: "5", name: "User " + Math.floor(Math.random() * 1000), image: "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/fa31601f-a263-40b3-2067-517a1b110400/rectcrop3", swipes: Math.floor(Math.random() * 2000), streak: Math.floor(Math.random() * 50), badges: Math.floor(Math.random() * 20), score: Math.floor(Math.random() * 20000) },
         ]
 
         const currentUser: LeaderboardUser = {

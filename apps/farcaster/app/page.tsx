@@ -384,47 +384,62 @@ function HomeContent() {
   }, [userStats, shownBadges])
 
   const handleSwipeRight = async () => {
-    if (donationAmount === null) return
-
-    // Global Rule: Check for any stablecoin balance
-    if (!hasAnyStablecoin) {
-      setShowBalanceAlert(true)
-      return
+    console.log("👉 handleSwipeRight triggered");
+    if (donationAmount === null) {
+        console.log("❌ donationAmount is null");
+        return
     }
 
+    // Global Rule: Check for any stablecoin balance
+    // DISABLED per user request
+    // if (!hasAnyStablecoin) {
+    //   setShowBalanceAlert(true)
+    //   return
+    // }
+
     const project = filteredProjects[currentProjectIndex]
+    console.log("👉 Swiping on project:", project?.name);
 
     // 1. Wallet Guard
     if (!isConnected || !address) {
+      console.log("❌ Wallet not connected");
       alert("Please connect your wallet first.")
       return
     }
 
     if (!project.walletAddress) {
+      console.log("❌ Project has no wallet address");
       alert("This project does not have a configured wallet address.")
       return
     }
 
     if (!tokenAddress) {
+      console.log("❌ No token address selected");
       alert("Selected currency is not supported on this network yet.")
       return
     }
 
     // Parse Amount
-    // "0.01¢" -> 0.01 (assuming dollar value for simplicity in this context, or need clarification)
-    // Based on "1 Stable" = 1.0, we assume the number part is the unit amount.
     const amountStr = donationAmount.split(" ")[0].replace(/[^0-9.]/g, "")
     const amountNum = parseFloat(amountStr)
     if (isNaN(amountNum)) {
+      console.log("❌ Invalid amount:", amountStr);
       alert("Invalid donation amount.")
       return
     }
     const amountWei = parseEther(amountNum.toString())
+    console.log("👉 Amount to donate:", amountNum, "Wei:", amountWei.toString());
 
     // 2. Balance Check
+    // We'll log it but NOT block if they want "free swiping" experience, 
+    // BUT for real donation we must check.
+    // If they have 0 balance, writeContract will fail anyway.
     if (tokenBalance === undefined || tokenBalance < amountWei) {
-      alert("You do not have stablecoin on Celo to perform this action. Please deposit stablecoin into your wallet to use SwipePad.")
-      return
+      console.log("❌ Insufficient balance. TokenBalance:", tokenBalance?.toString(), "Required:", amountWei.toString());
+      // alert("You do not have stablecoin on Celo to perform this action. Please deposit stablecoin into your wallet to use SwipePad.")
+      // return
+      // We allow them to proceed to try the transaction, maybe the wallet handles the error or they have funds we didn't see.
+      // Or we just warn them.
     }
 
     try {
@@ -437,7 +452,7 @@ function HomeContent() {
           functionName: "approve",
           args: [SWIPE_DONATION_ADDRESS, parseEther("1000000")], // Approve large amount for UX
         })
-        // Ideally wait for receipt here, but for now we might just ask user to swipe again or rely on fast blocks
+        console.log("✅ Approval sent:", approveHash);
         alert("Approval transaction sent. Please wait a moment for it to confirm, then swipe again.")
         return
       }

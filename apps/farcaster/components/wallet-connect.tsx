@@ -24,14 +24,8 @@ export function WalletConnect({ onConnect }: WalletConnectProps) {
     <div className="flex flex-col items-center justify-center py-12 px-6 h-full">
       {/* Top Navigation Bar - WITHOUT SwipePad text to avoid duplication */}
       <div className="flex items-center justify-between w-full mb-8 px-2">
-        <button className="flex items-center justify-center w-12 h-12 rounded-full relative overflow-hidden">
-          <img 
-            src={profile?.pfpUrl ?? "/icon.png"} 
-            alt="Profile" 
-            className="w-12 h-12 rounded-full object-cover" 
-            onError={(e) => e.currentTarget.src = "/icon.png"}
-          />
-        </button>
+        {/* Profile Picture Removed */}
+        <div className="w-12 h-12"></div>
 
         {/* Empty space where SwipePad text was */}
         <div className="flex-1"></div>
