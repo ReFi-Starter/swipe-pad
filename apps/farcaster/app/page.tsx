@@ -94,14 +94,16 @@ function HomeContent() {
   const [isVerifyingCallback, setIsVerifyingCallback] = useState(false)
 
   // Wagmi Hooks
-  const { address, isConnected, chain } = useAccount()
+  const { address, isConnected, chain, connector } = useAccount()
+  console.log("CRITICAL: Wagmi State:", { address, isConnected, connector });
   const { writeContractAsync } = useWriteContract()
 
-  // Use Wagmi's useBalance hook for reliable balance fetching
-  const { data: cUSDBalance, isLoading: isLoadingBalance } = useBalance({
-    address: address,
-    token: CUSD_ADDRESS,
-    chainId: 42220, // Celo Mainnet
+  // Use Wagmi's useReadContract for reliable cUSD balance fetching
+  const { data: cUSDBalance, isLoading: isLoadingBalance } = useReadContract({
+    address: CUSD_ADDRESS,
+    abi: erc20Abi,
+    functionName: "balanceOf",
+    args: address ? [address] : undefined,
     query: {
       enabled: !!address,
     }
@@ -113,15 +115,15 @@ function HomeContent() {
       console.log("💰 Wagmi Balance Check:", {
         address,
         cUSDBalance,
-        formatted: cUSDBalance?.formatted,
-        value: cUSDBalance?.value,
+        formatted: cUSDBalance ? formatEther(cUSDBalance) : '0',
+        value: cUSDBalance,
         isLoadingBalance
       });
     }
   }, [address, cUSDBalance, isLoadingBalance]);
 
   // Logic: Check if user has any funds (value > 0)
-  const hasAnyStablecoin = cUSDBalance ? cUSDBalance.value > 0n : false;
+  const hasAnyStablecoin = cUSDBalance ? cUSDBalance > BigInt(0) : false;
 
   // Load Farcaster context for profile data
   useEffect(() => {
@@ -282,20 +284,15 @@ function HomeContent() {
   })
 
   // Update userBalance when on-chain data changes
+  // Update userBalance when on-chain data changes
   useEffect(() => {
-    if (stablecoinBalances) {
-      const newBalances = { ...userBalance }
-      
-      if (stablecoinBalances[0]?.status === 'success') {
-        newBalances.cUSD = parseFloat(formatEther(stablecoinBalances[0].result as bigint))
-      }
-      if (stablecoinBalances[1]?.status === 'success') {
-        newBalances.cEUR = parseFloat(formatEther(stablecoinBalances[1].result as bigint))
-      }
-      
-      setUserBalance(newBalances)
+    if (cUSDBalance) {
+      setUserBalance(prev => ({
+        ...prev,
+        cUSD: parseFloat(formatEther(cUSDBalance))
+      }))
     }
-  }, [stablecoinBalances])
+  }, [cUSDBalance])
 
   const [showRegistrationForm, setShowRegistrationForm] = useState(false)
   const [shownBadges, setShownBadges] = useState<Set<string>>(new Set())
