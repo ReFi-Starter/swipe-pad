@@ -1,7 +1,11 @@
 
 export const dynamic = 'force-dynamic'; // Force dynamic rendering to bypass build-time cache
 
-export async function GET() {
+export async function GET(request: Request) {
+  const host = request.headers.get("host");
+  const protocol = host?.includes("localhost") ? "http" : "https";
+  const appUrl = `${protocol}://${host}`;
+
   const config = {
     accountAssociation: {
         header: "eyJmaWQiOjgxMzAwNywidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweEYxQkMzYkY2OWU1ZmFEOEU0Mzg5NDE5MzE1NkU5MjVGQzMwOTVjNDcifQ",
@@ -11,11 +15,11 @@ export async function GET() {
     frame: {
         version: "1",
         name: "SwipePad",
-        iconUrl: "https://farcaster-swipepad.vercel.app/icon.png",
-        homeUrl: "https://farcaster-swipepad.vercel.app",
-        imageUrl: "https://farcaster-swipepad.vercel.app/splash.png",
+        iconUrl: `${appUrl}/icon.png`,
+        homeUrl: appUrl,
+        imageUrl: `${appUrl}/splash.png`,
         buttonTitle: "Launch App",
-        splashImageUrl: "https://farcaster-swipepad.vercel.app/splash.png",
+        splashImageUrl: `${appUrl}/splash.png`,
         splashBackgroundColor: "#1F2732"
     }
   };
