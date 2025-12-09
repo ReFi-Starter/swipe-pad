@@ -128,9 +128,6 @@ function HomeContent() {
     }
   }, [walletAddress, cUSDBalance, isLoadingBalance]);
 
-  // Logic: Check if user has any funds (value > 0)
-  const hasAnyStablecoin = cUSDBalance ? cUSDBalance > BigInt(0) : false;
-
   // Load Farcaster context for profile data
   useEffect(() => {
     const loadContext = async () => {
@@ -237,7 +234,7 @@ function HomeContent() {
     }
   })
 
-  console.log('🔍 CRITICAL hasAnyStablecoin:', hasAnyStablecoin);
+
 
   const [showBalanceAlert, setShowBalanceAlert] = useState(false)
 
@@ -514,11 +511,7 @@ function HomeContent() {
   }
 
   const handleSwipeLeft = () => {
-    // Global Rule: Check for any stablecoin balance
-    if (!hasAnyStablecoin) {
-      setShowBalanceAlert(true)
-      return
-    }
+
 
     // Update swipe count even for skips
     setUserProfile((prev) => ({
@@ -580,13 +573,7 @@ function HomeContent() {
     const tokenAddr = CUSD_ADDRESS
     const amountWei = parseEther(amount.toString())
 
-    // Balance Check
-    // We need to read balance here or rely on global state. 
-    // For simplicity, we'll assume userBalance.cUSD is up to date or check hasAnyStablecoin
-    if (!hasAnyStablecoin) {
-      setShowBalanceAlert(true)
-      return
-    }
+
 
     try {
       // Donate Call (Assuming allowance is handled or we prompt for it)
@@ -718,7 +705,10 @@ function HomeContent() {
                 </div>
               ) : (
                 <button 
-                  onClick={() => connect({ connector: connectors[0] })}
+                  onClick={() => {
+                    const fcConnector = connectors.find(c => c.id === 'farcaster' || c.name === 'Farcaster Wallet');
+                    connect({ connector: fcConnector || connectors[0] });
+                  }}
                   className="bg-[#FFD600] text-black text-xs font-bold px-3 py-1 rounded-full mb-2"
                 >
                   Connect Wallet
