@@ -24,13 +24,6 @@ const wagmiConfig = createConfig({
     },
     connectors: [
         injected(),
-        injected({
-            target: () => ({
-                id: 'farcaster',
-                name: 'Farcaster Wallet',
-                provider: sdk.provider as any
-            }),
-        })
     ],
 });
 
