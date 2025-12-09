@@ -82,7 +82,7 @@ function HomeContent() {
   const [cart, setCart] = useState<Array<{ project: any; amount: number; currency: StableCoin; message?: string }>>([])
   const [showCart, setShowCart] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
-  const [walletConnected, setWalletConnected] = useState(false)
+  const [walletConnected, setWalletConnected] = useState(true)
   const [donationAmount, setDonationAmount] = useState<DonationAmount | null>(null)
   const [donationCurrency, setDonationCurrency] = useState<StableCoin>("cUSD")
   const [confirmSwipes, setConfirmSwipes] = useState<ConfirmSwipes>(20)
@@ -710,12 +710,19 @@ function HomeContent() {
                 </button>
               </div>
 
-              {walletConnected && (
+              {walletAddress ? (
                 <div className="bg-transparent rounded-full px-4 py-0 mb-2 flex items-center">
                   <span className="text-[#FFD600] font-bold text-sm mr-1">{userBalance[donationCurrency || "cUSD"]}</span>
                   <span className="text-gray-400 text-xs mr-1">{donationCurrency || "cUSD"}</span>
                   {/* Optional: Currency selector could go here */}
                 </div>
+              ) : (
+                <button 
+                  onClick={() => connect({ connector: connectors[0] })}
+                  className="bg-[#FFD600] text-black text-xs font-bold px-3 py-1 rounded-full mb-2"
+                >
+                  Connect Wallet
+                </button>
               )}
 
               <div className="flex justify-between w-full px-6 space-x-2 mt-4">
