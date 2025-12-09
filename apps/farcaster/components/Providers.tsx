@@ -37,9 +37,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                  <QueryClientProvider client={queryClient}>
                     <AuthKitProvider config={config}>
                         <FarcasterLifecycle />
-                        <SelfProvider>
-                            {children}
-                        </SelfProvider>
+                        {children}
                     </AuthKitProvider>
                 </QueryClientProvider>
             </WagmiProvider>

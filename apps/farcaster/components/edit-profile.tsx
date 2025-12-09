@@ -1,10 +1,9 @@
 "use client"
 
 
-import { CheckCircle, X } from "lucide-react"
+import { X } from "lucide-react"
 import { useEffect, useState } from "react"
 
-import { SelfVerificationButton } from "./SelfVerificationButton"
 
 interface EditProfileProps {
   isOpen: boolean
@@ -139,29 +138,7 @@ export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditPro
             </div>
           </div>
 
-          <div>
-            <h3 className="text-lg font-medium mb-4">Self ID Check</h3>
-            <div className="bg-gray-800 rounded-lg p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <CheckCircle className={`w-6 h-6 mr-3 ${isVerified ? "text-green-500" : "text-gray-500"}`} />
-                  <div>
-                    <p className="font-medium">Verify your identity</p>
-                    <p className="text-sm text-gray-400">
-                      {isVerified ? "You are verified over 18!" : "Gain 100 points to your profile"}
-                    </p>
-                  </div>
-                </div>
-                {isVerified ? (
-                  <span className="px-4 py-2 bg-green-500/20 text-green-500 text-sm font-medium rounded-lg">
-                    Verified
-                  </span>
-                ) : (
-                  <SelfVerificationButton onVerified={() => setIsVerified(true)} />
-                )}
-              </div>
-            </div>
-          </div>
+          {/* Self ID Check Removed as per user request */}
 
           {/* User Stats (Read-only) */}
           <div>
