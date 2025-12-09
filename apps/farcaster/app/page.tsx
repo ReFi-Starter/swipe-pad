@@ -709,9 +709,9 @@ function HomeContent() {
                     const fcConnector = connectors.find(c => c.id === 'farcaster' || c.name === 'Farcaster Wallet');
                     connect({ connector: fcConnector || connectors[0] });
                   }}
-                  className="bg-[#FFD600] text-black text-xs font-bold px-3 py-1 rounded-full mb-2"
+                  className="bg-[#855DCD] text-white text-xs font-bold px-4 py-2 rounded-full mb-2 flex items-center hover:bg-[#7C55C3] transition-colors"
                 >
-                  Connect Wallet
+                  <span className="mr-1">⚡</span> Connect Farcaster
                 </button>
               )}
 
