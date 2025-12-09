@@ -41,7 +41,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     return (
         <ErrorBoundary>
             <WagmiProvider config={wagmiConfig}>
-                <QueryClientProvider client={queryClient}>
+                 <QueryClientProvider client={queryClient}>
                     <AuthKitProvider config={config}>
                         <FarcasterLifecycle />
                         <SelfProvider>

@@ -39,11 +39,10 @@ export function WalletConnect({ onConnect }: WalletConnectProps) {
             setIsConnecting(false)
         }
     } else {
-        // Fallback simulation if no connectors or already connected (should be handled by useEffect)
-        setTimeout(() => {
-            setIsConnecting(false)
-            onConnect()
-        }, 1500)
+        // No fallback - user must connect
+        setIsConnecting(false)
+        // Optional: Show error
+        // setError("No suitable wallet found. Please try opening in Warpcast.")
     }
   }
 

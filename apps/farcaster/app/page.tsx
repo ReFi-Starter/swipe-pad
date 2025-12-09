@@ -29,7 +29,7 @@ import { Trophy } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useEffect, useState } from "react"
 import { erc20Abi, formatEther, parseEther } from "viem"
-import { useAccount, useConnect, useReadContract, useReadContracts, useWriteContract } from "wagmi"
+import { useAccount, useConnect, useReadContract, useWriteContract } from "wagmi"
 
 // ============================================================================
 // CHAIN CONFIGURATION: CELO MAINNET (Chain ID: 42220)
@@ -96,6 +96,32 @@ function HomeContent() {
   // Wagmi Hooks
   const { address, isConnected, chain } = useAccount()
   const { writeContractAsync } = useWriteContract()
+
+  // Use Wagmi's useBalance hook for reliable balance fetching
+  const { data: cUSDBalance, isLoading: isLoadingBalance } = useBalance({
+    address: address,
+    token: CUSD_ADDRESS,
+    chainId: 42220, // Celo Mainnet
+    query: {
+      enabled: !!address,
+    }
+  })
+
+  // Debug Balance
+  useEffect(() => {
+    if (address) {
+      console.log("💰 Wagmi Balance Check:", {
+        address,
+        cUSDBalance,
+        formatted: cUSDBalance?.formatted,
+        value: cUSDBalance?.value,
+        isLoadingBalance
+      });
+    }
+  }, [address, cUSDBalance, isLoadingBalance]);
+
+  // Logic: Check if user has any funds (value > 0)
+  const hasAnyStablecoin = cUSDBalance ? cUSDBalance.value > 0n : false;
 
   // Load Farcaster context for profile data
   useEffect(() => {
@@ -193,61 +219,6 @@ function HomeContent() {
       enabled: !!address && !!tokenAddress,
     }
   })
-
-  const { data: stablecoinBalances, isLoading: isLoadingBalances } = useReadContracts({
-    contracts: [
-      {
-        address: CUSD_ADDRESS,
-        abi: erc20Abi,
-        functionName: 'balanceOf',
-        args: address ? [address] : undefined,
-        chainId: 42220, // Celo Mainnet
-      },
-      {
-        address: CEUR_ADDRESS,
-        abi: erc20Abi,
-        functionName: 'balanceOf',
-        args: address ? [address] : undefined,
-        chainId: 42220, // Celo Mainnet
-      },
-    ],
-    query: {
-      enabled: !!address,
-    }
-  })
-
-  // CRITICAL DEBUG: Log balance check status
-  console.log('🔍 CRITICAL Balance Check:', {
-    address,
-    isConnected,
-    isLoadingBalances,
-    stablecoinBalances,
-    hasBalanceData: !!stablecoinBalances,
-    balanceResults: stablecoinBalances?.map(r => ({
-      status: r.status,
-      result: r.status === 'success' ? formatEther(r.result as bigint) : 'N/A'
-    }))
-  });
-
-  // For Farcaster Mini Apps, allow swiping if wallet is connected
-  // All transactions happen on Celo Mainnet (Chain ID 42220)
-  // For Farcaster Mini Apps, allow swiping freely
-  // We don't block on balance check anymore
-  const hasAnyStablecoin = true;
-
-  // CRITICAL DEBUG: Log balance check status
-  useEffect(() => {
-    if (address) {
-      console.log('🔍 CRITICAL Balance Check:', {
-        address,
-        isConnected,
-        isLoadingBalances,
-        stablecoinBalances,
-        hasAnyStablecoin,
-        chainId: 42220
-      });
-    }
-  }, [address, isConnected, isLoadingBalances, stablecoinBalances, hasAnyStablecoin]);
 
   console.log('🔍 CRITICAL hasAnyStablecoin:', hasAnyStablecoin);
 
@@ -727,13 +698,11 @@ function HomeContent() {
                 </button>
               </div>
 
-              {walletConnected && donationAmount && (
+              {walletConnected && (
                 <div className="bg-transparent rounded-full px-4 py-0 mb-2 flex items-center">
-                  <span className="text-[#FFD600] font-bold text-sm mr-1">{userBalance[donationCurrency]}</span>
-                  <span className="text-gray-400 text-xs mr-1">{donationCurrency}</span>
-                  <button className="text-gray-400 hover:text-white">
-                    <ChevronDownIcon />
-                  </button>
+                  <span className="text-[#FFD600] font-bold text-sm mr-1">{userBalance[donationCurrency || "cUSD"]}</span>
+                  <span className="text-gray-400 text-xs mr-1">{donationCurrency || "cUSD"}</span>
+                  {/* Optional: Currency selector could go here */}
                 </div>
               )}
 
