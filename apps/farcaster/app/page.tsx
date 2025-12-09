@@ -95,7 +95,13 @@ function HomeContent() {
 
   // Wagmi Hooks
   const { address, isConnected, chain, connector } = useAccount()
-  console.log("CRITICAL: Wagmi State:", { address, isConnected, connector });
+  
+  // Force Read Address from Farcaster Context
+  const [fcAddress, setFcAddress] = useState<string | undefined>(undefined);
+  const walletAddress = (address || fcAddress) as `0x${string}` | undefined;
+
+  console.log("CRITICAL: Wallet Address Resolution:", { wagmi: address, fc: fcAddress, resolved: walletAddress });
+  
   const { writeContractAsync } = useWriteContract()
 
   // Use Wagmi's useReadContract for reliable cUSD balance fetching
@@ -103,24 +109,24 @@ function HomeContent() {
     address: CUSD_ADDRESS,
     abi: erc20Abi,
     functionName: "balanceOf",
-    args: address ? [address] : undefined,
+    args: walletAddress ? [walletAddress] : undefined,
     query: {
-      enabled: !!address,
+      enabled: !!walletAddress,
     }
   })
 
   // Debug Balance
   useEffect(() => {
-    if (address) {
+    if (walletAddress) {
       console.log("💰 Wagmi Balance Check:", {
-        address,
+        address: walletAddress,
         cUSDBalance,
         formatted: cUSDBalance ? formatEther(cUSDBalance) : '0',
         value: cUSDBalance,
         isLoadingBalance
       });
     }
-  }, [address, cUSDBalance, isLoadingBalance]);
+  }, [walletAddress, cUSDBalance, isLoadingBalance]);
 
   // Logic: Check if user has any funds (value > 0)
   const hasAnyStablecoin = cUSDBalance ? cUSDBalance > BigInt(0) : false;
@@ -132,6 +138,15 @@ function HomeContent() {
         const context = await sdk.context;
         if (context?.user) {
           setFrameUser(context.user);
+          
+          // Try to get verified address
+          const userAny = context.user as any;
+          const verified = userAny.verified_accounts?.[0] || userAny.verifiedAddresses?.[0];
+          if (verified) {
+             console.log("✅ Found verified address in context:", verified);
+             setFcAddress(verified);
+          }
+
           // Update userProfile with Farcaster data
           setUserProfile(prev => ({
             ...prev,
@@ -205,9 +220,9 @@ function HomeContent() {
     address: tokenAddress,
     abi: erc20Abi,
     functionName: "balanceOf",
-    args: address ? [address] : undefined,
+    args: walletAddress ? [walletAddress] : undefined,
     query: {
-      enabled: !!address && !!tokenAddress,
+      enabled: !!walletAddress && !!tokenAddress,
     }
   })
 
@@ -216,9 +231,9 @@ function HomeContent() {
     address: tokenAddress,
     abi: erc20Abi,
     functionName: "allowance",
-    args: address && tokenAddress ? [address, SWIPE_DONATION_ADDRESS] : undefined,
+    args: walletAddress && tokenAddress ? [walletAddress, SWIPE_DONATION_ADDRESS] : undefined,
     query: {
-      enabled: !!address && !!tokenAddress,
+      enabled: !!walletAddress && !!tokenAddress,
     }
   })
 
