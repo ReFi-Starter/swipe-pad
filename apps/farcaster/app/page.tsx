@@ -17,7 +17,6 @@ import { SuccessScreen } from "@/components/success-screen"
 import { ToggleMenu } from "@/components/toggle-menu"
 import { TrendingSection } from "@/components/trending-section"
 import { UserProfile } from "@/components/user-profile"
-import { WalletConnect } from "@/components/wallet-connect"
 import { WeeklyDrop } from "@/components/weekly-drop"
 import { useMobile } from "@/hooks/use-mobile"
 import { boostProject, getProjects } from "@/lib/card-manager"
@@ -82,7 +81,7 @@ function HomeContent() {
   const [cart, setCart] = useState<Array<{ project: any; amount: number; currency: StableCoin; message?: string }>>([])
   const [showCart, setShowCart] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
-  const [walletConnected, setWalletConnected] = useState(true)
+
   const [donationAmount, setDonationAmount] = useState<DonationAmount | null>(null)
   const [donationCurrency, setDonationCurrency] = useState<StableCoin>("cUSD")
   const [confirmSwipes, setConfirmSwipes] = useState<ConfirmSwipes>(20)
@@ -671,10 +670,7 @@ function HomeContent() {
 
   const AppContent = () => (
     <div className="w-full h-full flex flex-col overflow-hidden">
-      {!walletConnected ? (
-        <WalletConnect onConnect={() => setWalletConnected(true)} />
-      ) : (
-        <>
+
           {/* Fixed Header */}
           <div className="sticky top-0 z-40 bg-gray-900/95 backdrop-blur-sm border-b border-gray-800">
             <div className="flex flex-col items-center py-2">
@@ -857,8 +853,7 @@ function HomeContent() {
               </div>
             )}
           </div>
-        </>
-      )}
+
 
       {showCart && <Cart items={cart} onClose={() => setShowCart(false)} onCheckout={handleCheckout} />}
 

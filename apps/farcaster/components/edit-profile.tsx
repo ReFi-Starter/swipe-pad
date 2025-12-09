@@ -34,7 +34,6 @@ import { sdk } from "@farcaster/miniapp-sdk"
 
 export function EditProfile({ isOpen, onClose, onSave, currentProfile }: EditProfileProps) {
   const { profile } = useProfile()
-  const [isVerified, setIsVerified] = useState(currentProfile.isVerified || false)
   const [frameUser, setFrameUser] = useState<any>(null)
 
   useEffect(() => {
