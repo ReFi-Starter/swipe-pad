@@ -14,6 +14,18 @@ export function FarcasterLifecycle() {
           // Call ready() to hide the splash screen
           await sdk.actions.ready();
           console.log("✅ Farcaster SDK Ready called successfully");
+
+          // Prompt to Add Mini App if not already added
+          try {
+            const context = await sdk.context;
+            if (context?.client && !context.client.added) {
+               console.log("➕ Prompting to add Mini App...");
+               await (sdk.actions as any).addFrame();
+            }
+          } catch (addError) {
+             console.warn("⚠️ Failed to prompt Add Mini App:", addError);
+          }
+
           return true;
         } catch (error) {
           console.error(`❌ Failed to call Farcaster SDK ready (Attempt ${attempts + 1}):`, error);
