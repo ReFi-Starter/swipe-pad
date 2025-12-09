@@ -9,7 +9,6 @@ import { celo } from "wagmi/chains";
 import { injected } from "wagmi/connectors";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { FarcasterLifecycle } from "./FarcasterLifecycle";
-import { SelfProvider } from "./SelfProvider";
 
 const config = {
     rpcUrl: "https://mainnet.optimism.io",
@@ -24,6 +23,13 @@ const wagmiConfig = createConfig({
     },
     connectors: [
         injected(),
+        injected({
+            target: () => ({
+                id: 'farcaster',
+                name: 'Farcaster Wallet',
+                provider: (sdk as any).provider,
+            }),
+        }),
     ],
 });
 
