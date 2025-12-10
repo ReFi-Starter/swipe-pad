@@ -1,9 +1,5 @@
 {
-    "framework": "nextjs",
-    "rewrites": [
-        {
-            "source": "/(.*)",
-            "destination": "/"
-        }
-    ]
+  "framework": "nextjs",
+  "installCommand": "npm install --legacy-peer-deps",
+  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
 }
