@@ -7,17 +7,20 @@ import { CategoryMenu } from "@/components/category-menu"
 import { CategorySection } from "@/components/category-section"
 import { CommunityFunds } from "@/components/community-funds"
 import { EditProfile } from "@/components/edit-profile"
+import { FarcasterInitializer } from "@/components/FarcasterInitializer"
 import { Leaderboard } from "@/components/leaderboard"
 import { MobileMockup } from "@/components/mobile-mockup"
+import { ParticlesBackground } from "@/components/ParticlesBackground"
 import { ProfileQuickView } from "@/components/profile-quick-view"
 import { ProjectCard } from "@/components/project-card"
 import { ProjectRegistrationForm } from "@/components/project-registration-form"
-import { StarryBackground } from "@/components/starry-background"
 import { SuccessScreen } from "@/components/success-screen"
 import { ToggleMenu } from "@/components/toggle-menu"
 import { TrendingSection } from "@/components/trending-section"
 import { UserProfile } from "@/components/user-profile"
+import { WalletConnect } from "@/components/wallet-connect"
 import { WeeklyDrop } from "@/components/weekly-drop"
+import { WelcomeScreen } from "@/components/welcome-screen"
 import { useMobile } from "@/hooks/use-mobile"
 import { boostProject, getProjects } from "@/lib/card-manager"
 import { categories } from "@/lib/data"
@@ -700,15 +703,7 @@ function HomeContent() {
                   {/* Optional: Currency selector could go here */}
                 </div>
               ) : (
-                <button 
-                  onClick={() => {
-                    const fcConnector = connectors.find(c => c.id === 'farcaster' || c.name === 'Farcaster Wallet');
-                    connect({ connector: fcConnector || connectors[0] });
-                  }}
-                  className="bg-[#855DCD] text-white text-xs font-bold px-4 py-2 rounded-full mb-2 flex items-center hover:bg-[#7C55C3] transition-colors"
-                >
-                  <span className="mr-1">⚡</span> Connect Farcaster
-                </button>
+                <WalletConnect />
               )}
 
               <div className="flex justify-between w-full px-6 space-x-2 mt-4">
@@ -891,24 +886,39 @@ function HomeContent() {
     </div>
   )
 
-  return (
-    <main className="flex min-h-screen flex-col items-center text-white relative overflow-hidden">
-      <StarryBackground />
+  const [hasEntered, setHasEntered] = useState(false)
 
-      {useMobile() ? (
-        <div className="relative z-10 w-full h-screen">
-          <AppContent />
-        </div>
+  return (
+    <>
+      <FarcasterInitializer />
+      <WalletDebug />
+      {!hasEntered ? (
+        <main className="flex min-h-screen flex-col items-center text-white relative overflow-hidden">
+          <ParticlesBackground />
+          <WelcomeScreen onEnter={() => setHasEntered(true)} />
+        </main>
       ) : (
-        <MobileMockup>
-          <AppContent />
-        </MobileMockup>
+        <main className="flex min-h-screen flex-col items-center text-white relative overflow-hidden">
+          <ParticlesBackground />
+
+          {useMobile() ? (
+            <div className="relative z-10 w-full h-screen">
+              <AppContent />
+            </div>
+          ) : (
+            <MobileMockup>
+              <AppContent />
+            </MobileMockup>
+          )}
+          {/* Balance Alert Modal */}
+          {/* Balance Alert Modal Removed */}
+        </main>
       )}
-      {/* Balance Alert Modal */}
-      {/* Balance Alert Modal Removed */}
-    </main>
+    </>
   )
+
 }
+
 
 function CartIcon() {
   return (
@@ -923,9 +933,9 @@ function CartIcon() {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <circle cx="8" cy="21" r="1" />
-      <circle cx="19" cy="21" r="1" />
-      <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+      <circle cx="9" cy="21" r="1" />
+      <circle cx="20" cy="21" r="1" />
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
     </svg>
   )
 }
