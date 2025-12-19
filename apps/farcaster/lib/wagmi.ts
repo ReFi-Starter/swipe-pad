@@ -4,7 +4,7 @@ import { farcasterMiniApp } from '@farcaster/miniapp-wagmi-connector'
 export const config = createConfig({
   chains: [celo],
   transports: { [celo.id]: http() },
-  connectors: [farcasterMiniApp({ shimDisconnect: true })],
+  connectors: [farcasterMiniApp()],
   ssr: true,
 })
 export { celo as defaultChain }
