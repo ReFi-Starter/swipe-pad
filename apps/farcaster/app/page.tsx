@@ -7,20 +7,18 @@ import { CategoryMenu } from "@/components/category-menu"
 import { CategorySection } from "@/components/category-section"
 import { CommunityFunds } from "@/components/community-funds"
 import { EditProfile } from "@/components/edit-profile"
-import { FarcasterInitializer } from "@/components/FarcasterInitializer"
 import { Leaderboard } from "@/components/leaderboard"
 import { MobileMockup } from "@/components/mobile-mockup"
-import { ParticlesBackground } from "@/components/ParticlesBackground"
 import { ProfileQuickView } from "@/components/profile-quick-view"
 import { ProjectCard } from "@/components/project-card"
 import { ProjectRegistrationForm } from "@/components/project-registration-form"
+import { StarryBackground } from "@/components/starry-background"
 import { SuccessScreen } from "@/components/success-screen"
 import { ToggleMenu } from "@/components/toggle-menu"
 import { TrendingSection } from "@/components/trending-section"
 import { UserProfile } from "@/components/user-profile"
 import { WalletConnect } from "@/components/wallet-connect"
 import { WeeklyDrop } from "@/components/weekly-drop"
-import { WelcomeScreen } from "@/components/welcome-screen"
 import { useMobile } from "@/hooks/use-mobile"
 import { boostProject, getProjects } from "@/lib/card-manager"
 import { categories } from "@/lib/data"
@@ -886,39 +884,24 @@ function HomeContent() {
     </div>
   )
 
-  const [hasEntered, setHasEntered] = useState(false)
-
   return (
-    <>
-      <FarcasterInitializer />
-      <WalletDebug />
-      {!hasEntered ? (
-        <main className="flex min-h-screen flex-col items-center text-white relative overflow-hidden">
-          <ParticlesBackground />
-          <WelcomeScreen onEnter={() => setHasEntered(true)} />
-        </main>
+    <main className="flex min-h-screen flex-col items-center text-white relative overflow-hidden">
+      <StarryBackground />
+
+      {useMobile() ? (
+        <div className="relative z-10 w-full h-screen">
+          <AppContent />
+        </div>
       ) : (
-        <main className="flex min-h-screen flex-col items-center text-white relative overflow-hidden">
-          <ParticlesBackground />
-
-          {useMobile() ? (
-            <div className="relative z-10 w-full h-screen">
-              <AppContent />
-            </div>
-          ) : (
-            <MobileMockup>
-              <AppContent />
-            </MobileMockup>
-          )}
-          {/* Balance Alert Modal */}
-          {/* Balance Alert Modal Removed */}
-        </main>
+        <MobileMockup>
+          <AppContent />
+        </MobileMockup>
       )}
-    </>
+      {/* Balance Alert Modal */}
+      {/* Balance Alert Modal Removed */}
+    </main>
   )
-
 }
-
 
 function CartIcon() {
   return (
@@ -933,9 +916,9 @@ function CartIcon() {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <circle cx="9" cy="21" r="1" />
-      <circle cx="20" cy="21" r="1" />
-      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+      <circle cx="8" cy="21" r="1" />
+      <circle cx="19" cy="21" r="1" />
+      <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
     </svg>
   )
 }

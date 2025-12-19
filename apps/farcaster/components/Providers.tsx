@@ -1,37 +1,57 @@
 "use client";
 
 import { AuthKitProvider } from "@farcaster/auth-kit";
-import { darkTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { farcasterMiniApp as miniAppConnector } from "@farcaster/miniapp-wagmi-connector";
+import { connectorsForWallets, darkTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
+import { coinbaseWallet, metaMaskWallet, rainbowWallet, walletConnectWallet } from '@rainbow-me/rainbowkit/wallets';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
-import { WagmiProvider } from "wagmi";
+import { createConfig, http, WagmiProvider } from "wagmi";
+import { celo } from "wagmi/chains";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { FarcasterLifecycle } from "./FarcasterLifecycle";
 
-const authConfig = {
+const config = {
     rpcUrl: "https://mainnet.optimism.io",
     domain: "farcaster.swipepad.xyz",
     siweUri: "https://farcaster.swipepad.xyz/login",
 };
 
-import { config } from "@/lib/wagmiConfig";
+const connectors = connectorsForWallets(
+  [
+    {
+      groupName: 'Recommended',
+      wallets: [rainbowWallet, metaMaskWallet, coinbaseWallet, walletConnectWallet],
+    },
+  ],
+  {
+    appName: 'SwipePad',
+    projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID',
+  }
+);
 
-// ... imports
-
-// Remove inline wagmiConfig and connectors definition
-
+const wagmiConfig = createConfig({
+    chains: [celo],
+    transports: {
+        [celo.id]: http(),
+    },
+    connectors: [
+        miniAppConnector(),
+        ...connectors
+    ],
+});
 
 export default function Providers({ children }: { children: React.ReactNode }) {
     const [queryClient] = useState(() => new QueryClient());
 
     return (
         <ErrorBoundary>
-            <WagmiProvider config={config}>
+            <WagmiProvider config={wagmiConfig}>
                 <QueryClientProvider client={queryClient}>
-                    <FarcasterLifecycle />
                     <RainbowKitProvider theme={darkTheme()}>
-                        <AuthKitProvider config={authConfig}>
+                        <AuthKitProvider config={config}>
+                            <FarcasterLifecycle />
                             {children}
                         </AuthKitProvider>
                     </RainbowKitProvider>
