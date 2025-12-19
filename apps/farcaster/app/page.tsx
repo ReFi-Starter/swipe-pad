@@ -95,13 +95,13 @@ function HomeContent() {
 
   // Wagmi Hooks
   const { address, isConnected, chain, connector } = useAccount()
-  
+
   // Force Read Address from Farcaster Context
   const [fcAddress, setFcAddress] = useState<string | undefined>(undefined);
   const walletAddress = (address || fcAddress) as `0x${string}` | undefined;
 
   console.log("CRITICAL: Wallet Address Resolution:", { wagmi: address, fc: fcAddress, resolved: walletAddress });
-  
+
   const { writeContractAsync } = useWriteContract()
 
   // Use Wagmi's useReadContract for reliable cUSD balance fetching
@@ -135,13 +135,13 @@ function HomeContent() {
         const context = await sdk.context;
         if (context?.user) {
           setFrameUser(context.user);
-          
+
           // Try to get verified address
           const userAny = context.user as any;
           const verified = userAny.verified_accounts?.[0] || userAny.verifiedAddresses?.[0];
           if (verified) {
-             console.log("✅ Found verified address in context:", verified);
-             setFcAddress(verified);
+            console.log("✅ Found verified address in context:", verified);
+            setFcAddress(verified);
           }
 
           // Update userProfile with Farcaster data
@@ -367,8 +367,8 @@ function HomeContent() {
   const handleSwipeRight = async () => {
     console.log("👉 handleSwipeRight triggered");
     if (donationAmount === null) {
-        console.log("❌ donationAmount is null");
-        return
+      console.log("❌ donationAmount is null");
+      return
     }
 
     // Global Rule: Check for any stablecoin balance
@@ -388,15 +388,15 @@ function HomeContent() {
       const targetConnector = fcConnector || connectors[0];
 
       if (targetConnector) {
-          try {
-            console.log("Connecting to:", targetConnector.name);
-            connect({ connector: targetConnector })
-          } catch (e) {
-            console.error("Connection failed:", e)
-            alert("Please connect your wallet first.")
-          }
-      } else {
+        try {
+          console.log("Connecting to:", targetConnector.name);
+          connect({ connector: targetConnector })
+        } catch (e) {
+          console.error("Connection failed:", e)
           alert("Please connect your wallet first.")
+        }
+      } else {
+        alert("Please connect your wallet first.")
       }
       return
     }
@@ -580,24 +580,24 @@ function HomeContent() {
       // Note: In a real app we should check allowance here too. 
       // For now, let's try to donate, if it fails due to allowance, we catch it.
       // But better to be safe:
-      
+
       // We can't easily check allowance synchronously here without a hook, 
       // so we'll just try to write. If it fails, we might need to prompt approve.
       // Or we can just reuse the writeContractAsync pattern.
-      
+
       console.log(`Donating ${amount} ${currency} to ${project.name}`)
-      
+
       // Check allowance (optimistic or try/catch)
       // Since we don't have the allowance hook for *this specific amount* ready, 
       // we'll proceed to donate. If it fails, user sees error.
-      
+
       const txHash = await writeContractAsync({
         address: SWIPE_DONATION_ADDRESS,
         abi: deployedContracts[42220].SwipeDonation.abi,
         functionName: "donate",
         args: [tokenAddr, project.walletAddress, amountWei],
       })
-      
+
       console.log("Donation TX:", txHash)
 
       setUserStats((prev) => {
@@ -619,9 +619,9 @@ function HomeContent() {
       console.error("Transaction failed:", error)
       // Simple heuristic for allowance error
       if (error.message?.includes("allowance") || error.message?.includes("transfer amount exceeds allowance")) {
-         alert("Please approve cUSD usage first. (Go to Swipe mode to approve)")
+        alert("Please approve cUSD usage first. (Go to Swipe mode to approve)")
       } else {
-         alert("Transaction failed. Please try again.")
+        alert("Transaction failed. Please try again.")
       }
     }
   }
@@ -672,180 +672,184 @@ function HomeContent() {
   const AppContent = () => (
     <div className="w-full h-full flex flex-col overflow-hidden">
 
-          {/* Fixed Header */}
-          <div className="sticky top-0 z-40 bg-gray-900/95 backdrop-blur-sm border-b border-gray-800">
-            <div className="flex flex-col items-center py-2">
-              <div className="flex items-center justify-between w-full mb-1 px-6">
-                <div className="w-8"></div>
-                <div className="flex-1 flex justify-center">
-                  <h1
-                    className="text-lg font-bold text-center text-white"
-                    style={{ fontFamily: "Pixelify Sans, monospace" }}
-                  >
-                    SwipePad
-                  </h1>
-                </div>
-                <button
-                  onClick={handleRegisterProject}
-                  className="flex items-center justify-center w-8 h-8 rounded-full bg-[#677FEB] text-white hover:bg-[#5A6FD3] transition-colors"
-                  title="Register Project"
-                >
-                  <RegisterIcon />
-                </button>
-              </div>
-
-              {walletAddress ? (
-                <div className="bg-transparent rounded-full px-4 py-0 mb-2 flex items-center">
-                  <span className="text-[#FFD600] font-bold text-sm mr-1">{userBalance[donationCurrency || "cUSD"]}</span>
-                  <span className="text-gray-400 text-xs mr-1">{donationCurrency || "cUSD"}</span>
-                  {/* Optional: Currency selector could go here */}
-                </div>
-              ) : (
-                <WalletConnect />
-              )}
-
-              <div className="flex justify-between w-full px-6 space-x-2 mt-4">
-                <button
-                  className="flex items-center justify-center w-10 h-10 rounded-full relative"
-                  onClick={() => setShowEditProfile(true)}
-                >
-                  <img
-                    src={userProfile.image || "/placeholder.svg"}
-                    alt="Profile"
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                </button>
-                <button
-                  className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-700"
-                  onClick={() => setViewMode("leaderboard")}
-                >
-                  <Trophy className="w-5 h-5 text-yellow-400" />
-                </button>
-                <button
-                  className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-700"
-                  onClick={() => setViewMode("trending")}
-                >
-                  <TrendingIcon />
-                </button>
-                <button
-                  className="flex items-center justify-center w-10 h-10 rounded-full bg-[#677FEB] relative"
-                  onClick={() => setShowCart(true)}
-                >
-                  <CartIcon />
-                  {cart.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-[#FFD600] text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                      {cart.length}
-                    </span>
-                  )}
-                </button>
-              </div>
+      {/* Fixed Header */}
+      <div className="sticky top-0 z-40 bg-gray-900/95 backdrop-blur-sm border-b border-gray-800">
+        <div className="flex flex-col items-center py-2">
+          <div className="flex items-center justify-between w-full mb-1 px-6">
+            <div className="w-8"></div>
+            <div className="flex-1 flex justify-center">
+              <h1
+                className="text-lg font-bold text-center text-white"
+                style={{ fontFamily: "Pixelify Sans, monospace" }}
+              >
+                SwipePad
+              </h1>
             </div>
+            <button
+              onClick={handleRegisterProject}
+              className="flex items-center justify-center w-8 h-8 rounded-full bg-[#677FEB] text-white hover:bg-[#5A6FD3] transition-colors"
+              title="Register Project"
+            >
+              <RegisterIcon />
+            </button>
           </div>
 
-          {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto">
-            {viewMode === "profile" ? (
-              <UserProfile stats={userStats} onBack={() => setViewMode("swipe")} />
-            ) : viewMode === "leaderboard" ? (
-              <Leaderboard userStats={userStats} userProfile={userProfile} onBack={() => setViewMode("swipe")} />
-            ) : viewMode === "trending" ? (
-              <div className="px-6 py-6">
-                <TrendingSection onDonate={handleCategoryProjectDonate} />
-                <CommunityFunds onDonate={handleCategoryProjectDonate} />
-                <WeeklyDrop onDonate={handleCategoryProjectDonate} />
-                <button
-                  onClick={() => setViewMode("swipe")}
-                  className="w-full py-3 bg-gray-800 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors mt-6"
-                >
-                  Back to Swipe
-                </button>
-              </div>
-            ) : (
-              <div className="py-1">
-                <div className={donationAmount === null ? "mt-6 mb-2" : ""}>
-                  <ToggleMenu
-                    viewMode={viewMode === "swipe" ? "swipe" : "list"}
-                    setViewMode={(mode) => setViewMode(mode)}
-                    large={donationAmount === null}
-                  />
-                </div>
+          {walletAddress ? (
+            <div className="bg-transparent rounded-full px-4 py-0 mb-2 flex items-center">
+              <span className="text-[#FFD600] font-bold text-sm mr-1">{userBalance[donationCurrency || "cUSD"]}</span>
+              <span className="text-gray-400 text-xs mr-1">{donationCurrency || "cUSD"}</span>
+              {/* Optional: Currency selector could go here */}
+            </div>
+          ) : (
+            <WalletConnect />
+          )}
 
-                {viewMode === "swipe" ? (
-                  <>
-                    {donationAmount === null ? (
-                      <AmountSelector onSelect={handleAmountSelect} />
-                    ) : (
-                      <>
-                        <CategoryMenu
-                          selectedCategory={selectedCategory}
-                          setSelectedCategory={setSelectedCategory}
-                          setCurrentProjectIndex={() => setCurrentProjectIndex(0)}
-                        />
+          <div className="flex justify-between w-full px-6 space-x-2 mt-4">
+            <button
+              className="flex items-center justify-center w-10 h-10 rounded-full relative overflow-hidden bg-gray-700"
+              onClick={() => setShowEditProfile(true)}
+            >
+              {userProfile.image ? (
+                <img
+                  src={userProfile.image}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-xl">👤</span>
+              )}
+            </button>
+            <button
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-700"
+              onClick={() => setViewMode("leaderboard")}
+            >
+              <Trophy className="w-5 h-5 text-yellow-400" />
+            </button>
+            <button
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-700"
+              onClick={() => setViewMode("trending")}
+            >
+              <TrendingIcon />
+            </button>
+            <button
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-[#677FEB] relative"
+              onClick={() => setShowCart(true)}
+            >
+              <CartIcon />
+              {cart.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-[#FFD600] text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {cart.length}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
 
-                        <div className="mb-1 px-6">
-                          <div className="flex justify-between items-center">
-                            <div>
-                              <span className="text-sm text-gray-300">Donating: </span>
-                              <span className="font-bold text-[#FFD600]">
-                                {donationAmount} {donationCurrency}
-                              </span>
-                            </div>
-                            <button
-                              onClick={() => setDonationAmount(null)}
-                              className="text-sm text-gray-300 hover:text-white underline"
-                            >
-                              Change
-                            </button>
-                          </div>
-                          <div className="mt-1 bg-gray-800 rounded-lg p-2">
-                            <div className="flex justify-between text-xs mb-1">
-                              <span>Swipes until confirmation:</span>
-                              <span>{confirmSwipes - swipeCount} more</span>
-                            </div>
-                            <div className="w-full bg-gray-700 rounded-full h-2">
-                              <div
-                                className="bg-[#FFD600] h-2 rounded-full transition-all duration-300"
-                                style={{ width: `${(swipeCount / confirmSwipes) * 100}%` }}
-                              ></div>
-                            </div>
-                          </div>
-                        </div>
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto">
+        {viewMode === "profile" ? (
+          <UserProfile stats={userStats} onBack={() => setViewMode("swipe")} />
+        ) : viewMode === "leaderboard" ? (
+          <Leaderboard userStats={userStats} userProfile={userProfile} onBack={() => setViewMode("swipe")} />
+        ) : viewMode === "trending" ? (
+          <div className="px-6 py-6">
+            <TrendingSection onDonate={handleCategoryProjectDonate} />
+            <CommunityFunds onDonate={handleCategoryProjectDonate} />
+            <WeeklyDrop onDonate={handleCategoryProjectDonate} />
+            <button
+              onClick={() => setViewMode("swipe")}
+              className="w-full py-3 bg-gray-800 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors mt-6"
+            >
+              Back to Swipe
+            </button>
+          </div>
+        ) : (
+          <div className="py-1">
+            <div className={donationAmount === null ? "mt-6 mb-2" : ""}>
+              <ToggleMenu
+                viewMode={viewMode === "swipe" ? "swipe" : "list"}
+                setViewMode={(mode) => setViewMode(mode)}
+                large={donationAmount === null}
+              />
+            </div>
 
-                        <div className="px-6">
-                          {filteredProjects.length > 0 && (
-                            <ProjectCard
-                              project={filteredProjects[currentProjectIndex]}
-                              onSwipeLeft={handleSwipeLeft}
-                              onSwipeRight={handleSwipeRight}
-                              onRewind={handleRewind}
-                              viewMode="swipe"
-                              donationAmount={donationAmount}
-                              donationCurrency={donationCurrency}
-                              onBoost={(amount) => handleProjectBoost(filteredProjects[currentProjectIndex], amount)}
-                            />
-                          )}
-                        </div>
-                      </>
-                    )}
-                  </>
+            {viewMode === "swipe" ? (
+              <>
+                {donationAmount === null ? (
+                  <AmountSelector onSelect={handleAmountSelect} />
                 ) : (
-                  <div className="mt-6">
-                    {Object.entries(projectsByCategory)
-                      .filter(([category]) => category !== "See All")
-                      .map(([category, categoryProjects]) => (
-                        <CategorySection
-                          key={category}
-                          category={category}
-                          projects={categoryProjects}
-                          onDonate={handleCategoryProjectDonate}
-                          onBoost={handleProjectBoost}
+                  <>
+                    <CategoryMenu
+                      selectedCategory={selectedCategory}
+                      setSelectedCategory={setSelectedCategory}
+                      setCurrentProjectIndex={() => setCurrentProjectIndex(0)}
+                    />
+
+                    <div className="mb-1 px-6">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <span className="text-sm text-gray-300">Donating: </span>
+                          <span className="font-bold text-[#FFD600]">
+                            {donationAmount} {donationCurrency}
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => setDonationAmount(null)}
+                          className="text-sm text-gray-300 hover:text-white underline"
+                        >
+                          Change
+                        </button>
+                      </div>
+                      <div className="mt-1 bg-gray-800 rounded-lg p-2">
+                        <div className="flex justify-between text-xs mb-1">
+                          <span>Swipes until confirmation:</span>
+                          <span>{confirmSwipes - swipeCount} more</span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-2">
+                          <div
+                            className="bg-[#FFD600] h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${(swipeCount / confirmSwipes) * 100}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="px-6">
+                      {filteredProjects.length > 0 && (
+                        <ProjectCard
+                          project={filteredProjects[currentProjectIndex]}
+                          onSwipeLeft={handleSwipeLeft}
+                          onSwipeRight={handleSwipeRight}
+                          onRewind={handleRewind}
+                          viewMode="swipe"
+                          donationAmount={donationAmount}
+                          donationCurrency={donationCurrency}
+                          onBoost={(amount) => handleProjectBoost(filteredProjects[currentProjectIndex], amount)}
                         />
-                      ))}
-                  </div>
+                      )}
+                    </div>
+                  </>
                 )}
+              </>
+            ) : (
+              <div className="mt-6">
+                {Object.entries(projectsByCategory)
+                  .filter(([category]) => category !== "See All")
+                  .map(([category, categoryProjects]) => (
+                    <CategorySection
+                      key={category}
+                      category={category}
+                      projects={categoryProjects}
+                      onDonate={handleCategoryProjectDonate}
+                      onBoost={handleProjectBoost}
+                    />
+                  ))}
               </div>
             )}
           </div>
+        )}
+      </div>
 
 
       {showCart && <Cart items={cart} onClose={() => setShowCart(false)} onCheckout={handleCheckout} />}
