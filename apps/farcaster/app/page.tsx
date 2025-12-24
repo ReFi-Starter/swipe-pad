@@ -82,12 +82,17 @@ function HomeContent() {
   const [currentProjectIndex, setCurrentProjectIndex] = useState(0)
   const [projects, setProjects] = useState<any[]>([])
 
-  // Load projects on mount and when category changes
+  // Load projects on mount and when category changes (Wait for wallet)
   useEffect(() => {
-    const loadedProjects = getProjects(selectedCategory)
-    setProjects(loadedProjects)
-    setCurrentProjectIndex(0)
-  }, [selectedCategory])
+    if (walletAddress) {
+        console.log("Wallet connected, loading projects...");
+        const loadedProjects = getProjects(selectedCategory)
+        setProjects(loadedProjects)
+        setCurrentProjectIndex(0)
+    } else {
+        console.log("Waiting for wallet connection to load projects...");
+    }
+  }, [selectedCategory, walletAddress])
 
   const [selectedProject, setSelectedProject] = useState<any>(null)
   const [cart, setCart] = useState<Array<{ project: any; amount: number; currency: StableCoin; message?: string }>>([])
@@ -122,7 +127,7 @@ function HomeContent() {
 
   // Force Read Address from Farcaster Context
   const [fcAddress, setFcAddress] = useState<string | undefined>(undefined);
-  const walletAddress = (address || fcAddress) as `0x${string}` | undefined;
+  const walletAddress = (address || smartAccount?.address || fcAddress) as `0x${string}` | undefined;
 
   console.log("CRITICAL: Wallet Address Resolution:", { wagmi: address, fc: fcAddress, resolved: walletAddress });
 

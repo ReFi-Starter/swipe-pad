@@ -15,7 +15,33 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  webpack: (config) => {
+  
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: "frame-ancestors 'self' https://warpcast.com https://*.farcaster.xyz https://explorer.farcaster.xyz;",
+          },
+          {
+            key: "Access-Control-Allow-Origin",
+            value: "*",
+          },
+          {
+            key: "Access-Control-Allow-Methods",
+            value: "GET, POST, PUT, DELETE, OPTIONS",
+          },
+          {
+            key: "Access-Control-Allow-Headers",
+            value: "X-Requested-With, Content-Type, Authorization",
+          },
+        ],
+      },
+    ];
+  },
+webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
       "coinbase-wallet-sdk": path.resolve(__dirname, "coinbase-wallet-sdk-mock.js"),
