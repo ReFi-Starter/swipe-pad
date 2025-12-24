@@ -51,7 +51,7 @@ html {
 }
         `}</style>
       </head>
-      <body>
+      <body suppressHydrationWarning={true}>
         <Providers>{children}</Providers>
         <Analytics />
       </body>

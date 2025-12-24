@@ -696,7 +696,6 @@ function HomeContent() {
   const AppContent = () => (
     showWelcome ? <WelcomeScreen onEnter={() => setShowWelcome(false)} /> : 
     <div className="w-full h-full flex flex-col overflow-hidden">
-    <div className="w-full h-full flex flex-col overflow-hidden">
 
       {/* Fixed Header */}
       <div className="sticky top-0 z-40 bg-gray-900/95 backdrop-blur-sm border-b border-gray-800">
