@@ -2,6 +2,7 @@
 // Thirdweb Wagmi Adapter
 import { inAppWalletConnector } from "@thirdweb-dev/wagmi-adapter";
 import { createThirdwebClient } from "thirdweb";
+import { ThirdwebProvider } from "thirdweb/react";
 
 
 import { AuthKitProvider } from "@farcaster/auth-kit";
@@ -57,6 +58,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
     return (
         <ErrorBoundary>
+            <ThirdwebProvider client={client}>
             <WagmiProvider config={wagmiConfig}>
                 <QueryClientProvider client={queryClient}>
                     <RainbowKitProvider theme={darkTheme()}>
@@ -67,6 +69,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                     </RainbowKitProvider>
                 </QueryClientProvider>
             </WagmiProvider>
+            </ThirdwebProvider>
         </ErrorBoundary>
     );
 }

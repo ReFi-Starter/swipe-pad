@@ -23,6 +23,7 @@ import { ToggleMenu } from "@/components/toggle-menu"
 import { TrendingSection } from "@/components/trending-section"
 import { UserProfile } from "@/components/user-profile"
 import { WeeklyDrop } from "@/components/weekly-drop"
+import { WelcomeScreen } from "@/components/welcome-screen"
 import { useMobile } from "@/hooks/use-mobile"
 import { boostProject, getProjects } from "@/lib/card-manager"
 import { categories } from "@/lib/data"
@@ -58,6 +59,7 @@ export default function Home() {
 }
 
 function HomeContent() {
+  const [showWelcome, setShowWelcome] = useState(true)
   const { connect, connectors } = useConnect()
   const { profile } = useProfile()
   const [frameUser, setFrameUser] = useState<any>(null)
@@ -692,6 +694,8 @@ function HomeContent() {
   )
 
   const AppContent = () => (
+    showWelcome ? <WelcomeScreen onEnter={() => setShowWelcome(false)} /> : 
+    <div className="w-full h-full flex flex-col overflow-hidden">
     <div className="w-full h-full flex flex-col overflow-hidden">
 
       {/* Fixed Header */}
