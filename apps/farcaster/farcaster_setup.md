@@ -1,11 +1,11 @@
 # 🚀 SwipePad Farcaster MiniApp Setup
 
-This guide details the steps to run and test the SwipePad Farcaster MiniApp.
+This guide details the steps to run and test the SwipePad Farcaster MiniApp locally.
 
 ## 📋 Prerequisites
-- **OS**: Pop!_OS / Linux
-- **Tools**: Node.js (v18+), ngrok
-- **Account**: [thirdweb](https://dash.thirdweb.com/) (for Farcaster Wallet Connection)
+- **Pop!_OS / Linux** system
+- **thirdweb Client ID** (Get one at [dash.thirdweb.com](https://dash.thirdweb.com/))
+- **ngrok** account for local tunneling
 
 ## 🛠️ Local Development
 
