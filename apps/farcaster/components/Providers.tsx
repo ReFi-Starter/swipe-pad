@@ -1,4 +1,8 @@
 "use client";
+// Thirdweb Wagmi Adapter
+import { inAppWalletConnector } from "@thirdweb-dev/wagmi-adapter";
+import { createThirdwebClient } from "thirdweb";
+
 
 import { AuthKitProvider } from "@farcaster/auth-kit";
 import { farcasterMiniApp as miniAppConnector } from "@farcaster/miniapp-wagmi-connector";
@@ -11,6 +15,11 @@ import { createConfig, http, WagmiProvider } from "wagmi";
 import { celo } from "wagmi/chains";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { FarcasterLifecycle } from "./FarcasterLifecycle";
+
+
+const client = createThirdwebClient({
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || "",
+});
 
 const config = {
     rpcUrl: "https://mainnet.optimism.io",
@@ -37,6 +46,7 @@ const wagmiConfig = createConfig({
         [celo.id]: http(),
     },
     connectors: [
+        inAppWalletConnector({ client }),
         miniAppConnector(),
         ...connectors
     ],
