@@ -2,6 +2,7 @@
 
 import { createThirdwebClient } from "thirdweb";
 import { ConnectButton, useActiveAccount } from "thirdweb/react";
+import ClientOnly from "@/components/ClientOnly";
 import { inAppWalletConnector } from "@thirdweb-dev/wagmi-adapter";
 import { inAppWallet } from "thirdweb/wallets";
 
@@ -53,7 +54,9 @@ const client = createThirdwebClient({
 export default function Home() {
   return (
     <Suspense fallback={<div className="flex items-center justify-center min-h-screen bg-black text-white">Loading SwipePad...</div>}>
-      <HomeContent />
+      <ClientOnly>
+         <HomeContent />
+      </ClientOnly>
     </Suspense>
   )
 }
