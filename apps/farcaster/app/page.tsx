@@ -1,5 +1,10 @@
 "use client"
 
+import { createThirdwebClient } from "thirdweb";
+import { ConnectButton, useActiveAccount } from "thirdweb/react";
+import { inAppWalletConnector } from "@thirdweb-dev/wagmi-adapter";
+import { inAppWallet } from "thirdweb/wallets";
+
 import { AmountSelector, type ConfirmSwipes, type DonationAmount, type StableCoin } from "@/components/amount-selector"
 import { BadgeNotification } from "@/components/badge-notification"
 import { Cart } from "@/components/cart"
@@ -17,7 +22,6 @@ import { SuccessScreen } from "@/components/success-screen"
 import { ToggleMenu } from "@/components/toggle-menu"
 import { TrendingSection } from "@/components/trending-section"
 import { UserProfile } from "@/components/user-profile"
-import { WalletConnect } from "@/components/wallet-connect"
 import { WeeklyDrop } from "@/components/weekly-drop"
 import { useMobile } from "@/hooks/use-mobile"
 import { boostProject, getProjects } from "@/lib/card-manager"
@@ -38,6 +42,11 @@ import { useAccount, useConnect, useReadContract, useWriteContract } from "wagmi
 const CUSD_ADDRESS = "0x765DE816845861e75A25fCA122bb6898B8B1282a" // Celo cUSD
 const CEUR_ADDRESS = "0xD8763CBa276a3738E6DE85b4b3bF5FDed6D6CA73" // Celo cEUR
 const SWIPE_DONATION_ADDRESS = deployedContracts[42220].SwipeDonation.address // Celo Mainnet
+
+const client = createThirdwebClient({
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || "",
+});
+
 
 
 export default function Home() {
@@ -95,6 +104,19 @@ function HomeContent() {
 
   // Wagmi Hooks
   const { address, isConnected, chain, connector } = useAccount()
+  // Thirdweb <-> Wagmi Bridge
+  const smartAccount = useActiveAccount();
+  useEffect(() => {
+    if (smartAccount && !isConnected) {
+      // Find the connector. The ID for @thirdweb-dev/wagmi-adapter is usually 'in-app-wallet' or similar.
+      // We'll iterate to find it.
+      const twConnector = connectors.find(c => c.id === 'in-app-wallet');
+      if (twConnector) {
+        connect({ connector: twConnector });
+      }
+    }
+  }, [smartAccount, isConnected, connect, connectors]);
+
 
   // Force Read Address from Farcaster Context
   const [fcAddress, setFcAddress] = useState<string | undefined>(undefined);
@@ -701,7 +723,18 @@ function HomeContent() {
               {/* Optional: Currency selector could go here */}
             </div>
           ) : (
-            <WalletConnect />
+            <ConnectButton
+              client={client}
+              wallets={[
+                inAppWallet({
+                  auth: {
+                    options: [
+                      "farcaster",
+                    ],
+                  },
+                }),
+              ]}
+            />
           )}
 
           <div className="flex justify-between w-full px-6 space-x-2 mt-4">
