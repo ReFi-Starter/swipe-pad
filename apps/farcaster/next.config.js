@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ['viem', 'wagmi', 'thirdweb'],
   experimental: {
     serverComponentsExternalPackages: ['@vercel/og'],
   },

@@ -11,7 +11,7 @@ import { connectorsForWallets, darkTheme, RainbowKitProvider } from '@rainbow-me
 import '@rainbow-me/rainbowkit/styles.css';
 import { coinbaseWallet, metaMaskWallet, rainbowWallet, walletConnectWallet } from '@rainbow-me/rainbowkit/wallets';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { createConfig, http, WagmiProvider } from "wagmi";
 import { celo } from "wagmi/chains";
 import { ErrorBoundary } from "./ErrorBoundary";
@@ -19,11 +19,6 @@ import { FarcasterLifecycle } from "./FarcasterLifecycle";
 import dynamic from "next/dynamic";
 
 const SafeThirdwebProvider = ThirdwebProvider as any;
-
-
-const client = createThirdwebClient({
-  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || "",
-});
 
 const config = {
     rpcUrl: "https://mainnet.optimism.io",
@@ -34,7 +29,11 @@ const config = {
 function ProvidersInner({ children }: { children: React.ReactNode }) {
     const [queryClient] = useState(() => new QueryClient());
 
-    const [wagmiConfig] = useState(() => {
+    const client = useMemo(() => createThirdwebClient({
+      clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || "",
+    }), []);
+
+    const wagmiConfig = useMemo(() => {
         const connectors = connectorsForWallets(
             [
                 {
@@ -59,7 +58,7 @@ function ProvidersInner({ children }: { children: React.ReactNode }) {
                 ...connectors
             ],
         });
-    });
+    }, [client]);
 
     return (
         <ErrorBoundary>

@@ -33,7 +33,7 @@ import { useProfile } from "@farcaster/auth-kit"
 import { sdk } from "@farcaster/miniapp-sdk"
 import { Trophy } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Suspense, useEffect, useState } from "react"
+import { Suspense, useEffect, useState, useMemo } from "react"
 import { erc20Abi, formatEther, parseEther } from "viem"
 import { useAccount, useConnect, useReadContract, useWriteContract } from "wagmi"
 import dynamic from "next/dynamic";
@@ -46,9 +46,7 @@ const CUSD_ADDRESS = "0x765DE816845861e75A25fCA122bb6898B8B1282a" // Celo cUSD
 const CEUR_ADDRESS = "0xD8763CBa276a3738E6DE85b4b3bF5FDed6D6CA73" // Celo cEUR
 const SWIPE_DONATION_ADDRESS = deployedContracts[42220].SwipeDonation.address // Celo Mainnet
 
-const client = createThirdwebClient({
-  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || "",
-});
+
 
 
 
@@ -63,6 +61,10 @@ function Home() {
 }
 
 function HomeContent() {
+  const client = useMemo(() => createThirdwebClient({
+    clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || "",
+  }), []);
+
   const [showWelcome, setShowWelcome] = useState(true)
   const { connect, connectors } = useConnect()
   const { profile } = useProfile()
