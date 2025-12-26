@@ -10,7 +10,8 @@
     "type-check": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
-    "update-abis": "node scripts/update-abis.js"
+    "update-abis": "node scripts/update-abis.js",
+    "build:farcaster": "cd apps/farcaster && next build"
   },
   "dependencies": {
     "@celo/contractkit": "^2.0.0",
