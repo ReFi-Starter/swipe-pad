@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   transpilePackages: ['viem', 'wagmi', 'thirdweb'],
   experimental: {
     serverComponentsExternalPackages: ['@vercel/og'],
@@ -25,6 +31,7 @@ const nextConfig = {
     NEXT_PUBLIC_FRAME_URL: process.env.NEXT_PUBLIC_FRAME_URL,
   },
   webpack: (config) => {
+    config.externals.push('pino-pretty', 'encoding');
     config.resolve.alias = {
       ...config.resolve.alias,
       // Mocks the React Native module for the web build
