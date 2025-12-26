@@ -6,20 +6,20 @@ import { Providers } from '@/components/Providers';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'SwipePad',
-  description: 'A Tinder-style interface for discovering crypto/impact projects',
+    title: 'SwipePad',
+    description: 'A Tinder-style interface for discovering crypto/impact projects',
 };
 
 export default function RootLayout({
-  children,
+    children,
 }: {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
-        <Providers>{children}</Providers>
-      </body>
-    </html>
-  );
+    return (
+        <html lang="en" suppressHydrationWarning>
+            <body className={inter.className} suppressHydrationWarning>
+                <Providers>{children}</Providers>
+            </body>
+        </html>
+    );
 }
