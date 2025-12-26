@@ -11,11 +11,12 @@ import { connectorsForWallets, darkTheme, RainbowKitProvider } from '@rainbow-me
 import '@rainbow-me/rainbowkit/styles.css';
 import { coinbaseWallet, metaMaskWallet, rainbowWallet, walletConnectWallet } from '@rainbow-me/rainbowkit/wallets';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createConfig, http, WagmiProvider } from "wagmi";
 import { celo } from "wagmi/chains";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { FarcasterLifecycle } from "./FarcasterLifecycle";
+import dynamic from "next/dynamic";
 
 const SafeThirdwebProvider = ThirdwebProvider as any;
 
@@ -30,34 +31,35 @@ const config = {
     siweUri: "https://farcaster.swipepad.xyz/login",
 };
 
-const connectors = connectorsForWallets(
-  [
-    {
-      groupName: 'Recommended',
-      wallets: [rainbowWallet, metaMaskWallet, coinbaseWallet, walletConnectWallet],
-    },
-  ],
-  {
-    appName: 'SwipePad',
-    projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID',
-  }
-);
-
-// @ts-ignore
-const wagmiConfig = createConfig({
-    chains: [celo],
-    transports: {
-        [celo.id]: http(),
-    },
-    connectors: [
-        inAppWalletConnector({ client }) as any,
-        miniAppConnector(),
-        ...connectors
-    ],
-});
-
-export default function Providers({ children }: { children: React.ReactNode }) {
+function ProvidersInner({ children }: { children: React.ReactNode }) {
     const [queryClient] = useState(() => new QueryClient());
+
+    const [wagmiConfig] = useState(() => {
+        const connectors = connectorsForWallets(
+            [
+                {
+                    groupName: 'Recommended',
+                    wallets: [rainbowWallet, metaMaskWallet, coinbaseWallet, walletConnectWallet],
+                },
+            ],
+            {
+                appName: 'SwipePad',
+                projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID',
+            }
+        );
+
+        return createConfig({
+            chains: [celo],
+            transports: {
+                [celo.id]: http(),
+            },
+            connectors: [
+                inAppWalletConnector({ client }) as any,
+                miniAppConnector(),
+                ...connectors
+            ],
+        });
+    });
 
     return (
         <ErrorBoundary>
@@ -76,3 +78,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         </ErrorBoundary>
     );
 }
+
+const Providers = dynamic(() => Promise.resolve(ProvidersInner), {
+  ssr: false,
+});
+
+export default Providers;

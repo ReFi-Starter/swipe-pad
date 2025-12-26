@@ -36,6 +36,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useEffect, useState } from "react"
 import { erc20Abi, formatEther, parseEther } from "viem"
 import { useAccount, useConnect, useReadContract, useWriteContract } from "wagmi"
+import dynamic from "next/dynamic";
 
 // ============================================================================
 // CHAIN CONFIGURATION: CELO MAINNET (Chain ID: 42220)
@@ -51,7 +52,7 @@ const client = createThirdwebClient({
 
 
 
-export default function Home() {
+function Home() {
   return (
     <Suspense fallback={<div className="flex items-center justify-center min-h-screen bg-black text-white">Loading SwipePad...</div>}>
       <ClientOnly>
@@ -1027,3 +1028,5 @@ function ChevronDownIcon() {
     </svg>
   )
 }
+
+export default dynamic(() => Promise.resolve(Home), { ssr: false });
