@@ -17,6 +17,8 @@ import { celo } from "wagmi/chains";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { FarcasterLifecycle } from "./FarcasterLifecycle";
 
+const SafeThirdwebProvider = ThirdwebProvider as any;
+
 
 const client = createThirdwebClient({
   clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || "",
@@ -41,13 +43,14 @@ const connectors = connectorsForWallets(
   }
 );
 
+// @ts-ignore
 const wagmiConfig = createConfig({
     chains: [celo],
     transports: {
         [celo.id]: http(),
     },
     connectors: [
-        inAppWalletConnector({ client }),
+        inAppWalletConnector({ client }) as any,
         miniAppConnector(),
         ...connectors
     ],
@@ -58,7 +61,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
     return (
         <ErrorBoundary>
-            <ThirdwebProvider client={client}>
+            <SafeThirdwebProvider client={client}>
             <WagmiProvider config={wagmiConfig}>
                 <QueryClientProvider client={queryClient}>
                     <RainbowKitProvider theme={darkTheme()}>
@@ -69,7 +72,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                     </RainbowKitProvider>
                 </QueryClientProvider>
             </WagmiProvider>
-            </ThirdwebProvider>
+            </SafeThirdwebProvider>
         </ErrorBoundary>
     );
 }

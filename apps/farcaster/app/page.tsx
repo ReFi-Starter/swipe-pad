@@ -65,6 +65,14 @@ function HomeContent() {
   const [showWelcome, setShowWelcome] = useState(true)
   const { connect, connectors } = useConnect()
   const { profile } = useProfile()
+  // Hoisted Hooks for Address Resolution
+  const { address, isConnected, chain, connector } = useAccount()
+  const smartAccount = useActiveAccount();
+  const [fcAddress, setFcAddress] = useState<string | undefined>(undefined);
+  const walletAddress = (address || smartAccount?.address || fcAddress) as `0x${string}` | undefined;
+
+  console.log("CRITICAL: Wallet Address Resolution:", { wagmi: address, fc: fcAddress, resolved: walletAddress });
+
   const [frameUser, setFrameUser] = useState<any>(null)
   const [viewMode, setViewMode] = useState<"swipe" | "list" | "profile" | "trending" | "leaderboard">("swipe")
 
@@ -112,10 +120,7 @@ function HomeContent() {
   const status = searchParams.get("status")
   const [isVerifyingCallback, setIsVerifyingCallback] = useState(false)
 
-  // Wagmi Hooks
-  const { address, isConnected, chain, connector } = useAccount()
-  // Thirdweb <-> Wagmi Bridge
-  const smartAccount = useActiveAccount();
+
   useEffect(() => {
     if (smartAccount && !isConnected) {
       // Find the connector. The ID for @thirdweb-dev/wagmi-adapter is usually 'in-app-wallet' or similar.
@@ -128,11 +133,7 @@ function HomeContent() {
   }, [smartAccount, isConnected, connect, connectors]);
 
 
-  // Force Read Address from Farcaster Context
-  const [fcAddress, setFcAddress] = useState<string | undefined>(undefined);
-  const walletAddress = (address || smartAccount?.address || fcAddress) as `0x${string}` | undefined;
 
-  console.log("CRITICAL: Wallet Address Resolution:", { wagmi: address, fc: fcAddress, resolved: walletAddress });
 
   const { writeContractAsync } = useWriteContract()
 
