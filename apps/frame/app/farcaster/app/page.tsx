@@ -1,1 +1,0 @@
-import Image from "next/image";\n\nexport default function Home() {\n  return (\n    <main>\n      <h1>SwipePad Farcaster MiniApp</h1>\n      <p>Frame API endpoints are ready.</p>\n    </main>\n  );\n}
